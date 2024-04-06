@@ -1,0 +1,37 @@
+{
+    "cartDescription": "nextCart",
+    "cartLogo": "",
+    "emailHost": "smtp-server.com",
+    "emailPort": 587,
+    "emailSecure": false,
+    "emailUser": "hi@nextCart.com",
+    "emailPassword": "this_is_the_smtp_password",
+    "emailAddress": "hi@nextCart.com",
+    "footer": {
+        "html": null,
+        "shownForCustomer": true,
+        "shownForAdmin": false
+    },
+    "googleAnalytics": "",
+    "injectJs": "",
+    "customCss": "",
+    "databaseConnectionString": "mongodb://127.0.0.1:27017/nextcart?replicaSet=rs0",
+    "theme": "Cloth",
+    "orderHook": "",
+    "enableLanguages": true,
+    "availableLanguages": {
+        "en": "English",
+        "id": "Indonesia",
+        "it": "Italiano"
+    },
+    "defaultLocale": "en",
+    "twitterHandle": "",
+    "facebookAppId": "",
+    "productOrderBy": "date",
+    "productOrder": "descending",
+    "session": {
+        "paramName": "__sess",
+        "maxAge": null,
+        "maxDays": 10
+    }
+}

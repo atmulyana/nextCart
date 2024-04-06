@@ -1,0 +1,17 @@
+{
+    "cartTitle": "CLOTH",
+    "baseUrl": "http://localhost:3000",
+    "productsPerRow": 3,
+    "productsPerPage": 6,
+    "currencySymbol": "$",
+    "currencyISO": "USD",
+    "maxQuantity": 25,
+    "paymentGateway": [
+        "authorizenet",
+        "blockonomics",
+        "instore"
+    ],
+    "trackStock": true,
+    "showRelatedProducts": true,
+    "showHomepageVariants": true
+}
