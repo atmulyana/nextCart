@@ -66,7 +66,7 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
             || quantity < 1
         ) { 
             delete cart.items[cartItemId];
-            updateTotalCart(cart, session);
+            await updateTotalCart(cart, session);
             await deleteCartItem(cartId, cartItemId);
             if (Object.keys(cart.items).length < 1) {
                 await deleteCart(cartId);
@@ -88,7 +88,7 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         const check = checkStock(cartItem);
         if (check) return response(lang(check.message));
 
-        updateTotalCart(cart, session);
+        await updateTotalCart(cart, session);
         await upsertCart(cartId, cart);
         await upsertCartItem(cartId, cartItemId, cartItem);
         return response('', {status: 200});

@@ -3,8 +3,7 @@
  **/
 import type {TCart, TCartItem, TVariant} from '@/data/types';
 import lang from '@/data/lang';
-import {dbTrans} from '@/data/db-conn';
-import {getCart, upsertCart, upsertCartItem} from '@/data/cart';
+import {cartTrans, getCart, upsertCart, upsertCartItem} from '@/data/cart';
 import {getProduct} from '@/data/product';
 import {getSession} from '@/data/session';
 import {checkStock, updateTotalCart} from '@/lib/cart';
@@ -12,7 +11,7 @@ import {ResponseMessage} from '@/lib/common';
 import {createPostHandler} from '@/lib/routeHandler';
 
 export const POST = createPostHandler(async (formData, redirect, isFromMobile) => {
-    return await dbTrans(async () => {
+    return await cartTrans(async () => {
         const cartWithId = await getCart();
         const session = await getSession();
         const {_id: _cartId, ...cart} = cartWithId ?? {
@@ -39,7 +38,7 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
             totalCartItems = cart.totalCartItems,
             _cart = cart,
             ...props
-        }: {
+        } : {
             status?: number,
             totalCartItems?: number,
             _cart?: TCart,
@@ -113,9 +112,9 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         const check = checkStock(cartItem);
         if (check) return response(lang(check.message));
 
-        updateTotalCart(cart, session);
+        await updateTotalCart(cart, session);
 
-        const cartId = _cartId || session.customerId || session._id;
+        const cartId = _cartId || session._id;
         await upsertCart(cartId, cart);
         await upsertCartItem(cartId, cartItemId, cartItem);
         return response(

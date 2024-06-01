@@ -4,15 +4,15 @@
 import type {NotificationParam} from '@/components/Notification';
 import type {TCart} from '@/data/types';
 import lang from '@/data/lang';
-import {dbTrans, type ObjectId} from '@/data/db-conn';
-import {getCart, deleteCart, deleteCartItem, upsertCart} from '@/data/cart';
+import {type ObjectId} from '@/data/db-conn';
+import {cartTrans, getCart, deleteCart, deleteCartItem, upsertCart} from '@/data/cart';
 import {getSession} from '@/data/session';
 import {updateTotalCart} from '@/lib/cart';
 import {ResponseMessage} from '@/lib/common';
 import {createPostHandler} from '@/lib/routeHandler';
 
 export const POST = createPostHandler(async (formData, redirect, isFromMobile) => {
-    return await dbTrans(async () => {
+    return await cartTrans(async () => {
         const cartWithId = await getCart();
         const session = await getSession();
         let cartId: ObjectId | undefined, cart: TCart | undefined;
@@ -50,7 +50,7 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         // remove item from cart
         delete cart.items[cartItemId];
         await deleteCartItem(cartId, cartItemId);
-        updateTotalCart(cart, session);
+        await updateTotalCart(cart, session);
         
         // If no item in cart, discard cart
         if (Object.keys(cart.items).length < 1) {

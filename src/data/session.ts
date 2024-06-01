@@ -1,21 +1,18 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import {cookies} from 'next/headers';
 import {TSession} from '@/data/types';
 import type {TSessionBasic, TSessionCustomer, TSessionUser} from '@/data/types';
+import {auth} from '@/lib/auth';
 import fn, {type Db, ObjectId} from './db-conn';
-import {config} from '@/lib/session';
 
-export function getSessionId() {
-    const id = cookies().get(config.paramName)?.value;
-    return id ? ObjectId.createFromBase64(id) : null;
+export async function getSessionId() {
+    const session = await auth();
+    return session?.id ? ObjectId.createFromBase64(session.id) : null;
 }
 
-export const refreshSession = fn(async (db: Db) => {
-    let now = new Date();
-    //now = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
-    const sessionId = getSessionId();
+export const refreshSessionExpires = fn(async (db: Db, expires: Date, sessId?: string) => {
+    const sessionId = sessId ? ObjectId.createFromBase64(sessId) : await getSessionId();
     let isNew: boolean | undefined;
     if (sessionId) {
         const w = await db.collection<TSessionBasic>('sessions').updateOne(
@@ -23,7 +20,7 @@ export const refreshSession = fn(async (db: Db) => {
             {
                 $set: {
                     //_id: sessionId,
-                    lastAccess: now
+                    expires
                 }
             },
             {
@@ -40,7 +37,7 @@ export const refreshSession = fn(async (db: Db) => {
 
 export const getSession = fn(async (db: Db) => {
     const sessions = db.collection<TSession>('sessions');
-    const sessionId = getSessionId();
+    const sessionId = await getSessionId();
     let session: TSession | undefined;
     if (sessionId) {
         session = (await sessions.aggregate<TSession>([
@@ -78,19 +75,19 @@ export const getSession = fn(async (db: Db) => {
             },
             {
                 $project: {
-                    lastAccess: 1,
+                    expires: 1,
                     //customers: 0,
                     customerId: '$customerId',
-                    customerEmail: { $ifNull: [ '$email', '$customerEmail' ] },
-                    customerCompany: { $ifNull: [ '$company', '$customerCompany' ] },
-                    customerFirstname: { $ifNull: [ '$firstName', '$customerFirstname' ] },
-                    customerLastname: { $ifNull: [ '$lastName', '$customerLastname' ] },
-                    customerAddress1: { $ifNull: [ '$address1', '$customerAddress1' ] },
-                    customerAddress2: { $ifNull: [ '$address2', '$customerAddress2' ] },
-                    customerCountry: { $ifNull: [ '$country', '$customerCountry' ] },
-                    customerState: { $ifNull: [ '$state', '$customerState' ] },
-                    customerPostcode: { $ifNull: [ '$postcode', '$customerPostcode' ] },
-                    customerPhone: { $ifNull: [ '$phone', '$customerPhone' ] },
+                    customerEmail: { $ifNull: [ '$customerEmail', '$email' ] },
+                    customerCompany: { $ifNull: [ '$customerCompany', '$company' ] },
+                    customerFirstname: { $ifNull: [ '$customerFirstname', '$firstName' ] },
+                    customerLastname: { $ifNull: [ '$customerLastname', '$lastName' ] },
+                    customerAddress1: { $ifNull: [ '$customerAddress1', '$address1' ] },
+                    customerAddress2: { $ifNull: [ '$customerAddress2', '$address2' ] },
+                    customerCountry: { $ifNull: [ '$customerCountry', '$country' ] },
+                    customerState: { $ifNull: [ '$customerState', '$state' ] },
+                    customerPostcode: { $ifNull: [ '$customerPostcode', '$postcode' ] },
+                    customerPhone: { $ifNull: [ '$customerPhone', '$phone' ] },
                     //users: 0,
                     userId: '$userId',
                     user: '$userEmail',
@@ -111,59 +108,8 @@ export const getSession = fn(async (db: Db) => {
     return new TSession();
 });
 
-// export const getSessionClient = fn(async (db: Db) => {
-//     const sessions = db.collection<TSession>('sessions');
-//     const sessionId = getSessionId();
-//     let session: TSessionClient | undefined;
-//     if (sessionId) {
-//         session = (await sessions.aggregate<TSessionClient>([
-//             {
-//                 $match: {
-//                     _id: sessionId
-//                 }
-//             },
-//             {
-//                 $lookup: {
-//                     from: "users",
-//                     localField: "userId",
-//                     foreignField: "_id",
-//                     as: "users"
-//                 }
-//             },
-//             {
-//                 $replaceRoot: {
-//                     newRoot: {
-//                         $mergeObjects: [
-//                             { $arrayElemAt: [ "$users", 0 ] },
-//                             "$$ROOT"
-//                         ]
-//                     }
-//                 }
-//             },
-//             {
-//                 $project: {
-//                     _id: 0,
-//                     customerPresent: { $or: [
-//                         {$ne: [{$type: "$customerId"}, 'missing']},
-//                         {$ne: [{$type: "$customerEmail"}, 'missing']},
-//                     ]},
-//                     userPresent: {$ne: [{$type: "$userId"}, 'missing']},
-//                     userAdmin: '$isAdmin',
-//                 }
-//             }
-//         ])
-//         .toArray())[0];
-//     }
-    
-//     return session ?? {
-//         customerPresent: false,
-//         userPresent: false,
-//         userAdmin: false,
-//     };
-// });
-
 export const setCustomerSession = fn(async (db: Db, customerId: ObjectId) => {
-    const sessionId = getSessionId();
+    const sessionId = await getSessionId();
     if (sessionId) {
         const w = await db.collection<TSessionCustomer>('sessions').updateOne(
             {_id: sessionId},
@@ -179,13 +125,22 @@ export const setCustomerSession = fn(async (db: Db, customerId: ObjectId) => {
 });
 
 export const clearCustomerSession = fn(async (db: Db) => {
-    const sessionId = getSessionId();
+    const sessionId = await getSessionId();
     if (sessionId) {
         const w = await db.collection<TSessionCustomer>('sessions').updateOne(
             {_id: sessionId},
             {
                 $unset: {
-                    customerId: ""
+                    customerId: "",
+                    customerEmail: "",
+                    customerFirstname: "",
+                    customerLastname: "",
+                    customerAddress1: "",
+                    customerAddress2: "",
+                    customerCountry: "",
+                    customerState: "",
+                    customerPostcode: "",
+                    customerPhone: "",
                 }
             }
         );
@@ -195,7 +150,7 @@ export const clearCustomerSession = fn(async (db: Db) => {
 });
 
 export const setUserSession = fn(async (db: Db, userId: ObjectId) => {
-    const sessionId = getSessionId();
+    const sessionId = await getSessionId();
     if (sessionId) {
         const w = await db.collection<TSessionUser>('sessions').updateOne(
             {_id: sessionId},
@@ -211,7 +166,7 @@ export const setUserSession = fn(async (db: Db, userId: ObjectId) => {
 });
 
 export const clearUserSession = fn(async (db: Db) => {
-    const sessionId = getSessionId();
+    const sessionId = await getSessionId();
     if (sessionId) {
         const w = await db.collection<TSessionUser>('sessions').updateOne(
             {_id: sessionId},

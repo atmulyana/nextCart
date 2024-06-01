@@ -3,10 +3,8 @@
  **/
 import React from 'react';
 import type {Metadata} from 'next';
-import {redirect} from 'next/navigation';
 import LoginForm from '@/partials/LoginForm';
 import lang from '@/data/lang';
-import {getSession} from '@/data/session';
 import {POST} from '../login_action/route';
 
 export function generateMetadata(): Metadata {
@@ -23,7 +21,5 @@ async function submit(formData: FormData) {
 }
 
 export default async function LoginPage({searchParams: {referrerUrl}}: {searchParams: {referrerUrl: string}}) {
-    const session = await getSession();
-    if (session.customerPresent) redirect('/customer/account');
     return <LoginForm referrerUrl={referrerUrl} submitHandler={submit} />;
 }

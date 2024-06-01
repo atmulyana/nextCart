@@ -65,7 +65,7 @@ export function CartForm({children, loading=null, ...props}: Parameters<typeof F
     </Form>
 }
 
-export const CartOpenButton = React.memo(function CartButton({cartText}: {cartText: string}) {
+export const CartOpenButton = React.memo(function CartOpenButton({cartText}: {cartText: string}) {
     const pathname = usePathname();
     if (pathname.toLowerCase().startsWith('/checkout')) return null;
     const cart = useCart();

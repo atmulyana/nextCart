@@ -2,7 +2,6 @@
  * https://github.com/atmulyana/nextCart
  **/
 import './globals.css'
-import '@/lib/data-sanitize' //declares new methods of `FormData`
 import type {Metadata, Viewport} from 'next'
 import {Inter} from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
@@ -11,10 +10,10 @@ import config from '@/config'
 import lang from '@/data/lang'
 import {ModalContext} from '@/components/Modal'
 import {NotificationContext} from '@/components/Notification'
-import SessionContext from '@/components/SessionContext'
+import {SessionProvider} from '@/components/SessionContext'
 import {initActions} from './actions'
 
-const title = 'Shop';
+const title = 'Shop'
 export const metadata: Metadata = {
     title,
     description: config.cartDescription,
@@ -42,15 +41,15 @@ export const viewport: Viewport = {
     initialScale: 1,
     maximumScale: 1,
     userScalable: false,
-};
-if (config.twitterHandle && metadata.twitter) metadata.twitter.site = config.twitterHandle;
+}
+if (config.twitterHandle && metadata.twitter) metadata.twitter.site = config.twitterHandle
 
 export default async function RootLayout({
-        children,
+        children
     }: {
         children: React.ReactNode
 }) {
-    await initActions();
+    await initActions()
     return (
         <html lang="en" className={inter.className}>
             <head>
@@ -66,9 +65,9 @@ export default async function RootLayout({
                 okLabel={lang('Confirm')}
                 cancelLabel={lang('Close')}
             >
-            <SessionContext>
+            <SessionProvider>
                 {children}
-            </SessionContext>
+            </SessionProvider>
             </ModalContext>
             </NotificationContext>
             </body>

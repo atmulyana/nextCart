@@ -2,7 +2,8 @@
  * https://github.com/atmulyana/nextCart
  **/
 import type {_Id, TCart, TCartItem, WithId} from '@/data/types';
-import fn, {type Db, ObjectId, toId} from './db-conn';
+import {updateSession} from '@/lib/auth';
+import fn, {type Db, ObjectId, toId, dbTrans} from './db-conn';
 import {getSessionId} from './session';
 
 const cartAggrStages = [
@@ -108,33 +109,14 @@ const cartAggrStages = [
 ];
 
 export const getCart = fn(async (db: Db) => {
-    const sessionId = getSessionId();
+    const sessionId = await getSessionId();
     let cart: WithId<TCart> | undefined;
     if (sessionId) {
-        const docs = await db.collection('sessions').aggregate<WithId<TCart>>([
+        const docs = await db.collection('cart').aggregate<WithId<TCart>>([
             {
                 $match: {
                     _id: sessionId
                 }
-            },
-            {
-                $project: {
-                    cartId: { $ifNull: [ '$customerId', '$_id' ] }
-                }
-            },
-            {
-                $lookup: {
-                    as: "cart",
-                    from: "cart",
-                    localField: "cartId",
-                    foreignField: "_id",
-                }
-            },
-            {
-                $unwind: "$cart"
-            },
-            {
-                $replaceRoot: { newRoot: "$cart" }
             },
             ...cartAggrStages
         ]).toArray();
@@ -156,7 +138,7 @@ export const getCartById = fn(async (db: Db, id: _Id) => {
 });
 
 export const getCartHeader = fn(async (db: Db) => {
-    const sessionId = getSessionId();
+    const sessionId = await getSessionId();
     let cart: Omit<TCart, 'items'> | undefined;
     if (sessionId) {
         const docs = await db.collection('sessions').aggregate<NonNullable<typeof cart>>([
@@ -305,3 +287,19 @@ export const deleteCartItems = fn(async (db: Db, cartId: ObjectId, itemIds: _Id[
         }
     );
 });
+
+export async function cartTrans(fn: () => Promise<Response | undefined>) {
+    return await dbTrans(async () => {
+        const response = await fn();
+        if (response) {
+            const data = await response.json();
+            const chartItemCount = data.totalCartItems as number;
+            await updateSession({
+                customer: {
+                    chartItemCount,
+                }
+            });
+            return response;
+        }
+    });
+}

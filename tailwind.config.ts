@@ -1,11 +1,12 @@
 import type { Config } from 'tailwindcss'
+const flowbite = require("flowbite-react/tailwind")
 
 const config: Config = {
     content: [
-        './node_modules/flowbite-react/**/Alert/*.js',
-        './node_modules/flowbite-react/**/Carousel/*.js',
-        './node_modules/flowbite-react/**/Dropdown/*.js',
-        './node_modules/flowbite-react/**/Modal/*.js',
+        './node_modules/flowbite-react/**/Alert/*.mjs',
+        './node_modules/flowbite-react/**/Carousel/*.mjs',
+        './node_modules/flowbite-react/**/Dropdown/*.mjs',
+        './node_modules/flowbite-react/**/Modal/*.mjs',
         './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
         './src/components/**/*.{js,ts,jsx,tsx,mdx}',
         './src/lib/modules/**/*.{js,ts,jsx,tsx,mdx}',
@@ -14,7 +15,7 @@ const config: Config = {
     ],
     darkMode: 'class',
     plugins: [
-        require("flowbite/plugin")
+        flowbite.plugin(),
     ],
     // safelist: [
     //     'notify-success',

@@ -7,7 +7,6 @@ import clientUsable, {type UsableOnClientConfig} from './usable-on-client';
 export type SessionConfig = {
     paramName: string,
     maxAge: number | null,
-    maxDays: number,
 };
 
 export type Config = {

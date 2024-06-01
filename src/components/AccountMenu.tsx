@@ -3,11 +3,9 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import {useFormState} from "react-dom";
 import Link from 'next/link';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {useSession} from './SessionContext';
-import {useCart} from './Cart';
 import DropDown from './DropDown';
 import Icon from './Icon';
 import {logoutCustomer} from '@/app/actions';
@@ -28,8 +26,7 @@ const AccountMenu = React.memo(function AccountMenu({
     const searchParams = useSearchParams().toString();
     
     return <>
-        <CartUpdater />
-        {session.customerPresent ? (<>
+        {session?.customerPresent ? (<>
             <DropDown
                 label={<Icon name='user' />}
                 items={[
@@ -59,17 +56,3 @@ const AccountMenu = React.memo(function AccountMenu({
     </>;
 });
 export default AccountMenu;
-
-const CartUpdater = React.memo(function CartUpdater() {
-    const session = useSession()
-    const cart = useCart();
-    const lastState = React.useRef(session.customerPresent);
-        
-    React.useEffect(() => {
-        const isLoggedOut = lastState.current && !session.customerPresent;
-        lastState.current = session.customerPresent;
-        if (isLoggedOut) cart.update(null);
-    }, [session.customerPresent]);
-
-    return null;
-});

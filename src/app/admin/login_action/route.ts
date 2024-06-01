@@ -3,13 +3,14 @@
  **/
 const bcrypt = require('bcryptjs');
 import {ResponseMessage} from '@/lib/common';
+import {signIn} from '@/lib/auth';
 import {createPostHandler} from '@/lib/routeHandler';
 import lang from '@/data/lang';
 import {getUserByEmail} from '@/data/user';
 import {setUserSession} from '@/data/session';
 
 export const POST = createPostHandler(async (formData, redirect, isFromMobile) => {
-    const email = formData.getString('loginEmail');
+    const email = formData.getString('loginEmail').trim();
     const password = formData.getString('loginPassword');
     
     const user = email && await getUserByEmail(email);
@@ -26,15 +27,29 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         return cannotLogin;
     }
 
-    if (await setUserSession(user._id)) {
-        if (isFromMobile) return Response.json({
-            message: lang('Successfully logged in'),
-            messageType: 'success',
-            user
-        });
-        return redirect('/admin');
+    try {
+        await signIn(
+            'admin',
+            {
+                userId: user._id.toString('base64'),
+                userAdmin: user.isAdmin,
+                userOwner: user.isOwner,
+                redirect: false,
+            }
+        );
+        if (await setUserSession(user._id)) {
+            if (isFromMobile) return Response.json({
+                message: lang('Successfully logged in'),
+                messageType: 'success',
+                user
+            });
+        }
+        else {
+            return cannotLogin;
+        }
     }
-    else {
+    catch {
         return cannotLogin;
     }
+    return redirect('/admin');
 });

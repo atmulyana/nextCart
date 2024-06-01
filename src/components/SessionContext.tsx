@@ -1,27 +1,25 @@
 'use client';
 /** 
  * https://github.com/atmulyana/nextCart
+ * 
+ * We don't use `SessionProvider` component from 'next-auth/react' because of avoiding the round-trip
+ * process to update the session context
  **/
 import React from 'react';
-import type {TSessionCustomer, TSessionUser} from '@/data/types';
-
-type ContextValue = Omit<TSessionCustomer & TSessionUser, '_id' | 'customerId' | 'userId'> & {
-    customerPresent: boolean,
-    userPresent: boolean,
-};
-
+import type {Session} from 'next-auth';
 
 const defaultContextValue = {
+    id: '',
     customerPresent: false,
-    userPresent: false,
+    expires: ''
 };
-const Context = React.createContext<ContextValue>(defaultContextValue);
+const Context = React.createContext<Session>(defaultContextValue);
 
-var setContextValue!: (value: Partial<ContextValue>) => void;
+var setContextValue!: (value: Partial<Session>) => void;
 
-function SessionContext({children}: {children: React.ReactNode}) {
-    const [value, setValue] = React.useState<ContextValue>(defaultContextValue);
-    setContextValue = (newFieldValues: Partial<ContextValue>) => {
+export function SessionProvider({children}: {children: React.ReactNode}) {
+    const [value, setValue] = React.useState<Session>(defaultContextValue);
+    setContextValue = (newFieldValues: Partial<Session>) => {
         setValue({
             ...value,
             ...newFieldValues,
@@ -32,11 +30,10 @@ function SessionContext({children}: {children: React.ReactNode}) {
         {children}
     </Context.Provider>;
 }
-export default SessionContext;
 
-export function SessionUpdater({value}: {value: Partial<ContextValue>}) {
+export function SessionUpdater({value}: {value: Partial<Session> | null}) {
     React.useEffect(() => {
-        setContextValue && setContextValue(value);
+        setContextValue && setContextValue(value ?? defaultContextValue);
     }, [value]);
     return null;
 }

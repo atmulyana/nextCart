@@ -6,10 +6,10 @@ import React from 'react';
 import {createPortal} from 'react-dom';
 import Link from 'next/link';
 import {usePathname, useRouter} from 'next/navigation';
+import {useSession} from '@/components/SessionContext';
 import {useModal} from '@/components/Modal';
 import type {NotificationParam} from '@/components/Notification';
 import Icon from '@/components/Icon';
-import {useSession} from '@/components/SessionContext';
 import modules from '@/lib/modules';
 import type {Return} from './data/route';
 
@@ -86,7 +86,7 @@ const ReviewControls = React.memo(function ReviewControls({
             <button
                 className='btn-primary'
                 onClick={async () => {
-                    if (session.customerPresent) {
+                    if (session?.customerPresent) {
                         let resolveSubmit: ((response: TResponse) => void) | undefined;
                         await openModal({
                             title: formTitle,

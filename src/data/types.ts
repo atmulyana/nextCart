@@ -105,7 +105,7 @@ export type TProductItem = TProductBase & {
 
 export interface TSessionBasic {
     _id: ObjectId;
-    lastAccess: Date;
+    expires: Date;
 }
 
 export interface TSessionBlockonomics {
@@ -142,12 +142,8 @@ export interface TSessionUser {
 }
 
 export class TSession implements TSessionBasic, TSessionCustomer, TSessionUser, TSessionBlockonomics {
-    constructor() {
-        this.lastAccess = new Date();
-    }
-
     _id!: ObjectId;
-    lastAccess: Date;
+    expires!: Date;
     cart?: TCart;
     get customerPresent(): boolean {return !!this.customerEmail}
     customerId?: ObjectId;
@@ -171,7 +167,7 @@ export class TSession implements TSessionBasic, TSessionCustomer, TSessionUser, 
 }
 
 export type TUser = {
-    id: ObjectId,
+    _id: ObjectId,
     usersName: string,
     userEmail: string,    
     userPassword: string,

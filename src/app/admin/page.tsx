@@ -3,17 +3,17 @@
  **/
 import React from 'react';
 import {redirect} from 'next/navigation';
-import {clearUserSession, getSession} from '@/data/session';
+import {clearUserSession} from '@/data/session';
+import {updateSession} from '@/lib/auth';
 
 async function logout() {
     "use server";
+    await updateSession({user: null});
     await clearUserSession();
     redirect('/admin');
 }
 
 export default async function AdminDashboard() {
-    const session = await getSession();
-    if (!session.userId) redirect('/admin/login');
     return <>
         <h1>Admin Dashboard</h1>
         <form action={logout}>

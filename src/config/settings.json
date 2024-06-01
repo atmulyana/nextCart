@@ -31,7 +31,6 @@
     "productOrder": "descending",
     "session": {
         "paramName": "__sess",
-        "maxAge": null,
-        "maxDays": 10
+        "maxAge": null
     }
 }
