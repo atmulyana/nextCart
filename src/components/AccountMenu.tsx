@@ -15,7 +15,7 @@ type AccountMenuProps = {
     logoutLabel?: string,
 }
 
-const AccountMenu = React.memo(function AccountMenu({
+const MemoizedAccountMenu = React.memo(function MemoizedAccountMenu({
     accountLabel = 'Account',
     logoutLabel = 'Logout',
 }: AccountMenuProps) {
@@ -55,4 +55,9 @@ const AccountMenu = React.memo(function AccountMenu({
         )}
     </>;
 });
-export default AccountMenu;
+
+export default function AccountMenu(props: AccountMenuProps) {
+    return <React.Suspense fallback={null}>
+        <MemoizedAccountMenu {...props} />
+    </React.Suspense>;
+}

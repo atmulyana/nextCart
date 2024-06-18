@@ -44,6 +44,10 @@ export function CartContext({cart, children}: {cart?: TCart, children: React.Rea
             }));
         }
     });
+
+    React.useEffect(() => {
+        value.update(cart);
+    }, [cart]);
     
     return <Context.Provider value={value}>
         {children}

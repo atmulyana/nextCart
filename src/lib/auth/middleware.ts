@@ -5,9 +5,10 @@ import {NextRequest, NextResponse} from "next/server";
 import {headers as nextHeaders} from "next/headers";
 import {Auth, raw, skipCSRFCheck, createActionURL} from "@auth/core";
 import type {ResponseInternal} from '@auth/core/types';
-import NextAuth from "next-auth";
+import NextAuth, {type Session} from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import cfg from './config';
+import {toRedirect} from "./access";
 
 type Cookies = ResponseInternal['cookies'];
 
@@ -55,7 +56,11 @@ async function initSession() {
 
     headers.set("Content-Type", "application/x-www-form-urlencoded");
     const body = null;
-    const req = new Request(url, { method: "POST", headers, body });
+    const req = new Request(url, {
+        method: "POST",
+        headers,
+        body
+    });
     const resp = await Auth(req, {
         ...config,
         raw,
@@ -65,9 +70,36 @@ async function initSession() {
     return resp?.cookies;
 }
 
+async function updateSession(data: Partial<Session>, request: NextRequest) {
+    const headers = new Headers(nextHeaders());
+    headers.set("Content-Type", "application/json");
+    const url = createActionURL(
+        "session", 
+        // @ts-expect-error `x-forwarded-proto` is not nullable, next.js sets it by default
+        headers.get("x-forwarded-proto"),
+        headers, process.env,
+        config.basePath
+    );
+    const body = JSON.stringify({data});
+    const req = new Request(url, {
+        method: "POST",
+        headers,
+        body
+    });
+    const res = await Auth(req, {
+        ...config,
+        raw,
+        skipCSRFCheck
+    });
+    setRequestCookies(request, res?.cookies);
+    return res?.cookies;
+}
+
 export const middleware = auth(async (request) => {
+    let auth = request.auth;
     let cookies: Cookies;
-    if (!request.auth) {
+    console.log('> auth: ', auth)
+    if (!auth) {
         cookies = await initSession();
         setRequestCookies(request, cookies);
     }
@@ -77,22 +109,14 @@ export const middleware = auth(async (request) => {
     request.headers.set('x-request-path', Url.pathname);
     request.headers.set('x-request-query', Url.search);
 
-    let redirectUrl = '';
-    if (Url.pathname == '/customer/account' || Url.pathname == '/customer/logout') {
-        if (!request.auth?.customerPresent) redirectUrl = '/customer/login';
-    }
-    else if (Url.pathname == '/customer/login' || Url.pathname == '/customer/login_action') {
-        if (request.auth?.customerPresent) redirectUrl = '/customer/account';
-    }
-    else if (Url.pathname == '/admin/login' || Url.pathname == '/admin/login_action') {
-        if (request.auth?.user) redirectUrl = '/admin';
-    }
-    else if (Url.pathname.startsWith('/admin')) {
-        if (!request.auth?.user) redirectUrl = '/admin/login';
-    }
-
-    if (redirectUrl) {
-        const response = NextResponse.redirect(new URL(redirectUrl, url));
+    let redirect = toRedirect(Url.pathname, auth);
+    if (redirect) {
+        const message = redirect?.message?.trim();
+        if (message) {
+            delete auth?.messageFlag;
+            cookies = await updateSession({...auth, message, messageType: redirect.messageType}, request);
+        }
+        const response = NextResponse.redirect(new URL(redirect.path, url));
         setResponseCookies(response, cookies);
         return response;
     }
@@ -100,6 +124,16 @@ export const middleware = auth(async (request) => {
     if (request.headers.get('X-Requested-With') == 'expressCartMobile' && request.method == 'GET' && !url.endsWith('/data'))
         url += '/data';
     
+    const {message, messageFlag, messageType, ...session} = auth ?? {};
+    if (message?.trim()) {
+        if (messageFlag) {
+            cookies = await updateSession(session, request);
+        }
+        else {
+            cookies = await updateSession({...session, message, messageType, messageFlag: true}, request);
+        }
+    }
+
     const response = NextResponse.rewrite(url, {request});
     setResponseCookies(response, cookies);
     return response;

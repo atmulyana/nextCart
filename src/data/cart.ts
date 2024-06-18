@@ -299,7 +299,8 @@ export async function cartTrans(fn: () => Promise<Response | undefined>) {
                     chartItemCount,
                 }
             });
-            return response;
+            return Response.json(data, {status: response.status});
         }
+        return response;
     });
 }
