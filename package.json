@@ -1,6 +1,6 @@
 {
   "name": "next-cart",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,6 +11,7 @@
   "dependencies": {
     "badwords-list": "^1.0.0",
     "bcryptjs": "^2.4.3",
+    "countries-list": "^3.1.0",
     "flowbite": "^2.2.0",
     "flowbite-react": "^0.9.0",
     "jssimpledateformat": "^3.0.0",

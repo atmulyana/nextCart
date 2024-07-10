@@ -36,7 +36,7 @@ export function SessionUpdater({value}: {value: Partial<Session> | null}) {
     const notify = useNotification();
     React.useEffect(() => {
         setContextValue && setContextValue(value ?? defaultContextValue);
-        if (value?.message && value.messageFlag) notify(value?.message, value?.messageType ?? 'danger')
+        if (value?.message) notify(value.message, value.messageType ?? 'danger');
     }, [value]);
     return null;
 }

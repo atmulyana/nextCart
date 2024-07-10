@@ -55,8 +55,9 @@ export default {
                 }
             }
             else if (trigger == 'update') {
+                const {message, messageType, ...oldToken} = token;
                 token = {
-                    ...token,
+                    ...oldToken,
                     ...session,
                     customer: ('customer' in session) && !session.customer ? {
                         chartItemCount: token.customer?.chartItemCount,

@@ -12,6 +12,7 @@ import {CartForm} from '@/components/Cart';
 import FrontMenu from '@/partials/FrontMenu';
 import SubmitButton from '@/components/SubmitButton';
 import SubmittedTextArea from '@/components/SubmittedTextArea';
+import Template from '@/partials/Template';
 import {currencySymbol, fixTags, fnMeta, formatAmount, snip} from '@/lib/common';
 import {addCartItem} from '@/app/actions';
 import {GET} from './data/route';
@@ -59,7 +60,7 @@ export default async function Product(props: Props) {
         descPlaceholder: lang('Product is great. Does everything it said it can do.'),
     };
 
-    return <>
+    return <Template>
         <FrontMenu />
         <div className='flex-none basis-full sm:basis-2/3 sm:mx-auto pt-8'>
             <div className='flex flex-wrap gap-y-8'>
@@ -154,5 +155,5 @@ export default async function Product(props: Props) {
                 </div>
             </div>}
         </div>
-    </>;
+    </Template>;
 }

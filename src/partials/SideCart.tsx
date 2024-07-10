@@ -18,6 +18,7 @@ export default function SideCart() {
                 emptyText={lang('Empty cart')}
                 discountText={lang('Discount')}
                 totalText={lang('Total')}
+                qtyText={lang('Quantity')}
             />
             <CartButtons
                 checkoutText={lang('Checkout')}

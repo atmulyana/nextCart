@@ -60,5 +60,6 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         
         await upsertCart(cartId, cart);
         return response('', {status: 200});
-    });
+    },
+    formData.has('homeAfterClear'));
 });

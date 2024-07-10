@@ -15,6 +15,7 @@ import FlexImage from '@/components/FlexImage';
 import Paging from '@/components/Paging';
 import SubmitButton from '@/components/SubmitButton';
 import SubmittedSelect from '@/components/SubmittedSelect';
+import Template from '@/partials/Template';
 import FrontMenu from './FrontMenu';
 
 const ColsToBasis = {
@@ -58,7 +59,7 @@ export default async function ProductList(props: ProductListProps) {
     const pageHref = title?.searchTerm ? `/${paginateUrl}/${encodeURIComponent(title.searchTerm)}` : `/${paginateUrl}`;
     const totalPage = Math.ceil(data.totalProductCount / config.productsPerPage);
 
-    return <>
+    return <Template>
         <FrontMenu />
         
         <div className='relative px-4 basis-full md:mx-auto md:basis-2/3 grow-0 shrink-0'>
@@ -82,7 +83,7 @@ export default async function ProductList(props: ProductListProps) {
                 />
             </div>
         </div>
-    </>;
+    </Template>;
 }
 
 function Item({

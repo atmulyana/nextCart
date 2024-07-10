@@ -454,13 +454,33 @@ if (/(\?|&)replicaSet=/i.test(dbUrl)) {
         const client = await getClient(),
               db = await getDb();
         const session = client.startSession();
+        let redirect: Error | undefined;
+        let result: T;
         try {
             db.session = session;
-            return await session.withTransaction<T>(fn, options);
+            result = await session.withTransaction<T>(
+                async () => {
+                    try {
+                        result = await fn();
+                    } catch (err) {
+                        if ((err instanceof Error) && err.message == 'NEXT_REDIRECT') {
+                            redirect = err;
+                        }
+                        else {
+                            throw err;
+                        }
+                    }
+                    return result;
+                },
+                options
+            );
         } finally {
             await session.endSession();
             delete db.session;
         }
+
+        if (redirect) throw redirect;
+        return result;
     };
 }
 else {

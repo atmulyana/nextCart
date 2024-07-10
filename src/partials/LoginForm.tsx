@@ -6,6 +6,7 @@ import {headers} from 'next/headers';
 import lang from '@/data/lang';
 import FormWithSchema from '@/components/FormWithSchema';
 import Input from '@/components/SubmittedInput';
+import Template from '@/partials/Template';
 
 export type LoginFormProps = {
     referrerUrl?: string | null,
@@ -20,7 +21,7 @@ export default function LoginForm({referrerUrl, submitHandler}: LoginFormProps) 
         catch {}
     }
 
-    return <div className='relative w-full px-3.5 pt-24 md:max-w-[33.333333%] md:grow-0 md:shrink-0 md:basis-1/3 mx-auto'>
+    return <Template><div className='relative w-full px-3.5 pt-24 md:max-w-[33.333333%] md:grow-0 md:shrink-0 md:basis-1/3 mx-auto'>
         <FormWithSchema schemaName='login' action={submitHandler}>
             <input type='hidden' name='referrerUrl' value={referrerUrl || ''} />
             <h2>{lang('Please sign in')}</h2>
@@ -32,5 +33,5 @@ export default function LoginForm({referrerUrl, submitHandler}: LoginFormProps) 
             </div>
             <button type='submit' className='block w-full btn-outline-primary'>{lang('Sign in')}</button>
         </FormWithSchema>
-    </div>;
+    </div></Template>;
 }

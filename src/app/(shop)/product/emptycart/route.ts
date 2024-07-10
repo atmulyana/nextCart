@@ -21,5 +21,6 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
                 cart: null,
             }
         );
-    });
+    },
+    formData.has('homeAfterClear'));
 });

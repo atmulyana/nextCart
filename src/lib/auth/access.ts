@@ -10,11 +10,25 @@ type Redirect = {
 };
 
 type ToRedirectItem = {
-    fromPath: string,
+    fromPath: string | Array<string>,
     isPrefix?: boolean,
-    toPath: string | ((auth: Session | null) => string | null | undefined),
+    toRedirect?: string | null | ((auth: Session | null) => Redirect | string | null | undefined),
     message?: string,
     messageType?: Session['messageType'],
+}
+
+function checkoutEmptyCart(auth: Session | null) {
+    if ((auth?.customer?.chartItemCount ?? 0) < 1) return {
+        path: '/',
+        message: 'The are no items in your cart. Please add some items before checking out.'
+    }
+}
+
+function checkoutCustomerMustExist(auth: Session | null) {
+    if (!auth?.customerPresent) return {
+        path: '/checkout/information',
+        message: 'Please fill the customer information for shipping'
+    }
 }
 
 function customerNeedsLogin(auth: Session | null) {
@@ -35,45 +49,58 @@ function adminHasLoggedin(auth: Session | null) {
 
 const items: ToRedirectItem[] = [
     {
+        fromPath: ['/checkout/cart', '/checkout/information'],
+        toRedirect: checkoutEmptyCart,
+    },
+    {
+        fromPath: ['/checkout/shipping', '/checkout/payment'],
+        toRedirect: (auth: Session | null) => checkoutEmptyCart(auth) || checkoutCustomerMustExist(auth),
+    },
+    {
         fromPath: '/customer/account',
-        toPath: customerNeedsLogin
+        toRedirect: customerNeedsLogin
     },
     {
         fromPath: '/customer/logout',
-        toPath: customerNeedsLogin
+        toRedirect: customerNeedsLogin
     },
     {
         fromPath: '/customer/login',
-        toPath: customerHasLoggedIn
+        toRedirect: customerHasLoggedIn
     },
     {
         fromPath: '/customer/login_action',
-        toPath: customerHasLoggedIn
+        toRedirect: customerHasLoggedIn
     },
     {
         fromPath: '/admin/login',
-        toPath: adminHasLoggedin
+        toRedirect: adminHasLoggedin
     },
     {
         fromPath: '/admin/login_action',
-        toPath: adminHasLoggedin
+        toRedirect: adminHasLoggedin
     },
     {
         fromPath: '/admin',
         isPrefix: true,
-        toPath: adminNeedsLogin
+        toRedirect: adminNeedsLogin
     },
 ];
 
 export function toRedirect(path: string, auth: Session | null) {
-    for (const {fromPath, isPrefix, toPath, message, messageType} of items) {
-        if (path == fromPath || isPrefix && path.startsWith(`${fromPath}/`)) {
-            const redirectPath = typeof(toPath) == 'function' ? toPath(auth) : toPath;
-            return redirectPath 
+    for (const {fromPath, isPrefix, toRedirect: toPath, message, messageType} of items) {
+        if (
+            Array.isArray(fromPath) && fromPath.includes(path) ||
+            path === fromPath ||
+            !Array.isArray(fromPath) && isPrefix && path.startsWith(`${fromPath}/`)
+        ) {
+            let redirect = typeof(toPath) == 'function' ? toPath(auth) : toPath;
+            if (typeof(redirect) == 'string') redirect = {path: redirect};
+            return redirect
                 ? {
-                    path: redirectPath,
                     message,
                     messageType,
+                    ...redirect,
                 }
                 : null;
         }

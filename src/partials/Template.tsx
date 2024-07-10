@@ -16,7 +16,7 @@ export default async function Template({children}: {children: React.ReactNode}) 
     const session = await auth();
     if (session) {
         await refreshSessionExpires(new Date(session.expires), session.id);
-        if (session.message && session.messageFlag) session.message = lang(session.message);
+        if (session.message) session.message = lang(session.message);
     }
     return <> 
         {children}

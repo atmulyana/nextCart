@@ -1,8 +1,9 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
+import {redirect, RedirectType} from 'next/navigation';
 import type {_Id, TCart, TCartItem, WithId} from '@/data/types';
-import {updateSession} from '@/lib/auth';
+import {setSessionMessage, updateSession} from '@/lib/auth';
 import fn, {type Db, ObjectId, toId, dbTrans} from './db-conn';
 import {getSessionId} from './session';
 
@@ -288,7 +289,7 @@ export const deleteCartItems = fn(async (db: Db, cartId: ObjectId, itemIds: _Id[
     );
 });
 
-export async function cartTrans(fn: () => Promise<Response | undefined>) {
+export async function cartTrans(fn: () => Promise<Response | undefined>, homeAfterClear?: boolean) {
     return await dbTrans(async () => {
         const response = await fn();
         if (response) {
@@ -299,6 +300,10 @@ export async function cartTrans(fn: () => Promise<Response | undefined>) {
                     chartItemCount,
                 }
             });
+            if (homeAfterClear && chartItemCount < 1) {
+                setSessionMessage('The are no items in your cart. Please add some items before checking out.');
+                redirect('/', RedirectType.replace);
+            }
             return Response.json(data, {status: response.status});
         }
         return response;

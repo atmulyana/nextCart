@@ -125,5 +125,6 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
                 messageType: 'success',
             }
         );
-    });
+    },
+    formData.has('homeAfterClear'));
 });

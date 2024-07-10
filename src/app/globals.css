@@ -157,4 +157,27 @@
     .pt-full {
         padding-top: 100%;
     }
+
+    .bordered {
+        @apply border border-[rgba(0,0,0,.25)] dark:border-[rgba(255,255,255,.25)] rounded p-5 my-4;
+    }
+
+    .checkout-left-pane {
+        @apply basis-full md:basis-5/12 shrink-0;
+    }
+    .checkout-right-pane {
+        @apply hidden md:block basis-7/12 grow shrink-0;
+    }
+    .checkout-left-pane:empty {
+        @apply !hidden;
+    }
+    .checkout-left-pane:empty + .checkout-right-pane {
+        @apply !block;
+    }
+    .checkout-buttons {
+        @apply flex justify-between mb-4;
+    }
+    .checkout-buttons:has(> *:only-child) {
+        @apply !justify-end;
+    }
 }

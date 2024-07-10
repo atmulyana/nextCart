@@ -36,7 +36,6 @@ declare module "next-auth/jwt" {
         } | null;
         message?: string;
         messageType?: NotificationParam['type'];
-        messageFlag?: true,
         //refresh?: 'EXPIRES';
     }
 }

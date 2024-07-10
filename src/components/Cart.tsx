@@ -5,7 +5,7 @@
 import type {TCart, TCartItem} from '@/data/types';
 import React from 'react';
 import Link from 'next/link';
-import {usePathname} from 'next/navigation';
+import {usePathname, useRouter} from 'next/navigation';
 import {currencySymbol, formatAmount} from '@/lib/common';
 import {clearCart, updateCartItem} from '@/app/actions';
 import FlexImage from './FlexImage';
@@ -16,7 +16,7 @@ import SubmitButton from './SubmitButton';
 import SubmittedInput from './SubmittedInput';
 
 interface ContextValue extends TCart {
-    update(cart: TCart | null | undefined): void;
+    update(cart: TCart | null | undefined, callback?: (cart: TCart) => any): void;
 }
 
 const defaultCart: TCart = {
@@ -35,9 +35,11 @@ const Context = React.createContext<ContextValue>({
 });
 
 export function CartContext({cart, children}: {cart?: TCart, children: React.ReactNode}) {
+    const updateCallback = React.useRef<(cart: TCart) => any>();
     const [value, setValue] = React.useState<ContextValue>({
        ...(cart ?? defaultCart),
-       update: (cart: TCart | null | undefined) => {
+       update: (cart: TCart | null | undefined, callback?: (cart: TCart) => any) => {
+            if (callback) updateCallback.current = callback;    
             setValue(val => ({
                 ...(cart ?? defaultCart),
                 update: val.update,
@@ -46,8 +48,16 @@ export function CartContext({cart, children}: {cart?: TCart, children: React.Rea
     });
 
     React.useEffect(() => {
-        value.update(cart);
+        value.update(cart, updateCallback.current);
     }, [cart]);
+
+    React.useEffect(() => {
+        const callback = updateCallback.current;
+        if (callback) {
+            updateCallback.current = undefined;
+            callback(value);
+        }
+    }, [value]);
     
     return <Context.Provider value={value}>
         {children}
@@ -62,17 +72,26 @@ function closeCart() {
     document.body.classList.remove('pushy-open-right');
 }
 
-export function CartForm({children, loading=null, ...props}: Parameters<typeof Form>[0]) {
+export function CartForm({
+    children,
+    loading = null,
+    ...props
+}: Parameters<typeof Form>[0]) {
     const cart = useCart();
-    return <Form {...props} loading={null} onSubmitted={({data}) => cart.update(data?.cart)}>
+    const router = useRouter();
+    return <Form 
+        {...props}
+        loading={null}
+        onSubmitted={({data}) => cart.update(data?.cart)}
+    >
         {children}
     </Form>
 }
 
 export const CartOpenButton = React.memo(function CartOpenButton({cartText}: {cartText: string}) {
     const pathname = usePathname();
-    if (pathname.toLowerCase().startsWith('/checkout')) return null;
     const cart = useCart();
+    if (pathname.toLowerCase().startsWith('/checkout')) return null;
     return <Link
         href="/checkout/cart"
         className="btn leading-none whitespace-nowrap"
@@ -103,21 +122,24 @@ export const Cart = React.memo(function Cart({
     discountText,
     totalText,
     emptyText,
+    qtyText,
     readonly = false,
+    homeAfterClear = false,
 }: {
     title: string,
     optionText: string,
     discountText: string,
     totalText: string,
     emptyText: string,
+    qtyText: string,
     readonly?: boolean,
+    homeAfterClear?: boolean,
 }) {
     const cart = useCart(),
           itemIds = Object.keys(cart.items);
     let item: TCartItem;
 
-    return <div className="flex-initial flex flex-col items-stretch min-h-0 my-3.5 p-5 bg-[--bg-color]
-                           border border-[rgba(0,0,0,.25)] dark:border-[rgba(255,255,255,.25)] rounded">
+    return <div className="flex-initial flex flex-col items-stretch min-h-0 bg-[--bg-color] bordered">
         <h5 className="flex-none mb-3">{title}</h5>
         <div className="flex-initial min-h-0 overflow-auto cartBodyWrapper">
             {itemIds.map(cartItemId => (item = cart.items[cartItemId],
@@ -131,8 +153,8 @@ export const Cart = React.memo(function Cart({
                         {item.variantId && <><strong>{optionText}:</strong> {item.variantTitle}</>}
                     </div>
                     {readonly
-                        ? <div className="flex-none basis-2/3"></div>
-                        : <CartItemForm id={cartItemId} quantity={item.quantity} />
+                        ? <div className="flex-none basis-2/3">{qtyText}: {item.quantity}</div>
+                        : <CartItemForm id={cartItemId} quantity={item.quantity} homeAfterClear={homeAfterClear} />
                     }
                     <strong className="flex-none basis-1/3 self-center text-right">
                         {currencySymbol()}{formatAmount(item.totalItemPrice)}
@@ -172,7 +194,7 @@ export const Cart = React.memo(function Cart({
     </div>;
 });
 
-function CartItemForm({id, quantity}: {id: string, quantity: number}) {
+function CartItemForm({id, quantity, homeAfterClear}: {id: string, quantity: number, homeAfterClear?: boolean}) {
     let sQuantity: string = '';
     const qtyRef = React.useRef<HTMLInputElement>(null);
 
@@ -184,6 +206,7 @@ function CartItemForm({id, quantity}: {id: string, quantity: number}) {
         action={updateCartItem}
         className="flex-none basis-2/3 flex flex-row"
     >
+        {homeAfterClear && <input type='hidden' name='homeAfterClear' value='1' />}
         <input type="hidden" name="cartId" value={id} />
         <div className="relative flex-none basis-3/4 flex items-stretch input-group pr-4">
             <SubmitButton
@@ -224,14 +247,18 @@ export const CartOverlay = React.memo(function CartOverlay() {
 export const CartButtons = React.memo(function CartButtons({
     checkoutText,
     clearCartText,
+    homeAfterClear = false,
 }: {
     checkoutText: string,
     clearCartText: string,
+    homeAfterClear?: boolean,
 }) {
     const cart = useCart();
+    const path = usePathname();
     const openConfirm = useModal();
-    return <div className={`flex-none flex justify-between ${Object.keys(cart.items).length > 0 ? '' : 'hidden'}`}>
+    return <div className={`flex-none checkout-buttons ${Object.keys(cart.items).length > 0 ? '' : 'hidden'}`}>
         <CartForm action={clearCart} className='flex-none'>
+            {homeAfterClear && <input type='hidden' name='homeAfterClear' value='1' />}
             <SubmitButton type="button" className='btn-danger'
                 onClick={async e => {
                     if (await openConfirm()) {
@@ -243,6 +270,7 @@ export const CartButtons = React.memo(function CartButtons({
                 }}
             >{clearCartText}</SubmitButton>
         </CartForm>
-        <Link href='/checkout/information' onClick={closeCart} className='btn btn-primary flex-none'>{checkoutText}</Link>
+        {path != '/checkout/information'
+            && <Link href='/checkout/information' onClick={closeCart} className='btn btn-primary flex-none'>{checkoutText}</Link>}
     </div>;
 });
