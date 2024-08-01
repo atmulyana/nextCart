@@ -2,7 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import lang from '@/data/lang';
-import Breadcrumb from './Breadcrumb';
+import Breadcrumb from '@/components/Breadcrumb';
 import CheckoutCart from './CheckoutCart';
 
 export default async function CheckoutLayout({

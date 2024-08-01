@@ -1,9 +1,8 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import {redirect, RedirectType} from 'next/navigation';
 import type {_Id, TCart, TCartItem, WithId} from '@/data/types';
-import {setSessionMessage, updateSession} from '@/lib/auth';
+import {redirectWithMessage, updateSessionToken} from '@/lib/auth';
 import fn, {type Db, ObjectId, toId, dbTrans} from './db-conn';
 import {getSessionId} from './session';
 
@@ -142,30 +141,11 @@ export const getCartHeader = fn(async (db: Db) => {
     const sessionId = await getSessionId();
     let cart: Omit<TCart, 'items'> | undefined;
     if (sessionId) {
-        const docs = await db.collection('sessions').aggregate<NonNullable<typeof cart>>([
+        const docs = await db.collection('cart').aggregate<NonNullable<typeof cart>>([
             {
                 $match: {
                     _id: sessionId
                 }
-            },
-            {
-                $project: {
-                    cartId: { $ifNull: [ '$customerId', '$_id' ] }
-                }
-            },
-            {
-                $lookup: {
-                    as: "cart",
-                    from: "cart",
-                    localField: "cartId",
-                    foreignField: "_id",
-                }
-            },
-            {
-                $unwind: "$cart"
-            },
-            {
-                $replaceRoot: { newRoot: "$cart" }
             },
             {
                 $project: {
@@ -181,20 +161,46 @@ export const getCartHeader = fn(async (db: Db) => {
 
 export const upsertCart = fn(async (db: Db, cartId: ObjectId, cart: Omit<TCart, 'items'>) => {
     if ('_id' in cart) delete cart._id;
-    const $set: Partial<TCart> = {...cart};
+    const $set: Partial<TCart> = {...cart},
+          $unset: Partial<TCart> = {};
     delete $set.items;
-    if (!cart.discount) delete $set.discount;
-    if (!cart.orderComment) delete $set.orderComment;
-    if (!cart.shippingMessage) delete $set.shippingMessage;
+    if (!cart.discount) {
+        delete $set.discount;
+        $unset.discount = '';
+    }
+    if (!cart.orderComment) {
+        delete $set.orderComment;
+        $unset.orderComment = '';
+    }
+    if (!cart.shippingMessage) {
+        delete $set.shippingMessage;
+        $unset.shippingMessage = '';
+    }
     
     await db.collection('cart').updateOne(
         {
             _id: cartId
         },
-        {$set},
+        {
+            $set,
+            $unset,
+        },
         {
             upsert: true,
         }
+    );
+});
+
+export const updateOrderComment = fn(async (db: Db, orderComment: string) => {
+    await db.collection('cart').updateOne(
+        {
+            _id: (await getSessionId()) ?? undefined
+        },
+        {
+            $set: {
+                orderComment
+            }
+        },
     );
 });
 
@@ -295,14 +301,13 @@ export async function cartTrans(fn: () => Promise<Response | undefined>, homeAft
         if (response) {
             const data = await response.json();
             const chartItemCount = data.totalCartItems as number;
-            await updateSession({
+            await updateSessionToken({
                 customer: {
                     chartItemCount,
                 }
             });
             if (homeAfterClear && chartItemCount < 1) {
-                setSessionMessage('The are no items in your cart. Please add some items before checking out.');
-                redirect('/', RedirectType.replace);
+                await redirectWithMessage('/', 'The are no items in your cart. Please add some items before checking out.');
             }
             return Response.json(data, {status: response.status});
         }

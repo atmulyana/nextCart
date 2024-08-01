@@ -7,10 +7,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import config from '@/config';
 import lang from '@/data/lang';
-import Footer from '@/components/Footer';
-import DarkModeMenu from '@/components/DarkModeMenu';
-import LanguangeMenu from '@/components/LanguageMenu';
+import Footer from '@/partials/Footer';
+import DarkModeMenu from '@/partials/DarkModeMenu';
 import FrontMenu from '@/partials/FrontMenu';
+import LanguangeMenu from '@/partials/LanguageMenu';
 
 export default function NotFoundPage() {
     const pathname = headers().get('x-request-path');

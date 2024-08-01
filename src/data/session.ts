@@ -3,11 +3,11 @@
  **/
 import {TSession} from '@/data/types';
 import type {TSessionBasic, TSessionCustomer, TSessionUser} from '@/data/types';
-import {auth} from '@/lib/auth';
+import {getSessionToken} from '@/lib/auth';
 import fn, {type Db, ObjectId} from './db-conn';
 
 export async function getSessionId() {
-    const session = await auth();
+    const session = await getSessionToken();
     return session?.id ? ObjectId.createFromBase64(session.id) : null;
 }
 
@@ -108,16 +108,15 @@ export const getSession = fn(async (db: Db) => {
     return new TSession();
 });
 
-export const setCustomerSession = fn(async (db: Db, customerId: ObjectId) => {
+export const setCustomerSession = fn(async (db: Db, data: ObjectId | Omit<TSessionCustomer, '_id'>) => {
     const sessionId = await getSessionId();
     if (sessionId) {
+        let $set: Omit<TSessionCustomer, '_id'> = {};
+        if (data instanceof ObjectId) $set.customerId = data;
+        else $set = data;
         const w = await db.collection<TSessionCustomer>('sessions').updateOne(
             {_id: sessionId},
-            {
-                $set: {
-                    customerId
-                }
-            }
+            {$set}
         );
         return w.modifiedCount > 0;
     }
@@ -133,6 +132,7 @@ export const clearCustomerSession = fn(async (db: Db) => {
                 $unset: {
                     customerId: "",
                     customerEmail: "",
+                    customerCompany: "",
                     customerFirstname: "",
                     customerLastname: "",
                     customerAddress1: "",

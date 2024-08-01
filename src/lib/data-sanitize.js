@@ -8,6 +8,10 @@ export function sanitize(value) {
     return value;
 }
 
+FormData.prototype.getBoolean = function(paramName) {
+    return this.has(paramName);
+}
+
 FormData.prototype.getDate = function(paramName) {
     const value = this.get(paramName);
     if (typeof(value) == 'string') {
@@ -31,9 +35,9 @@ FormData.prototype.getNumber = function(paramName) {
     return (reNumber.test(value)) ? parseFloat(value.trim()) : NaN;
 }
 
-FormData.prototype.getString = function(paramName) {
+FormData.prototype.getString = function(paramName, trimmed = true) {
     const value = this.get(paramName);
-    return (typeof(value) == 'string') ? value : '';
+    return (typeof(value) == 'string') ? (trimmed ? value.trim() : value) : '';
 }
 
 FormData.prototype.sanitize = function(paramName) {
@@ -52,6 +56,11 @@ class AppFormData extends FormData {
         if (isPlainObject(data)) this.#data = data;
     }
 
+    getBoolean(paramName) {
+        if (typeof(this.#data[paramName]) == 'boolean') return this.#data[paramName];
+        return super.getBoolean(paramName);
+    }
+
     getDate(paramName) {
         if (this.#data[paramName] instanceof Date) return this.#data[paramName];
         return super.getDate(paramName);
@@ -62,9 +71,9 @@ class AppFormData extends FormData {
         return super.getNumber(paramName);
     }
 
-    getString(paramName) {
+    getString(paramName, trimmed = true) {
         if (typeof(this.#data[paramName]) == 'string') return this.#data[paramName];
-        return super.getString(paramName);
+        return super.getString(paramName, trimmed);
     }
 }
 

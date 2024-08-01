@@ -12,6 +12,7 @@ import zod, {
     type ZodRawShape,
     type ZodTypeAny,
     ZodString,
+    ZodType,
 } from 'zod';
 
 declare module 'zod' {
@@ -82,6 +83,51 @@ export type InputsProps = {
     [inputName: string]: InputProps
 };
 
+class IfType extends ZodType {
+    #ifClause!: (inputs: InputProps) => boolean;
+    #trueType!: ZodTypeAny;
+    #falseType!: ZodTypeAny;
+    #name: string | undefined;
+
+    constructor(
+        ifClause: (inputs: InputProps) => boolean,
+        trueType: ZodTypeAny,
+        falseType: ZodTypeAny,
+        name?: string,
+    ) {
+        super({});
+        this.#name = name;
+        this.#ifClause = ifClause;
+        this.#trueType = trueType;
+        this.#falseType = falseType;
+    }
+
+    setName(name: string) {
+        this.#name = name;
+        return this;
+    }
+
+    get TrueType() {
+        return this.#trueType;
+    }
+
+    get FalseType() {
+        return this.#falseType;
+    }
+
+    _parse(input: zod.ParseInput): zod.ParseReturnType<any> {
+        const data = input.data as InputProps;
+        if (!this.#name || !(this.#name in data)) throw new Error('Cannot parse the value');
+        input = {
+            ...input,
+            data: data[this.#name],
+        }
+        if (this.#ifClause(data)) return this.#trueType._parse(input);
+        return this.#falseType._parse(input);
+    }
+    
+}
+
 /**
  * `zod.object` has a problem with `zod.preprocess`: if a property fails to parse then the next properties won't be parsed.
  * So here, we create a simple class to make sure all properties are validated.
@@ -97,12 +143,39 @@ export class Schema {
         return this.#shape;
     }
 
+    extends(shape: ZodRawShape) {
+        const newShape: ZodRawShape = {
+            ...this.#shape,
+        };
+        for (let prop in shape) {
+            newShape[prop] = shape[prop];
+        }
+        return new Schema(newShape);
+    }
+
     async validate(objVal: InputProps) {
         const messages: {[prop: string]: string} = {};
         const data: InputProps = {};
+        const ifNames: string[] = [];
         for (let prop in this.#shape) {
             const propSchema = this.#shape[prop];
-            const ret = await propSchema.safeParseAsync(objVal[prop]);
+            if (propSchema instanceof IfType) {
+                ifNames.push(prop);
+                data[prop] = objVal[prop];
+            }
+            else {
+                if (propSchema instanceof ZodBoolean) objVal[prop] = objVal[prop] !== null; 
+                const ret = await propSchema.safeParseAsync(objVal[prop]);
+                if (ret.success) {
+                    data[prop] = ret.data;
+                }
+                else {
+                    messages[prop] = ret.error.issues[0].message;
+                }
+            }
+        }
+        for (let prop of ifNames) {
+            const ret = await (this.#shape[prop] as IfType).setName(prop).safeParseAsync(data);
             if (ret.success) {
                 data[prop] = ret.data;
             }
@@ -176,6 +249,7 @@ function getInputProps(name: string, propType: ZodTypeAny) {
     }
     else if (propType instanceof ZodBoolean) {
         props.type = 'checkbox';
+        delete props.required;
     }
     else if (propType instanceof ZodNumber) {
         const type = propType as ZodNumber;
@@ -197,6 +271,14 @@ function getInputProps(name: string, propType: ZodTypeAny) {
         }
 
     }
+    else if (propType instanceof IfType) {
+        delete props.required;
+        const trueProps = getInputProps(name, (propType as IfType).TrueType),
+              falseProps = getInputProps(name, (propType as IfType).FalseType);
+        for (let propName in trueProps) {
+            if (trueProps[propName] === falseProps[propName]) props[propName] = trueProps[propName];
+        }
+    }
 
     return props;
 }
@@ -209,11 +291,16 @@ export function getSchemaProps(schema: Schema) {
     return inputsProps;
 }
 
+const schemas: {
+    [name: string]: () => Promise<{default: Schema}>,
+} = {
+    'login': async () => await import('@/lib/schema/login'),
+    'review': async () => await import('@/lib/schema/review'),
+    'customerData': async () => await import('@/lib/schema/customerData'),
+    'checkoutInfo': async () => await import('@/lib/schema/checkoutInfo'),
+};
 export async function getSchema(name: string) {
-    const schema = (name.startsWith('@/') 
-        ? await import(name)
-        : await import(`@/lib/schema/${name}`)
-    ).schema as Schema;
+    const schema = (await schemas[name]()).default;
     if (!(schema instanceof Schema)) throw 'Invalid schema name';
     return schema;
 }
@@ -223,6 +310,13 @@ const z = {
     ..._zod,
     ...coerce,
     preprocess,
+    // boolean: (params?: Parameters<typeof _zod.boolean>[0]) => preprocess(
+    //     val => {
+    //         val = val ?? false;
+    //         return val !== false;
+    //     },
+    //     _zod.boolean(params)
+    // ),
     date: (params?: Parameters<typeof coerce.date>[0]) => preprocess(
         val => {
             if (val === null) {
@@ -255,6 +349,12 @@ const z = {
         },
         coerce.number(params)
     ),
+    if: (
+        ifClause: (inputs: InputProps) => boolean,
+        trueType: ZodTypeAny,
+        falseType: ZodTypeAny,
+        name?: string
+    ) => new IfType(ifClause, trueType, falseType, name),
     string: (params?: Parameters<typeof coerce.string>[0]) => preprocess(
         val => {
             if (val === null) {

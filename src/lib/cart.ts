@@ -5,7 +5,7 @@ import type {TCart, TCartItem} from '@/data/types';
 import config from '@/config/usable-on-client';
 import modules, {type TCustomerAddress} from './modules';
 
-export async function updateTotalCart(cart: TCart, custmerOrigin: TCustomerAddress) {
+export function updateTotalCart(cart: TCart, custmerOrigin: TCustomerAddress) {
     cart.totalCartAmount = 0;
     cart.totalCartItems = 0;
     cart.totalCartProducts = 0;

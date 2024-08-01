@@ -3,7 +3,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import DropDown from './DropDown';
+import DropDown from '@/components/DropDown';
 
 declare var $$darkMode: {
     value: boolean | null,

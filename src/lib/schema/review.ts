@@ -7,7 +7,7 @@ import {productExists} from '@/data/product';
 import {stripHtml} from 'string-strip-html';
 const {regex: badwordsList} = require('badwords-list') as {regex: RegExp};
 
-export const schema = z.form({
+export default z.form({
     title: z.preprocess(
         val => {
             if (typeof(val) == 'string') {

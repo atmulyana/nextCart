@@ -15,8 +15,8 @@ export default async function postHandler(formData: FormData) {
         return ResponseMessage(lang('You need to be logged in to create a review'), 401);
     }
 
-    let title = formData.getString('title').trim();
-    let description = formData.getString('description').trim();
+    let title = formData.getString('title');
+    let description = formData.getString('description');
     let rating = formData.getNumber('rating');
     let product = formData.getString('product');
 

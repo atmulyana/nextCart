@@ -8,11 +8,10 @@ import {createPostHandler} from '@/lib/routeHandler';
 import lang from '@/data/lang';
 import {getCustomerByEmail} from '@/data/customer';
 import {setCustomerSession} from '@/data/session';
-import {cookies} from 'next/headers';
 
 export const POST = createPostHandler(async (formData, redirect, isFromMobile) => {
-    const email = formData.getString('loginEmail').trim();
-    const password = formData.getString('loginPassword');
+    const email = formData.getString('loginEmail');
+    const password = formData.getString('loginPassword', false);
     
     const customer = email && await getCustomerByEmail(email);
     if (!customer) {

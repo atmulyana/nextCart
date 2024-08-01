@@ -36,6 +36,13 @@ const nextConfig = {
             },
         ]
     },
+
+    experimental: {
+        //ppr: false,
+        staleTimes: {
+            dynamic: 0,
+        },
+    },
 }
 
 module.exports = nextConfig;

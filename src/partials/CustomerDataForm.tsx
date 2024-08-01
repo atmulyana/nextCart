@@ -3,48 +3,45 @@
  **/
 import React from 'react';
 import {countries} from 'countries-list';
+import type {TSessionCustomer} from '@/data/types';
 import lang from '@/data/lang';
 import Input from '@/components/SubmittedInput';
 import Select from '@/components/SubmittedSelect';
-import TextArea from '@/components/SubmittedTextArea';
 
-export default function CustomerDataForm() {
+export default function CustomerDataForm({data}: {data?: TSessionCustomer | null}) {
     return <div className='flex flex-wrap -mx-4'>
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <Input name='shipEmail' placeholder={lang('Email address')} /> 
+            <Input name='email' placeholder={lang('Email address')} value={data?.customerEmail ?? ''} /> 
         </div>
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <Input name='shipCompany' placeholder={lang('Company name')} /> 
+            <Input name='company' placeholder={lang('Company name')} value={data?.customerCompany ?? ''} /> 
         </div>
         <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4'>
-            <Input name='shipFirstname' placeholder={lang('First name')} /> 
+            <Input name='firstName' placeholder={lang('First name')} value={data?.customerFirstname ?? ''} /> 
         </div>
         <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4'>
-            <Input name='shipLastname' placeholder={lang('Last name')} /> 
+            <Input name='lastName' placeholder={lang('Last name')} value={data?.customerLastname ?? ''} /> 
         </div>
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <Input name='shipAddr1' placeholder={lang('Address 1')} /> 
+            <Input name='address1' placeholder={lang('Address 1')} value={data?.customerAddress1 ?? ''}  /> 
         </div>
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <Input name='shipAddr2' placeholder={`${lang("Address 2")} (${lang("optional")})`} /> 
+            <Input name='address2' placeholder={`${lang("Address 2")} (${lang("optional")})`} value={data?.customerAddress2 ?? ''} /> 
         </div>
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <Select name='shipCountry'>
+            <Select name='country' value={data?.customerCountry ?? ''}>
                 <option key={-1} value="" disabled>{lang('Select Country')}</option>
                 {Object.values(countries).map((item, idx) => <option key={idx} value={item.name}>{item.name}</option>)}
             </Select> 
         </div>
         <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4'>
-            <Input name='shipState' placeholder={lang('State')} /> 
+            <Input name='state' placeholder={lang('State')} value={data?.customerState ?? ''} /> 
         </div>
         <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4'>
-            <Input name='shipPostcode' placeholder={lang('Post code')} /> 
+            <Input name='postcode' placeholder={lang('Post code')} value={data?.customerPostcode ?? ''} /> 
         </div>
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <Input name='shipPhoneNumber' placeholder={lang("Phone number")} /> 
-        </div>
-        <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <TextArea name='orderComment' placeholder={lang("Order comment")}></TextArea> 
+            <Input name='phone' placeholder={lang("Phone number")} value={data?.customerPhone ?? ''} /> 
         </div>
     </div>;
 }

@@ -51,7 +51,7 @@ export const GET = createGetHandler(async ({
     }
     const results = await getProducts(pageNum, query);
     const ret: Return = {
-        title,
+        title: title as (string | undefined),
         results: results.data,
         totalProductCount: results.totalItems,
         pageNum,

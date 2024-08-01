@@ -4,6 +4,9 @@
  **/
 import {redirect} from 'next/navigation';
 import lang from '@/data/lang';
+import {POST as createAccount} from '@/app/(shop)/customer/create/route';
+import {POST as saveAccount} from '@/app/(shop)/customer/save/route';
+import {POST as loginCustomerAction} from './(shop)/customer/login_action/route';
 import {POST as logoutCustomerAction} from './(shop)/customer/logout/route';
 import {POST as addCartItemAction} from './(shop)/product/addtocart/route';
 import {POST as deleteCartItemAction} from './(shop)/product/removefromcart/route';
@@ -14,6 +17,17 @@ import {POST as addReviewAction} from './(shop)/product/addreview/route';
 export async function initActions() {
     //There is a bug when using a server action which imports a module containing top level `await`
     //See: https://github.com/vercel/next.js/issues/54282
+}
+
+export async function saveCheckoutInfo(formData: FormData) {
+    return await (formData.has('createAccount')
+        ? createAccount.responseJson(formData)
+        : saveAccount.responseJson(formData)
+    );
+}
+
+export async function loginCustomer(formData: FormData) {
+    return await loginCustomerAction.responseJson(formData);
 }
 
 export async function logoutCustomer(formData: FormData) {

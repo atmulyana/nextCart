@@ -41,7 +41,7 @@ export default {
                     token.customer = {
                         id: user.id,
                         email: user.email,
-                        chartItemCount: token.customer?.chartItemCount ?? 0,
+                        chartItemCount: user.token?.customer?.chartItemCount ?? 0,
                     };
                     token.user = user.token?.user;
                 }
@@ -60,9 +60,9 @@ export default {
                     ...oldToken,
                     ...session,
                     customer: ('customer' in session) && !session.customer ? {
-                        chartItemCount: token.customer?.chartItemCount,
+                        chartItemCount: oldToken.customer?.chartItemCount,
                     } : {
-                        ...token.customer,
+                        ...oldToken.customer,
                         ...session.customer,
                     },
                 };

@@ -38,6 +38,8 @@ export type TCartItem = {
 export type TCustomer = {
     _id: ObjectId,
     email: string,
+    password: string,
+    company: string,
     firstName: string,
     lastName: string,
     address1: string,
@@ -46,8 +48,6 @@ export type TCustomer = {
     state: string,
     postcode: string,
     phone: string,
-    password: string,
-    company: string,
 }
 
 export type TDiscount = {

@@ -3,9 +3,9 @@
  **/
 import React from 'react';
 import type {Metadata} from 'next';
+import {loginCustomer} from '@/app/actions';
 import LoginForm from '@/partials/LoginForm';
 import lang from '@/data/lang';
-import {POST} from '../login_action/route';
 
 export function generateMetadata(): Metadata {
     return  {
@@ -15,11 +15,6 @@ export function generateMetadata(): Metadata {
     };
 }
 
-async function submit(formData: FormData) {
-    "use server";
-    return await POST.responseJson(formData);
-}
-
 export default async function LoginPage({searchParams: {referrerUrl}}: {searchParams: {referrerUrl: string}}) {
-    return <LoginForm referrerUrl={referrerUrl} submitHandler={submit} />;
+    return <LoginForm referrerUrl={referrerUrl} submitHandler={loginCustomer} />;
 }

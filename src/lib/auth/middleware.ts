@@ -9,12 +9,29 @@ import NextAuth, {type Session} from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import cfg from './config';
 import {toRedirect} from "./access";
-import {clearSessionMessage, getSessionMessage, setSessionMessage} from ".";
+import {fetchMessage, getUrl, setRedirectMessage} from "./common";
 
 type Cookies = ResponseInternal['cookies'];
 
-const config = {
+
+let jwtCreated: ((token: Session) => void) | undefined;
+const config: typeof cfg = {
     ...cfg,
+    callbacks: {
+        ...cfg.callbacks,
+        async jwt(params) {
+            const token = (cfg.callbacks?.jwt && await cfg.callbacks.jwt(params)) ?? null;
+            if (typeof(jwtCreated) == 'function') jwtCreated(
+                {
+                    id: token?.id ?? '',
+                    customer: token?.customer,
+                    customerPresent: false,
+                    expires: new Date().toISOString(),
+                }
+            );
+            return token;
+        },
+    },
     providers: [
         Credentials({
             id: 'guest',
@@ -67,90 +84,42 @@ async function initSession() {
         skipCSRFCheck,
         trustHost: true
     });
-    return resp?.cookies;
-}
-
-async function getSession(request: NextRequest) {
-    const headers = request.headers;
-    const url = createActionURL(
-        "session",
-        // @ts-expect-error `x-forwarded-proto` is not nullable, next.js sets it by default
-        headers.get("x-forwarded-proto"),
-        headers,
-        process.env,
-        config.basePath
-    );
-    const req = new Request(url, {
-        headers: { cookie: headers.get("cookie") ?? "" },
-    })
-    const resp = await Auth(req, config);
-    return await resp.json();
-}
-
-async function updateSession(data: Partial<Session>, request: NextRequest) {
-    const headers = new Headers(request.headers);
-    headers.set("Content-Type", "application/json");
-    const url = createActionURL(
-        "session", 
-        // @ts-expect-error `x-forwarded-proto` is not nullable, next.js sets it by default
-        headers.get("x-forwarded-proto"),
-        headers, process.env,
-        config.basePath
-    );
-    const body = JSON.stringify({data});
-    const req = new Request(url, {
-        method: "POST",
-        headers,
-        body
-    });
-    const res = await Auth(req, {
-        ...config,
-        raw,
-        skipCSRFCheck,
-        trustHost: true
-    });
-    setRequestCookies(request, res?.cookies);
-    return res?.cookies;
+    return resp.cookies;
 }
 
 export const middleware = auth(async (request) => {
-    let auth = request.auth;
+    let auth!: Session;
     let cookies: Cookies;
-    if (!auth) {
-        cookies = await initSession();
-        setRequestCookies(request, cookies);
+    if (request.auth) {
+        auth = request.auth;
     }
-    
-    let url = request.url.replace(/\/+$/, '');
-    const Url = new URL(url);
-    request.headers.set('x-request-path', Url.pathname);
-    request.headers.set('x-request-query', Url.search);
+    else {
+        jwtCreated = (sess) => {
+            auth = sess;
+        }
+        cookies = await initSession();;
+        setRequestCookies(request, cookies);
+        jwtCreated = void(0);
+    }
 
-    let redirect = toRedirect(Url.pathname, auth);
+    const url = getUrl(request);
+    fetchMessage(auth.id, request);
+
+    const redirect = toRedirect(url.pathname, auth);
     if (redirect) {
-        const message = redirect.message?.trim();
-        const response = NextResponse.redirect(new URL(redirect.path, url));
-        setSessionMessage(redirect.message, redirect.messageType, response);
+        const message = redirect.message?.trim(),
+              redirectUrl = new URL(redirect.path, url);
+        let response: NextResponse;
+        if (message)  setRedirectMessage(auth.id, message, redirect.messageType)
+        response = NextResponse.redirect(redirectUrl);
+        setResponseCookies(response, cookies);
         return response;
     }
     
-    if (request.headers.get('X-Requested-With') == 'expressCartMobile' && request.method == 'GET' && !url.endsWith('/data'))
-        url += '/data';
-    
-    let {message, messageType} = getSessionMessage(request),
-        session: Partial<Session>;
-    if (message) {
-        cookies = await updateSession({...auth, message, messageType}, request);
-    }
-    else {
-        ({message, messageType, ...session} = auth ?? {});
-        if (message !== undefined) {
-            cookies = await updateSession(session, request);
-        }
-    }
-
-    const response = NextResponse.rewrite(url, {request});
+    if (request.headers.get('X-Requested-With') == 'expressCartMobile' && request.method == 'GET' && !url.pathname.endsWith('/data'))
+        url.pathname += '/data';
+    const response = NextResponse.rewrite(url.toString(), {request});
+    //const response = NextResponse.next({request});
     setResponseCookies(response, cookies);
-    clearSessionMessage(response);
     return response;
 });

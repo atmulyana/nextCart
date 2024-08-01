@@ -7,6 +7,7 @@ import config from '@/config/usable-on-client';
 import {getCart} from '@/data/cart';
 import {getSession} from '@/data/session';
 import {title} from '@/app/(shop)/layout';
+import {getSessionMessage} from './auth';
 import {isPlainObject, normalizeParamValue, type GetParam, type RouteParam} from './common';
 
 export type Redirect = (url: any, defaultUrl?: string) => any;
@@ -58,6 +59,7 @@ async function applyCommonMobileData(response: any, isGet: boolean = false) {
             ...cart,
             discountCode: typeof(discount) == 'string' ? discount : discount?.code,
             cart: items,
+            ...getSessionMessage(),
         };
         response.config = config;
         if (isGet) {

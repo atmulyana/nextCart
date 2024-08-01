@@ -10,8 +10,8 @@ import {getUserByEmail} from '@/data/user';
 import {setUserSession} from '@/data/session';
 
 export const POST = createPostHandler(async (formData, redirect, isFromMobile) => {
-    const email = formData.getString('loginEmail').trim();
-    const password = formData.getString('loginPassword');
+    const email = formData.getString('loginEmail');
+    const password = formData.getString('loginPassword', false);
     
     const user = email && await getUserByEmail(email);
     if (!user) {

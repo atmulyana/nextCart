@@ -7,19 +7,24 @@
  * found that the template is not re-rendered on every navigation. So, it's better that the
  * `Template` component below is inserted in every 'page.tsx'.
  **/
+import {cookies} from 'next/headers';
 import lang from '@/data/lang';
 import {refreshSessionExpires} from "@/data/session";
-import {auth} from '@/lib/auth';
+import UrlFixer from '@/components/UrlFixer';
 import {SessionUpdater} from '@/components/SessionContext';
+import {getRequestUrl, getSessionMessage, getSessionToken} from '@/lib/auth';
 
 export default async function Template({children}: {children: React.ReactNode}) {
-    const session = await auth();
+    const session = await getSessionToken();
     if (session) {
         await refreshSessionExpires(new Date(session.expires), session.id);
-        if (session.message) session.message = lang(session.message);
+        const msg = await getSessionMessage();
+        if (msg.message) session.message = lang(msg.message);
+        session.messageType = msg.type;
     }
     return <> 
         {children}
         <SessionUpdater value={session} />
+        <UrlFixer {...getRequestUrl()} />
     </>;
 }

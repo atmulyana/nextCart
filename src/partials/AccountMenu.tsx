@@ -5,9 +5,9 @@
 import React from 'react';
 import Link from 'next/link';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import {useSession} from './SessionContext';
-import DropDown from './DropDown';
-import Icon from './Icon';
+import {useSession} from '@/components/SessionContext';
+import DropDown from '@/components/DropDown';
+import Icon from '@/components/Icon';
 import {logoutCustomer} from '@/app/actions';
 
 type AccountMenuProps = {

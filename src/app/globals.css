@@ -65,7 +65,7 @@
         text-decoration: underline;
     }
 
-    input:not([type=button]):not([type=checbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=image]):not([type=radio]):not([type=range]):not([type=reset]):not([type=submit]),
+    input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=image]):not([type=radio]):not([type=range]):not([type=reset]):not([type=submit]),
     select {
         @apply block w-full m-0 py-1.5 px-3 text-base
             border border-solid rounded border-slate-300 dark:border-slate-700

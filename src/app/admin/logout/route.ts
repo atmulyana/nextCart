@@ -3,10 +3,10 @@
  **/
 import {createPostHandler} from '@/lib/routeHandler';
 import {clearUserSession} from '@/data/session';
-import {updateSession} from '@/lib/auth';
+import {updateSessionToken} from '@/lib/auth';
 
 export const POST = createPostHandler(async (formData, redirect) => {
-    await updateSession({user: null});
+    await updateSessionToken({user: null});
     await clearUserSession();
     return redirect(formData.get('referrerUrl'), '/admin');
 });

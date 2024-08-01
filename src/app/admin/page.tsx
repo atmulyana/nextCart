@@ -2,15 +2,11 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import {redirect} from 'next/navigation';
-import {clearUserSession} from '@/data/session';
-import {updateSession} from '@/lib/auth';
+import {POST} from '@/app/admin/logout/route';
 
-async function logout() {
+async function logout(formData: FormData) {
     "use server";
-    await updateSession({user: null});
-    await clearUserSession();
-    redirect('/admin');
+    return POST.response(formData);
 }
 
 export default async function AdminDashboard() {

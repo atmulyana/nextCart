@@ -1,15 +1,18 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
+import {cache} from 'react';
+import {revalidatePath} from 'next/cache';
 import {cookies} from 'next/headers';
-import {redirect} from 'next/navigation';
-import {NextRequest, NextResponse} from "next/server";
-import NextAuth, {type Session} from "next-auth";
+import {redirect, RedirectType} from 'next/navigation';
+import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import type {NotificationParam} from '@/components/Notification';
 //import {refreshSessionExpires} from "@/data/session";
 import config from './config';
+import {getRequestUrl, getSessionMessage as internalGetSessionMessage, setRedirectMessage} from './common';
 
-export const {signIn, signOut, auth, handlers, unstable_update: updateSession} = NextAuth({
+export const {signIn, signOut, auth, handlers, unstable_update: updateSessionToken} = NextAuth({
     ...config,
     providers: [
         Credentials({
@@ -65,39 +68,23 @@ export const {signIn, signOut, auth, handlers, unstable_update: updateSession} =
     // },
 });
 
-type RequestCookies = Pick<NextRequest['cookies'], 'get' | 'has'>;
-type ResponseCookies = Pick<NextResponse['cookies'], 'set'>;
+//`cache` is not supported in middleware
+export const getSessionToken = cache(auth);
 
-const cookieName = {
-    message: 'sess-msg',
-    messageType: 'sess-msg-type',
+export async function redirectWithMessage(
+    url: string | URL,
+    message: NotificationParam | string
+) {
+    const session = await getSessionToken();
+    if (!session) return;
+    setRedirectMessage(session.id, message);
+    revalidatePath((url instanceof URL) ? url.pathname : url);
+    cookies().set('x-revalidated-at', new Date().toISOString());
+    redirect(url.toString(), RedirectType.replace);
 }
 
-export function setSessionMessage(message: string | undefined, messageType?: Session['messageType'], response?: NextResponse) {
-    const cakes: ResponseCookies = response ? response.cookies : cookies();
-    message = message?.trim();
-    if (message) {
-        cakes.set(cookieName.message, message);
-        if (messageType) cakes.set(cookieName.messageType, messageType);
-    }
+export async function getSessionMessage(request?: Request) {
+    return internalGetSessionMessage(request, (await getSessionToken())?.id);
 }
 
-export function getSessionMessage(request?: NextRequest) {
-    const cakes: RequestCookies = request ? request.cookies : cookies();
-    const data: Pick<Session, 'message' | 'messageType'> = {};
-    if (cakes.has(cookieName.message)) {
-        data.message = cakes.get(cookieName.message)?.value.trim();
-        if (request) request.cookies.delete(cookieName.message);
-    }
-    if (cakes.has(cookieName.messageType)) {
-        data.messageType = cakes.get(cookieName.messageType)?.value.trim() as Session['messageType'];
-        if (request) request.cookies.delete(cookieName.messageType);
-    }
-    return data;
-}
-
-export function clearSessionMessage(response?: NextResponse) {
-    const cakes: ResponseCookies = response ? response.cookies : cookies();
-    cakes.set(cookieName.message, '', {maxAge: 0});
-    cakes.set(cookieName.messageType, '', {maxAge: 0});
-}
+export {getRequestUrl};

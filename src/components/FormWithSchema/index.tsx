@@ -1,31 +1,65 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import * as React from 'react';
+import React from 'react';
 import Form, {type FormProps} from '../Form';
 import SchemaContext from '../SchemaContext';
 import {getSchemaProps, validate} from './validation';
 import {FormLoading} from './Loading';
 
-const FormWithSchema = React.forwardRef<
+type Props = Omit<FormProps, 'action'> & {
+    action: Exclude<FormProps['action'], string | undefined>,
+    schemaName: string,
+};
+type PropsWithRef = Props & {
+    formRef: React.Ref<HTMLFormElement>,
+};
+
+const InternalForm = React.forwardRef<
     HTMLFormElement,
-    Omit<FormProps, 'action'> & {
-        action: Exclude<FormProps['action'], string | undefined>,
-        schemaName: string,
+    Props & {
+        inputsProps: React.ComponentProps<typeof SchemaContext>['inputsProps'],
     }
->(function FormWithSchema(
+>(function InternalForm(
     {
-        action,
         children,
+        inputsProps,
         schemaName,
         ...props
     },
     ref
 ) {
-    return <SchemaContext inputsProps={getSchemaProps} schemaName={schemaName}>
-        <Form {...props} ref={ref} action={action} validate={validate.bind(null, schemaName)} loading={<FormLoading />}>
+    return <SchemaContext inputsProps={inputsProps} schemaName={schemaName}>
+        <Form {...props} ref={ref} validate={validate.bind(null, schemaName)} loading={<FormLoading />}>
             {children}
         </Form>
     </SchemaContext>;
+});
+
+async function ServerForm({
+    children,
+    formRef,
+    schemaName,
+    ...props
+}: PropsWithRef) {
+    return <InternalForm {...props} inputsProps={await getSchemaProps(schemaName)} schemaName={schemaName} ref={formRef}>
+        {children}
+    </InternalForm>;
+}
+
+function ClientForm({
+    children,
+    formRef,
+    schemaName,
+    ...props
+}: PropsWithRef) {
+    return <InternalForm {...props} inputsProps={getSchemaProps} schemaName={schemaName} ref={formRef}>
+        {children}
+    </InternalForm>;
+}
+
+const FormWithSchema = React.forwardRef<HTMLFormElement, Props>(function FormWithSchema(props,  ref) {
+    const Form = typeof(window) == 'undefined' ? ServerForm : ClientForm;
+    return <Form {...props} formRef={ref} />;
 });
 export default FormWithSchema;

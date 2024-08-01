@@ -32,7 +32,7 @@ declare module "next-auth/jwt" {
         customer?: {
             id?: string;
             email?: string | null;
-            chartItemCount: number;
+            chartItemCount?: number;
         } | null;
         message?: string;
         messageType?: NotificationParam['type'];
