@@ -1,41 +1,54 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-const bcrypt = require('bcryptjs');
+import lang from '@/data/lang';
+import {getCart, upsertCart} from '@/data/cart';
+import {getDiscountByCode} from '@/data/discount';
+import {getSession} from '@/data/session';
+import {updateTotalCart} from '@/lib/cart';
 import {ResponseMessage} from '@/lib/common';
 import modules from '@/lib/modules';
 import {createPostHandler} from '@/lib/routeHandler';
-import lang from '@/data/lang';
-import {getDiscountByCode} from '@/data/discount';
 
 export const POST = createPostHandler(async (formData) => {
+    const cart = await getCart();
+    const response = (message: string, status: number = 400) => ResponseMessage(
+        message, {
+            status,
+            cart: cart ?? null,
+        }
+    );
+
+    if (!cart) return response(lang('The are no items in your cart'));
+    
     const code = formData.getString('discountCode');
     
     // Check if the discount module is loaded
     if(!modules.discount){
-        return ResponseMessage(lang('Access denied'), 403);
+        return response(lang('Access denied'), 403);
     }
 
     if (typeof(code) != 'string' || !code) {
-        return ResponseMessage(lang('Discount code is required'), 400);
+        return response(lang('Discount code is required'));
     }
 
     const discount = await getDiscountByCode(code);
     if(!discount){
-        return ResponseMessage(lang('Discount code is not found'), 404);
+        return response(lang('Discount code is not found'), 404);
     }
 
     const now = Date.now();
     if (now > discount.end.getTime()) {
-        return ResponseMessage(lang('Discount is expired'), 410);
+        return response(lang('Discount code is expired'), 410);
     }
     if (now < discount.start.getTime()) {
-        return ResponseMessage(lang('Discount does not apply yet'), 451);
+        return response(lang('Discount code does not apply yet'), 451);
     }
 
-    return {
-        message: lang('Discount code applied'),
-        messageType: 'success',
-        discount,
-    };
+    const session = await getSession();
+    cart.discount = code;
+    await updateTotalCart(cart, session);
+    await upsertCart(cart._id, cart);
+
+    return response(lang('Discount code applied'), 200);
 });

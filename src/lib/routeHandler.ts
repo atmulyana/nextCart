@@ -53,15 +53,23 @@ export function redirect(url: any, option: {base?: string | URL, default?: strin
 
 async function applyCommonMobileData(response: any, isGet: boolean = false) {
     if (isPlainObject(response)) {
-        const {discount, items, ...cart} = (await getCart()) ?? {};
+        const {discount, items = {}, ...cart} = (
+            (
+                ('cart' in response) ? response.cart : await getCart()
+            ) ?? {} 
+        ) as Partial<NonNullable<Awaited<ReturnType<typeof getCart>>>>;
         response.session = {
             ...(await getSession()),
             ...cart,
             discountCode: typeof(discount) == 'string' ? discount : discount?.code,
             cart: items,
-            ...getSessionMessage(),
+            ...(await getSessionMessage()),
         };
         response.config = config;
+        if ('cart' in response) {
+            response.totalCartItems = cart.totalCartItems ?? 0;
+            delete response.cart;
+        }
         if (isGet) {
             if (typeof(response.title) == 'undefined') response.title = title;
         }

@@ -12,15 +12,15 @@ import Template from '@/partials/Template';
 
 export function generateMetadata() {
     return {
-        title: `${lang('Checkout')} - ${lang('Shipping')}`,
+        title: `${lang('Checkout', 1)} - ${lang('Shipping')}`,
     };
 };
 
 export async function updateShippingInCart() {
     const cart = await getCart();
-    const session = await getSession()
+    const session = await getSession();
     if (cart) {
-        updateTotalCart(cart, session);
+        await updateTotalCart(cart, session);
         await upsertCart(cart._id, cart);
     }
     return cart;
@@ -33,12 +33,10 @@ export default async function CheckoutShipping() {
     return <Template>
         <div className='bordered'>
             <h5 className='mb-3'>{lang('Shipping options')}</h5>
-            <ul className='flex flex-col bordered !p-0'>
-                <li className='block px-5 py-3'>
-                    {lang(cart?.shippingMessage ?? '')}
-                    {shippingCost > 0 && <strong className='float-right'>{currencySymbol()}{formatAmount(cart?.totalCartShipping ?? 0)}</strong>}
-                </li>
-            </ul>
+            <div className='bordered !py-3'>
+                {lang(cart?.shippingMessage ?? '')}
+                {shippingCost > 0 && <strong className='float-right'>{currencySymbol()}{formatAmount(cart?.totalCartShipping ?? 0)}</strong>}
+            </div>
         </div>
         <div className='checkout-buttons'>
             <Link href='/checkout/information' className='btn btn-primary'>{lang('Return to information')}</Link> 

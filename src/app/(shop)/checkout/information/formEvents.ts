@@ -14,12 +14,17 @@ export function createAccountCheckboxChange(e: React.ChangeEvent<HTMLInputElemen
 export function nextToShippingClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     const form = document.getElementById('customerInfoForm');
     if (form) {
-        (e.target as HTMLButtonElement).disabled = true;
+        const submitBtn = e.target as HTMLButtonElement;
+        submitBtn.disabled = true;
+        (submitBtn.previousSibling as HTMLAnchorElement).classList.add('disabled');
         (form as HTMLFormElement).requestSubmit();
     }
 }
 
 export function formSubmitted() {
-    const submitBtn = document.getElementById('nextToShippingButton');
-    if (submitBtn) (submitBtn as HTMLButtonElement).disabled = false;
+    const submitBtn = document.getElementById('nextToShippingButton') as HTMLButtonElement;
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        (submitBtn.previousSibling as HTMLAnchorElement).classList.remove('disabled');
+    }
 }

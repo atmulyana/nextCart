@@ -160,9 +160,9 @@ export const getCartHeader = fn(async (db: Db) => {
 });
 
 export const upsertCart = fn(async (db: Db, cartId: ObjectId, cart: Omit<TCart, 'items'>) => {
-    if ('_id' in cart) delete cart._id;
     const $set: Partial<TCart> = {...cart},
           $unset: Partial<TCart> = {};
+    if ('_id' in $set) delete $set._id;
     delete $set.items;
     if (!cart.discount) {
         delete $set.discount;
@@ -204,7 +204,12 @@ export const updateOrderComment = fn(async (db: Db, orderComment: string) => {
     );
 });
 
-export const deleteCart = fn(async (db: Db, cartId: ObjectId) => {
+export const deleteCart = fn(async (db: Db, cartId?: ObjectId) => {
+    if (!cartId) {
+        const id = await getSessionId();
+        if (!id) return;
+        cartId = id;
+    }
     await db.collection('cart').deleteOne(
         {
             _id: cartId
@@ -295,12 +300,12 @@ export const deleteCartItems = fn(async (db: Db, cartId: ObjectId, itemIds: _Id[
     );
 });
 
-export async function cartTrans(fn: () => Promise<Response | undefined>, homeAfterClear?: boolean) {
+export async function cartTrans(fn: () => Promise<Response | void>, homeAfterClear?: boolean) {
     return await dbTrans(async () => {
         const response = await fn();
         if (response) {
             const data = await response.json();
-            const chartItemCount = data.totalCartItems as number;
+            const chartItemCount = (data.cart?.totalCartItems ?? 0) as number;
             await updateSessionToken({
                 customer: {
                     chartItemCount,

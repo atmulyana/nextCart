@@ -13,6 +13,8 @@ import {POST as deleteCartItemAction} from './(shop)/product/removefromcart/rout
 import {POST as updateCartItemAction} from './(shop)/product/updatecart/route';
 import {POST as clearCartAction} from './(shop)/product/emptycart/route';
 import {POST as addReviewAction} from './(shop)/product/addreview/route';
+import {POST as AddDiscountAction} from './(shop)/checkout/adddiscountcode/route';
+import {POST as RemoveDiscountAction} from './(shop)/checkout/removediscountcode/route';
 
 export async function initActions() {
     //There is a bug when using a server action which imports a module containing top level `await`
@@ -62,6 +64,11 @@ export async function clearCart(formData: FormData) {
 
 export async function addReview(formData: FormData) {
     return await addReviewAction.responseJson(formData);
+}
+
+export async function changeDiscount(formData: FormData) {
+    if (formData.has('remove')) return RemoveDiscountAction.responseJson(formData);
+    else return AddDiscountAction.responseJson(formData);
 }
 
 export async function getErrorPageTexts() {

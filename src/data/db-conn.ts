@@ -27,7 +27,8 @@ import {
     type UpdateResult,
     type WithoutId,
 } from 'mongodb';
-const {databaseConnectionString: dbUrl} = require('@/config').default;
+import appCfg from '@/config';
+const {databaseConnectionString: dbUrl} = appCfg;
 import type {_Id} from './types';
 
 type Db = MongoDb & {session?: ClientSession}

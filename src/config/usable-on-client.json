@@ -7,9 +7,7 @@
     "currencyISO": "USD",
     "maxQuantity": 25,
     "paymentGateway": [
-        "authorizenet",
-        "blockonomics",
-        "instore"
+        "stripe"
     ],
     "trackStock": true,
     "showRelatedProducts": true,

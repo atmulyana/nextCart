@@ -1,13 +1,12 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
+import '@/lib/darkMode'
 import './globals.css'
 import type {Metadata, Viewport} from 'next'
-import {Inter} from 'next/font/google'
-const inter = Inter({ subsets: ['latin'] })
-import Script from 'next/script'
 import config from '@/config'
 import lang from '@/data/lang'
+import Html from '@/components/Html';
 import {ModalContext} from '@/components/Modal'
 import {NotificationContext} from '@/components/Notification'
 import {SessionProvider} from '@/components/SessionContext'
@@ -51,10 +50,9 @@ export default async function RootLayout({
 }) {
     await initActions()
     return (
-        <html lang="en" className={inter.className}>
+        <Html>
             <head>
                 <meta httpEquiv="X-UA-Compatible" content="IE=edge"></meta>
-                <Script src="/scripts/darkMode.js" />
                 {config.facebookAppId && <meta property="fb:app_id" content={config.facebookAppId} />}
             </head>
             <body>
@@ -71,6 +69,6 @@ export default async function RootLayout({
             </ModalContext>
             </NotificationContext>
             </body>
-        </html>
+        </Html>
     )
 }

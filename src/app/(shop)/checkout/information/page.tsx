@@ -18,7 +18,7 @@ import {createAccountCheckboxChange, formSubmitted, nextToShippingClick} from '.
 
 export function generateMetadata() {
     return {
-        title: `${lang('Checkout')} - ${lang('Information')}`,
+        title: `${lang('Checkout', 1)} - ${lang('Information')}`,
     };
 };
 

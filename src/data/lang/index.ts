@@ -85,7 +85,11 @@ const init = async () => {
     });
     db.close();
 
-    return (s: string, idx: number = 0) => texts[s] && texts[s][idx] && texts[s][idx][currentLocale()] || s;
+    return (s: string, idx: number = 0) =>
+        texts[s] && (
+            texts[s][idx] && texts[s][idx][currentLocale()] ||
+            texts[s][0] && texts[s][0][currentLocale()]
+        ) || s;
 }
 
 const lang = await init();

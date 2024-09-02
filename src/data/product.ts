@@ -3,7 +3,7 @@
  **/
 import type {SortDirection} from 'mongodb';
 import config from '@/config';
-import type {_Id, TProduct, TProductImage, TProductItem} from './types';
+import type {_Id, TProduct, TProductImage, TProductItem, TVariant} from './types';
 import fn, {type Db, toId} from './db-conn';
 
 export const getProduct = fn(async (db: Db, id: _Id): Promise<TProduct | undefined> => {
@@ -50,6 +50,13 @@ export const getProduct = fn(async (db: Db, id: _Id): Promise<TProduct | undefin
             }
         }
     ]).toArray())[0];
+});
+
+export const getVariant = fn(async (db: Db, id: {productId: _Id, variantId: _Id}): Promise<TVariant | null> => {
+    return await db.collection<TVariant>('variants').findOne({
+        _id: toId(id.variantId),
+        product: toId(id.productId)
+    });
 });
 
 export const getDefaultImage =  fn(async (db: Db, id: _Id): Promise<TProductImage | undefined | null> => {
@@ -206,6 +213,33 @@ export const getStock = fn(async (db: Db, productId: _Id, variantId?: _Id) => {
         if (doc) return doc.stock;
     }
     return null;
+});
+
+export const updateStock = fn(async (db: Db, id: { productId: _Id, variantId?: _Id}, newStock: number) => {
+    if(id.variantId){
+        await db.collection('variants').updateOne(
+            {
+                _id: toId(id.variantId)
+            }, 
+            {
+                $set: {
+                    stock: newStock
+                }
+            }
+        );
+    }
+    else {
+        await db.collection('products').updateOne(
+            {
+                _id: toId(id.productId)
+            },
+            {
+                $set: {
+                    productStock: newStock
+                }
+            }
+        );
+    }
 });
 
 export const productExists = fn(async (db: Db, productId: _Id) => {

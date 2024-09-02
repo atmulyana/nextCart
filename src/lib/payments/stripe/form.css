@@ -1,0 +1,6 @@
+/** 
+ * https://github.com/atmulyana/nextCart
+ **/
+ .StripeElement {
+    @apply border border-solid rounded border-[--input-border-color] my-4 py-1.5 px-3;
+ }

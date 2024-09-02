@@ -3,7 +3,7 @@
  **/
 import type {NextAuthConfig, Session} from "next-auth";
 import {customAlphabet} from 'nanoid';
-import appCfg from '@/config';
+import sessionCfg from '@/config/session';
 
 const BASE64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 const nanoid = customAlphabet(BASE64_CHARS, 16);
@@ -24,11 +24,11 @@ export default {
         }
     },
     cookies: {
-        name: appCfg.session.paramName,
+        name: sessionCfg.paramName,
     },
     session: {
         strategy: 'jwt',
-        maxAge: appCfg.session.maxAge ?? 30 * 24 * 60 * 60,
+        maxAge: sessionCfg.maxAge ?? 30 * 24 * 60 * 60,
     },
     secret: 'abc',
     callbacks: {

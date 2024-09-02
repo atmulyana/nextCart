@@ -1,7 +1,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {TCart, TCartItem} from '@/data/types';
+import type {TCartItem} from '@/data/types';
 import lang from '@/data/lang';
 import {cartTrans, deleteCart, deleteCartItem, getCart, upsertCart, upsertCartItem} from '@/data/cart';
 import {getSession} from '@/data/session';
@@ -9,7 +9,7 @@ import {checkStock, updateTotalCart} from '@/lib/cart';
 import {ResponseMessage} from '@/lib/common';
 import {createPostHandler} from '@/lib/routeHandler';
 
-export const POST = createPostHandler(async (formData, redirect, isFromMobile) => {
+export const POST = createPostHandler(async (formData) => {
     return await cartTrans(async () => {
         const cartWithId = await getCart();
         if (!cartWithId) {
@@ -31,31 +31,22 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         const productComment = formData.getString('productComment');
         let oriCartItem: TCartItem | undefined;
         
-        const response = (message: string, {
-            status = 400,
-            totalCartItems = cart.totalCartItems,
-            _cart = cart,
-        }: {
-            status?: number,
-            totalCartItems?: number,
-            _cart?: TCart,
-        } = {}) => {
+        const response = (message: string, status = 400) => {
             if (status != 200 && oriCartItem && cartItemId) {
-                _cart.items[cartItemId] = oriCartItem;
+                cart.items[cartItemId] = oriCartItem;
             } 
             return ResponseMessage(
                 message,
                 {
                     status,
-                    totalCartItems,
-                    cart: isFromMobile ? null : _cart,
+                    cart: Object.keys(cart.items).length < 1 ? null : cart,
                 }
             );
         }
         
         const cartItem = cart.items[cartItemId];
         if (!cartItem) {
-            return response(lang('There was an error updating the cart'), {status: 404});
+            return response(lang('There was an error updating the cart'), 404);
         }
         oriCartItem = {...cartItem};
         
@@ -74,8 +65,8 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
                 await upsertCart(cartId, cart);
             }
             return typeof(cartItem.title) == 'undefined'
-                ? response(lang('The product has been deleted'), {status: 410})
-                : response('', {status: 200});
+                ? response(lang('The product has been deleted'), 410)
+                : response('', 200);
         }
 
         quantity = Math.floor(quantity);
@@ -90,7 +81,7 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         await updateTotalCart(cart, session);
         await upsertCart(cartId, cart);
         await upsertCartItem(cartId, cartItemId, cartItem);
-        return response('', {status: 200});
+        return response('', 200);
     },
     formData.has('homeAfterClear'));
 });

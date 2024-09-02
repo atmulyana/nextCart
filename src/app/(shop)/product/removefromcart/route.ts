@@ -1,7 +1,6 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {NotificationParam} from '@/components/Notification';
 import type {TCart} from '@/data/types';
 import lang from '@/data/lang';
 import {type ObjectId} from '@/data/db-conn';
@@ -11,7 +10,7 @@ import {updateTotalCart} from '@/lib/cart';
 import {ResponseMessage} from '@/lib/common';
 import {createPostHandler} from '@/lib/routeHandler';
 
-export const POST = createPostHandler(async (formData, redirect, isFromMobile) => {
+export const POST = createPostHandler(async (formData) => {
     return await cartTrans(async () => {
         const cartWithId = await getCart();
         const session = await getSession();
@@ -19,31 +18,18 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         if (cartWithId) {
             ({_id: cartId, ...cart} = cartWithId);
         }
-        if (!cartId) return; //impossible
-       
-        const response = (message: string, {
-            status = 400,
-            totalCartItems = cart?.totalCartItems ?? 0,
-            cart: _cart = cart,
-            messageType = 'danger',
-        }: {
-            status?: number,
-            totalCartItems?: number,
-            cart?: TCart,
-            messageType?: NotificationParam['type'],
-        } = {}) => ResponseMessage(
+
+        const response = (message: string, status: number = 400, isEmpty: boolean = false) => ResponseMessage(
             message,
             {
                 status,
-                totalCartItems,
-                cart: isFromMobile ? null : _cart,
-                messageType
+                cart: isEmpty ? null : (cart ?? null),
             }
         );
         
         const cartItemId = formData.getString('cartId');
         // Check for item in cart
-        if (!cart || !cart.items || !cart.items[cartItemId]) {
+        if (!cartId || !cart || !cart.items || !cart.items[cartItemId]) {
             return response(lang('Product not found in cart'));
         }
 
@@ -55,11 +41,11 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         // If no item in cart, discard cart
         if (Object.keys(cart.items).length < 1) {
             await deleteCart(cartId);
-            return response(lang('Cart successfully emptied'), {status: 200, messageType: 'success'});
+            return response(lang('Cart successfully emptied'), 200, true);
         }
         
         await upsertCart(cartId, cart);
-        return response('', {status: 200});
+        return response('', 200);
     },
     formData.has('homeAfterClear'));
 });

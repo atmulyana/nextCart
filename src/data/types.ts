@@ -65,6 +65,34 @@ export type TMenu = {
     order: number,
 }
 
+export type OrderStatus = 'Paid' | 'Declined' | 'Approved' | 'Approved - Processing' | 'Failed' | 'Completed' | 'Shipped' | 'Pending';
+export type TOrder = {
+    orderPaymentId: string,
+    orderPaymentGateway: string,
+    orderTotal: number,
+    orderShipping: number,
+    orderItemCount: number,
+    orderProductCount: number,
+    orderCustomer?: ObjectId,
+    orderEmail: string,
+    orderCompany?: string,
+    orderFirstname?: string,
+    orderLastname?: string,
+    orderAddr1?: string,
+    orderAddr2?: string,
+    orderCountry?: string,
+    orderState?: string,
+    orderPostcode?: string,
+    orderPhoneNumber?: string,
+    orderComment?: string,
+    orderStatus: OrderStatus,
+    orderDate: Date,
+    orderProducts: Record<string, TCartItem>,
+    orderType: 'Single' | 'Subscription',
+    productStockUpdated?: boolean,
+    [p: string]: any,
+}
+
 type TProductBase = {
     _id: ObjectId,
     productPermalink: string,

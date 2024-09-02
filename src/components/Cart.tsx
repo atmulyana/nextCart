@@ -5,7 +5,7 @@
 import type {TCart, TCartItem} from '@/data/types';
 import React from 'react';
 import Link from 'next/link';
-import {usePathname, useRouter} from 'next/navigation';
+import {usePathname} from 'next/navigation';
 import {currencySymbol, formatAmount} from '@/lib/common';
 import {clearCart, updateCartItem} from '@/app/actions';
 import FlexImage from './FlexImage';
@@ -78,10 +78,9 @@ export function CartForm({
     ...props
 }: Parameters<typeof Form>[0]) {
     const cart = useCart();
-    const router = useRouter();
     return <Form 
         {...props}
-        loading={null}
+        loading={loading === true ? undefined : null}
         onSubmitted={({data}) => cart.update(data?.cart)}
     >
         {children}

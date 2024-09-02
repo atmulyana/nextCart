@@ -89,13 +89,14 @@ export function fnMeta<P extends GetParam = {}, S extends GetParam = {}>(
     }
 } 
 
-export function ResponseMessage(message: string, params?: (number | {status: number, [p: string]: any})) {
+export function ResponseMessage(message: string, params?: (number | {status?: number, [p: string]: any})) {
     let status: number = 500,
-        props : Object = {};
+        props : {[p: string]: any} = {};
     if (typeof(params) == 'number') status = params;
     else if (typeof(params) == 'object') {
-        ({status, ...props} = params);
+        ({status = 500, ...props} = params);
     }
+    if (message && status == 200 && !props.messageType) props.messageType = 'success';
     return Response.json({message, ...props}, {status});
 }
 
@@ -122,3 +123,12 @@ export function fixTags(html: string) {
 export function snip(text: string | null | undefined) {
     return text && text.length > 155 ? `${text.substring(0, 155)}...` : '';
 }
+
+const reVarNameHolders = /\$\{([_a-zA-Z][_a-zA-Z0-9]*)\}/g;
+export const str = (template: string | null | undefined, params: {[name: string]: any}): string | null | undefined => template &&
+    template.replace(reVarNameHolders, function(_, p1: string): string {
+        let value = params[p1];
+        if (typeof(value) == 'function') return value() + '';
+        if (value !== null && value !== undefined) return value + '';
+        return '';
+    });

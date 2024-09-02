@@ -1,7 +1,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {TCart, TCartItem, TVariant} from '@/data/types';
+import type {TCartItem, TVariant} from '@/data/types';
 import lang from '@/data/lang';
 import {cartTrans, getCart, upsertCart, upsertCartItem} from '@/data/cart';
 import {getProduct} from '@/data/product';
@@ -10,7 +10,7 @@ import {checkStock, updateTotalCart} from '@/lib/cart';
 import {ResponseMessage} from '@/lib/common';
 import {createPostHandler} from '@/lib/routeHandler';
 
-export const POST = createPostHandler(async (formData, redirect, isFromMobile) => {
+export const POST = createPostHandler(async (formData) => {
     return await cartTrans(async () => {
         const cartWithId = await getCart();
         const session = await getSession();
@@ -33,28 +33,17 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         const productComment = formData.getString('productComment');
         let oriCartItem: TCartItem | undefined;
 
-        const response = (message: string, {
-            status = 400,
-            totalCartItems = cart.totalCartItems,
-            _cart = cart,
-            ...props
-        } : {
-            status?: number,
-            totalCartItems?: number,
-            _cart?: TCart,
-            [p: string]: any,
-        } = {}) => {
+        const response = (message: string, status = 400, props?: {[p: string]: any}) => {
             if (status != 200) {
-                if (oriCartItem) _cart.items[cartItemId] = oriCartItem;
-                else delete _cart.items[cartItemId];
+                if (oriCartItem) cart.items[cartItemId] = oriCartItem;
+                else delete cart.items[cartItemId];
             }
 
             return ResponseMessage(
                 message,
                 {
                     status,
-                    totalCartItems,
-                    cart: isFromMobile ? null : _cart,
+                    cart,
                     ...props
                 }
             );
@@ -62,7 +51,7 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
 
         const product = await getProduct(productId);
         if (!product) {
-            return response(lang('Error updating cart. Product not found.'), {status: 404});
+            return response(lang('Error updating cart. Product not found.'), 404);
         }
         if (product.productPublished === false) {
             return response(lang('Error updating cart. Product not published.'));
@@ -71,7 +60,7 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         if (productVariant) {
             variant = product.variants?.find(variant => variant._id.toString() == productVariant);
             if (!variant) {
-                return response(lang('Error updating cart. Variant not found.'), {status: 404});
+                return response(lang('Error updating cart. Variant not found.'), 404);
             }
         }
         
@@ -117,14 +106,7 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         const cartId = _cartId || session._id;
         await upsertCart(cartId, cart);
         await upsertCartItem(cartId, cartItemId, cartItem);
-        return response(
-            lang('Cart successfully updated'),
-            {
-                status: 200,
-                cartId,
-                messageType: 'success',
-            }
-        );
+        return response(lang('Cart successfully updated'), 200, {cartId});
     },
     formData.has('homeAfterClear'));
 });

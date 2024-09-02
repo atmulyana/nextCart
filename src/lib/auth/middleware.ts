@@ -7,6 +7,7 @@ import {Auth, raw, skipCSRFCheck, createActionURL} from "@auth/core";
 import type {ResponseInternal} from '@auth/core/types';
 import NextAuth, {type Session} from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import {newUrl} from '@/lib/payments/routes';
 import cfg from './config';
 import {toRedirect} from "./access";
 import {fetchMessage, getUrl, setRedirectMessage} from "./common";
@@ -104,8 +105,12 @@ export const middleware = auth(async (request) => {
 
     const url = getUrl(request);
     fetchMessage(auth.id, request);
-
-    const redirect = toRedirect(url.pathname, auth);
+    const paymentUrl = await newUrl(request);
+    
+    const redirect = toRedirect(
+        paymentUrl ? '/checkout/payment' : url.pathname,
+        auth
+    );
     if (redirect) {
         const message = redirect.message?.trim(),
               redirectUrl = new URL(redirect.path, url);
@@ -116,10 +121,13 @@ export const middleware = auth(async (request) => {
         return response;
     }
     
-    if (request.headers.get('X-Requested-With') == 'expressCartMobile' && request.method == 'GET' && !url.pathname.endsWith('/data'))
+    if (paymentUrl) {
+        url.pathname = paymentUrl;
+    }
+    else if (request.headers.get('X-Requested-With') == 'expressCartMobile' && request.method == 'GET' && !url.pathname.endsWith('/data')) {
         url.pathname += '/data';
+    }
     const response = NextResponse.rewrite(url.toString(), {request});
-    //const response = NextResponse.next({request});
     setResponseCookies(response, cookies);
     return response;
 });

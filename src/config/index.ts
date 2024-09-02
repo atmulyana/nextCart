@@ -2,34 +2,25 @@
  * https://github.com/atmulyana/nextCart
  **/
 import 'server-only';
+import cfg from './config';
 import clientUsable, {type UsableOnClientConfig} from './usable-on-client';
+import emailCfg from './email';
+import sessionCfg from './session';
 
 export type SessionConfig = {
     paramName: string,
     maxAge: number | null,
 };
 
-export type Config = {
-    cartDescription: string,
-    cartLogo: string,
-    productOrderBy: "date" | "title",
-    productOrder: "ascending" | "descending",
-    footer: {
-        html: string | null,
-        shownForCustomer: boolean,
-        shownForAdmin: boolean,
-    },
-    databaseConnectionString: string,
-    enableLanguages: boolean,
-    availableLanguages: Record<string, string>,
-    defaultLocale: string,
-    twitterHandle: string,
-    facebookAppId: string,
-    session: SessionConfig,
-} & UsableOnClientConfig;
+export type Config = typeof cfg &
+    {email: typeof emailCfg} &
+    UsableOnClientConfig &
+    {session: typeof sessionCfg};
 
 const config: Config = {
-    ...require('./settings.json'),
-    ...clientUsable
+    ...cfg,
+    email: emailCfg,
+    ...clientUsable,
+    session: sessionCfg,
 };
 export default config;

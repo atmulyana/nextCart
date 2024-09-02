@@ -77,10 +77,12 @@ export async function redirectWithMessage(
 ) {
     const session = await getSessionToken();
     if (!session) return;
+    if (url instanceof URL) url = url.pathname;
+    else if (!url.startsWith('/')) throw "Invalid URL: only absolute path accepted without protocol and hostname.";
     setRedirectMessage(session.id, message);
-    revalidatePath((url instanceof URL) ? url.pathname : url);
+    revalidatePath(url);
     cookies().set('x-revalidated-at', new Date().toISOString());
-    redirect(url.toString(), RedirectType.replace);
+    redirect(url, RedirectType.replace);
 }
 
 export async function getSessionMessage(request?: Request) {

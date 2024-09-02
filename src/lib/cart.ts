@@ -5,7 +5,7 @@ import type {TCart, TCartItem} from '@/data/types';
 import config from '@/config/usable-on-client';
 import modules, {type TCustomerAddress} from './modules';
 
-export function updateTotalCart(cart: TCart, custmerOrigin: TCustomerAddress) {
+export async function updateTotalCart(cart: TCart, custmerOrigin: TCustomerAddress) {
     cart.totalCartAmount = 0;
     cart.totalCartItems = 0;
     cart.totalCartProducts = 0;
@@ -26,7 +26,7 @@ export function updateTotalCart(cart: TCart, custmerOrigin: TCustomerAddress) {
     if (modules.shipping) modules.shipping.calculateShipping(cart, custmerOrigin);
 
     // Calculate discount if enabled
-    if(modules.discount) modules.discount.calculateDiscount(cart);
+    if(modules.discount) await modules.discount.calculateDiscount(cart);
 
     // Calculate our total amount removing discount and adding shipping
     cart.totalCartAmount = cart.totalCartNetAmount - cart.totalCartDiscount + cart.totalCartShipping;

@@ -1,6 +1,6 @@
 {
   "name": "next-cart",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-email/render": "1.0.0",
+    "@stripe/stripe-js": "^4.2.0",
     "badwords-list": "^1.0.0",
     "bcryptjs": "^2.4.3",
     "countries-list": "^3.1.0",
@@ -19,20 +21,23 @@
     "nanoid": "^5.0.5",
     "next": "^14.1.0",
     "next-auth": "^5.0.0-beta.18",
+    "nodemailer": "^6.9.14",
     "numeral": "^2.0.6",
     "react": "^18",
     "react-dom": "^18",
     "sqlite3": "^5.1.6",
     "string-strip-html": "^13.4.6",
+    "stripe": "^16.6.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
+    "@types/node": "^22.1.0",
+    "@types/nodemailer": "^6.4.15",
     "@types/numeral": "^2.0.5",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "autoprefixer": "^10.4.17",
-    "eslint": "^9.7.0",
+    "eslint": "^8.57.0",
     "eslint-config-next": "^14.1.0",
     "file-loader": "^6.2.0",
     "postcss": "^8.4.35",

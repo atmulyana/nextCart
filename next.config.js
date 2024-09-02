@@ -14,6 +14,7 @@ const nextConfig = {
             );
         }
         config.experiments.topLevelAwait = true;
+        //config.node = {global: true};
         return config;
     },
 
@@ -42,6 +43,9 @@ const nextConfig = {
         staleTimes: {
             dynamic: 0,
         },
+        serverComponentsExternalPackages: [
+            '@react-email/render',
+        ],
     },
 }
 
