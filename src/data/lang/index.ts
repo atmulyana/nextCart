@@ -3,21 +3,12 @@
  **/
 import 'server-only';
 import {access, constants} from 'node:fs';
-import {cookies} from 'next/headers';
 //import {cache} from 'react';
 import sqlite from 'sqlite3';
 const serverRoot = require('next-server-root-dir');
+import currentLocale from '@/lib/currentLocale/server';
 import config from '@/config';
 let {defaultLocale} = config;
-
-export function currentLocale(): string {
-    try {
-        return cookies().get('locale')?.value ?? defaultLocale;
-    }
-    catch {
-        return defaultLocale;
-    }
-}
 
 type Locale = {
     idx: any,
@@ -85,10 +76,10 @@ const init = async () => {
     });
     db.close();
 
-    return (s: string, idx: number = 0) =>
+    return (s: string, idx: number = 0, locale: string = currentLocale()) =>
         texts[s] && (
-            texts[s][idx] && texts[s][idx][currentLocale()] ||
-            texts[s][0] && texts[s][0][currentLocale()]
+            texts[s][idx] && texts[s][idx][locale] ||
+            texts[s][0] && texts[s][0][locale]
         ) || s;
 }
 

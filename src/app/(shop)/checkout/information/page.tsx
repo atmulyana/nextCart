@@ -54,34 +54,34 @@ export default async function CheckoutInformation() {
             </FormWithSchema>
         )}
 
-        <FormWithSchema 
-            id='customerInfoForm'
-            action={saveCheckoutInfo}
-            className='block'
-            onSubmitted={formSubmitted}
-            schemaName='checkoutInfo'
-        >
-            <input type='hidden' name='customerId' value={session.customerId?.toHexString() || ''} />
-            <CustomerDataForm data={session} />
-            <div className='flex -mx-4'>
-                <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-                    <TextArea name='orderComment' value={cart?.orderComment ?? ''} placeholder={lang("Order comment")} /> 
+            <FormWithSchema 
+                id='customerInfoForm'
+                action={saveCheckoutInfo}
+                className='block'
+                onSubmitted={formSubmitted}
+                schemaName='checkoutInfo'
+            >
+                <input type='hidden' name='customerId' value={session.customerId?.toHexString() || ''} />
+                <CustomerDataForm data={session} />
+                <div className='flex -mx-4'>
+                    <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
+                        <TextArea name='orderComment' value={cart?.orderComment ?? ''} placeholder={lang("Order comment")} /> 
+                    </div>
                 </div>
-            </div>
-            
-            {!session.customerPresent && <div className='flex flex-wrap -mx-4'>
-                <div className='basis-full grow-0 shrink-0 mb-4 px-4 text-gray-500'>
-                    {lang('Enter a password to create an account for next time')}
-                </div>
-                <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4'>
-                    <Input type='password' name='password' placeholder={lang('Password')} />
-                </div>
-                <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4 flex items-center'>
-                    <Input name='createAccount' id="createAccountCheckbox" type='checkbox' value='1' onChange={createAccountCheckboxChange} />
-                    <label htmlFor='createAccountCheckbox' className='ml-1'>{lang('Create account')}</label>
-                </div>
-            </div>}
-        </FormWithSchema>
+                
+                {!session.customerPresent && <div className='flex flex-wrap -mx-4'>
+                    <div className='basis-full grow-0 shrink-0 mb-4 px-4 text-gray-500'>
+                        {lang('Enter a password to create an account for next time')}
+                    </div>
+                    <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4'>
+                        <Input type='password' name='password' placeholder={lang('Password')} />
+                    </div>
+                    <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4 flex items-center'>
+                        <Input name='createAccount' id="createAccountCheckbox" type='checkbox' value='1' onChange={createAccountCheckboxChange} />
+                        <label htmlFor='createAccountCheckbox' className='ml-1'>{lang('Create account')}</label>
+                    </div>
+                </div>}
+            </FormWithSchema>
         </div>
         <div className='checkout-buttons'>
             <Link href='/checkout/cart' className='btn btn-primary'>{lang('Return to cart')}</Link>

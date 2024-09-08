@@ -56,24 +56,16 @@ const $$darkMode: {
     setTheme(isDark = $$darkMode.isDark) {
         var root = document.querySelector(':root') as HTMLElement;
         if (!root) return ;
-        var fgColor = root.style.getPropertyValue('--fg-color');
+        var isCurrentDark = root.classList.contains('dark');
         
         if (isDark) {
             root.classList.add('dark');
-            root.style.setProperty('--fg-color', 'white');
-            root.style.setProperty('--bg-color', 'black');
-            root.style.setProperty('--input-text-color', '#cbd5e1');
-            root.style.setProperty('--input-border-color', '#cbd5e1');
         }
         else {
             root.classList.remove('dark');
-            root.style.setProperty('--fg-color', 'black');
-            root.style.setProperty('--bg-color', 'white');
-            root.style.setProperty('--input-text-color', '#475569');
-            root.style.setProperty('--input-border-color', '#cbd5e1');
         }
 
-        if (root.style.getPropertyValue('--fg-color') !== fgColor) {
+        if (isCurrentDark != isDark) {
             for (var listener of changeListeners) listener();
         }
     }

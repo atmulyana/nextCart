@@ -2,7 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 const bcrypt = require('bcryptjs');
-import type {TCustomer, TSessionCustomer} from '@/data/types';
+import type {TCustomer, TSessionCustomer, WithoutId} from '@/data/types';
 import {dbTrans} from '@/data/db-conn';
 import {createCustomer} from '@/data/customer';
 import {setCustomerSession} from '@/data/session';
@@ -12,7 +12,7 @@ import {updateSessionToken} from '@/lib/auth';
 
 export const POST = createPostHandler(async (formData, redirect, isFromMobile) => {
     return await dbTrans(async () => {
-        const customer: Omit<TCustomer, '_id'> = {
+        const customer: WithoutId<TCustomer> = {
             email: formData.getString('email'),
             company: formData.getString('company'),
             firstName: formData.getString('firstName'),
@@ -25,7 +25,7 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
             phone: formData.getString('phone'),
             password: bcrypt.hashSync(formData.getString('password', false), 10),
         }
-        const sessObj: Omit<TSessionCustomer, '_id'> = {
+        const sessObj: WithoutId<TSessionCustomer> = {
             customerEmail: customer.email,
             customerCompany: customer.company,
             customerFirstname: customer.firstName,

@@ -1,9 +1,9 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {Binary, ObjectId, WithId} from 'mongodb';
+import type {Binary, ObjectId, WithId, WithoutId} from 'mongodb';
 
-export type {WithId};
+export type {WithId, WithoutId};
 export type _Id = string | ObjectId;
 
 export type TCart = {
@@ -67,6 +67,7 @@ export type TMenu = {
 
 export type OrderStatus = 'Paid' | 'Declined' | 'Approved' | 'Approved - Processing' | 'Failed' | 'Completed' | 'Shipped' | 'Pending';
 export type TOrder = {
+    _id: _Id,
     orderPaymentId: string,
     orderPaymentGateway: string,
     orderTotal: number,

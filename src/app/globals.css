@@ -6,20 +6,25 @@
 @tailwind utilities;
 
 :root {
+    --fg-color: black;
+    --bg-color: white;
     --font-size: 16px;
     --line-height: 1.5;
     --color-danger: #f05252; /* red-500 */
     --color-success: #0e9f6e;  /* green-500 */
     --color-warning: #c27803;  /* yellow-500 */
+    --input-text-color: #475569;
+    --input-border-color: #475569;
     font-size: var(--font-size);
 }
-
-/*:root {
-    --fg-color: black;
-    --bg-color: white;
+:root.dark {
+    --fg-color: white;
+    --bg-color: black;
+    --input-text-color: #cbd5e1;
+    --input-border-color: #cbd5e1;
 }
 
-@media (prefers-color-scheme: dark) {
+/*@media (prefers-color-scheme: dark) {
     :root {
         --fg-color: white;
         --bg-color: black;
@@ -42,6 +47,11 @@
             text-base text-center align-middle;
         height: calc(1.5rem /*line-height*/ + .75rem /*padding*/ + 2px /*border*/);
     }
+    .btn-sm {
+        @apply px-2 py-1 text-sm;
+        border-radius: .2rem;
+        height: calc(1.25rem /*line-height*/ + .5rem /*padding*/ + 2px /*border*/);
+    }
     .btn-primary {
         @apply bg-[--fg-color] border-[--fg-color] text-[--bg-color];
     }
@@ -63,27 +73,23 @@
     .btn-outline-warning {
         @apply text-[--color-warning]  border-[--color-warning] hover:text-white hover:bg-[--color-warning];
     }
-    button:disabled {
-        @apply opacity-60;
-    }
-    button:not(:disabled) {
-        cursor: pointer;
-    }
     button[data-testid^="carousel-"] {
         @apply !p-0 !h-auto !w-auto;
     }
     button[data-testid="carousel-indicator"] {
         @apply !h-3 !w-3;
     }
-
     a {
         text-decoration: none;
     }
     a[href]:not(.btn):hover {
         text-decoration: underline;
     }
-    a.disabled {
+    button:disabled, a.disabled {
         @apply opacity-60 pointer-events-none;
+    }
+    button:not(:disabled) {
+        cursor: pointer;
     }
 
     input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=image]):not([type=radio]):not([type=range]):not([type=reset]):not([type=submit]),
@@ -184,14 +190,13 @@
     }
 
     .bordered {
-        @apply border border-[rgba(0,0,0,.25)] dark:border-[rgba(255,255,255,.25)] rounded p-5 my-4;
+        @apply border border-black/25 dark:border-white/25 rounded p-5 my-4;
     }
     ul.bordered {
         @apply flex flex-col border-0 rounded-none p-0;
     }
     ul.bordered > li {
-        @apply block border [&:not(:first-child)]:border-t-0 border-[rgba(0,0,0,.25)] dark:border-[rgba(255,255,255,.25)]
-            first:rounded-t last:rounded-b px-5 py-3;
+        @apply block border [&:not(:first-child)]:border-t-0 border-black/25 dark:border-white/25 first:rounded-t last:rounded-b px-5 py-3;
     }
 
     .checkout-left-pane {

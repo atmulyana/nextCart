@@ -1,3 +1,4 @@
+'use client';
 /** 
  * https://github.com/atmulyana/nextCart
  **/

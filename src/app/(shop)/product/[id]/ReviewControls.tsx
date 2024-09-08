@@ -10,7 +10,7 @@ import {useSession} from '@/components/SessionContext';
 import {useModal} from '@/components/Modal';
 import type {NotificationParam} from '@/components/Notification';
 import Icon from '@/components/Icon';
-import modules from '@/lib/modules';
+import type {TModules} from '@/lib/modules';
 import type {Return} from './data/route';
 
 type TResponse = {
@@ -21,6 +21,7 @@ type TResponse = {
 const ReviewControls = React.memo(function ReviewControls({
     productId,
     data,
+    reviewModule,
     labels: {
         addReview,
         openReviews,
@@ -37,6 +38,7 @@ const ReviewControls = React.memo(function ReviewControls({
 }: {
     productId: string,
     data?: Return['reviews'],
+    reviewModule: TModules['review'],
     labels: {
         addReview: string,
         openReviews: string,
@@ -61,8 +63,8 @@ const ReviewControls = React.memo(function ReviewControls({
     const session = useSession();
     const openModal = useModal();
 
-    if (!modules.review) return null;
-    const {RatingStars, Reviews, ReviewForm} = modules.review;
+    if (!reviewModule) return null;
+    const {RatingStars, Reviews, ReviewForm} = reviewModule;
 
     React.useEffect(() => {
         const _reviewsCont = document.createElement('div');

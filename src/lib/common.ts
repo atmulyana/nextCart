@@ -132,3 +132,16 @@ export const str = (template: string | null | undefined, params: {[name: string]
         if (value !== null && value !== undefined) return value + '';
         return '';
     });
+
+const statusColors: {[status: string]: string} = {
+    Paid: 'success',
+    Approved: 'success',
+    'Approved - Processing': 'success',
+    Failed: 'danger',
+    Completed: 'success',
+    Shipped: 'success',
+    Pending: 'warning',
+};
+export function getStatusColor(status: string) {
+    return statusColors[status] || 'danger';
+}

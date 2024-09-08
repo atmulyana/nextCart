@@ -23,7 +23,7 @@ export default async function Payment({params: {orderId}}: {params: {orderId: st
     return <Template>{module.PaymentComplete ? (
         <module.PaymentComplete order={order} />
     ) : (    
-        <div className='flex flex-col shrink-0 basis-full md:basis-5/6 mx-auto text-center'>
+        <div className='shrink-0 basis-full md:basis-5/6 mx-auto text-center pt-14'>
             {order.orderStatus == 'Paid' ?
                 <h2 className="text-[--color-success]">{lang('Your payment has been successfully processed')}</h2> :
              order.orderStatus == 'Pending' ?
@@ -41,7 +41,7 @@ export default async function Payment({params: {orderId}}: {params: {orderId: st
             {(order.orderStatus === 'Paid' || order.orderStatus === 'Pending') &&
                <h5 className="text-[--color-warning]">{lang('Please retain the details above as a reference of payment')}</h5>
             }
-            <Link href='/' className='btn btn-outline-warning self-center'>{lang('Home')}</Link>
+            <Link href='/' className='btn btn-outline-warning'>{lang('Home')}</Link>
         </div>
     )}</Template>;
 }

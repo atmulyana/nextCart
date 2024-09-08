@@ -2,7 +2,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {TMenu} from '@/data/types'
+import type {TMenu, WithoutId} from '@/data/types'
 import React from "react";
 import {createPortal} from 'react-dom';
 import Link from "next/link";
@@ -26,7 +26,7 @@ export default React.memo(function FrontMenuBar({
 
     if (pathname == '/admin' || pathname.startsWith('/admin/')) return null;
 
-    const menuItems: Omit<TMenu, '_id'>[] = [
+    const menuItems: WithoutId<TMenu>[] = [
         {
             title: homeMenuTitle,
             link: '/',

@@ -24,6 +24,10 @@ function checkoutEmptyCart(auth: Session | null) {
     }
 }
 
+/**
+ * The customer needs to log in (`auth.customer.id` exists)
+ * or to fill the customer information in 'Checkout > Informtion' form (`auth.customer.id` is possibly defined or blank)
+ */
 function checkoutCustomerMustExist(auth: Session | null) {
     if (!auth?.customerPresent) return {
         path: '/checkout/information',
@@ -32,11 +36,11 @@ function checkoutCustomerMustExist(auth: Session | null) {
 }
 
 function customerNeedsLogin(auth: Session | null) {
-    if (!auth?.customerPresent) return '/customer/login';
+    if (!auth?.customer?.id) return '/customer/login';
 }
 
 function customerHasLoggedIn(auth: Session | null) {
-    if (auth?.customerPresent) return '/customer/account';
+    if (auth?.customer?.id) return '/customer/account';
 }
 
 function adminNeedsLogin(auth: Session | null) {

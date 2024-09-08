@@ -5,7 +5,7 @@ import React from 'react';
 import Icon from '@/components/Icon';
 import DropDown from '@/components/DropDown';
 import config  from '@/config';
-import {currentLocale} from '@/data/lang';
+import currentLocale from '@/lib/currentLocale/server';
 
 export default function LanguangeMenu() {
     const curLocale = currentLocale();

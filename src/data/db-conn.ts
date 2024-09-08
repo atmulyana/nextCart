@@ -4,6 +4,7 @@
 import 'server-only';
 import {cache} from 'react';
 import {
+    type AggregationCursor,
     type BulkWriteOptions,
     type ClientSession,
     type Collection,
@@ -491,3 +492,25 @@ else {
     };
 }
 export {dbTrans};
+
+
+export async function getPagedList<T>(
+    query: AggregationCursor<T>,
+    page: number = 1,
+    numberOfItems: number = 5
+) {
+    let skip = 0;
+    if (page > 1) {
+        skip = (page - 1) * numberOfItems;
+    }
+
+    const list = await query.skip(skip).limit(numberOfItems + 1).toArray();
+    const isNext = list.length > numberOfItems;
+    if (isNext) list.length = numberOfItems;
+
+    return {
+        list,
+        isNext,
+        page,
+    };
+}

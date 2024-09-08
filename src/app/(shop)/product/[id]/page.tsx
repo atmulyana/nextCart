@@ -14,6 +14,7 @@ import SubmitButton from '@/components/SubmitButton';
 import SubmittedTextArea from '@/components/SubmittedTextArea';
 import Template from '@/partials/Template';
 import {currencySymbol, fixTags, fnMeta, formatAmount, snip} from '@/lib/common';
+import modules from '@/lib/modules';
 import {addCartItem} from '@/app/actions';
 import {GET} from './data/route';
 import ImageSlider from './ImageSlider';
@@ -114,6 +115,7 @@ export default async function Product(props: Props) {
                     <ReviewControls
                         productId={productId}
                         data={reviews}
+                        reviewModule={modules.review}
                         labels={{
                             addReview: lang('Add review'),
                             openReviews: lang('Reviews'),

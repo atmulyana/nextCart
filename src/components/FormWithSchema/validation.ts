@@ -5,7 +5,11 @@
 import lang from '@/data/lang';
 import {mergeData} from '@/lib/data-sanitize';
 import {getSchema, getSchemaProps as _getSchemaProps, type InputProps, Schema} from '@/lib/schema';
-    
+
+export async function initValidationActions() {
+    //For bundling
+}
+
 export async function validate(schemaName: string, formData: FormData, action: (formData: FormData) => any) {
     let schema!: Schema;
     try {

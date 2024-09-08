@@ -6,7 +6,6 @@ import {toId} from '@/data/db-conn';
 import type {TReviewList} from '@/lib/modules/review-basic/data';
 import {getReviews} from '@/lib/modules/review-basic/data';
 import {isIndexNumber} from '@/lib/common';
-import {timeAgo} from '@/lib/datetime';
 import {createGetHandler, type HandlerParams} from '@/lib/routeHandler';
 
 export const GET = createGetHandler(async ({
@@ -22,8 +21,5 @@ export const GET = createGetHandler(async ({
     const productId = toId(id);
     if (productId) reviews = await getReviews(productId, pageIdx);
 
-    if (Array.isArray(reviews)) {
-        for (let i = 0; (reviews[i].timeAgo = timeAgo(reviews[i].date), i < reviews.length); i++);
-    }
     return reviews;
 });

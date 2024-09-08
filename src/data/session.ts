@@ -2,7 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import {TSession} from '@/data/types';
-import type {TSessionBasic, TSessionCustomer, TSessionUser} from '@/data/types';
+import type {TSessionBasic, TSessionCustomer, TSessionUser, WithoutId} from '@/data/types';
 import {getSessionToken} from '@/lib/auth';
 import fn, {type Db, ObjectId} from './db-conn';
 
@@ -108,15 +108,33 @@ export const getSession = fn(async (db: Db) => {
     return new TSession();
 });
 
-export const setCustomerSession = fn(async (db: Db, data: ObjectId | Omit<TSessionCustomer, '_id'>) => {
+export const setCustomerSession = fn(async (db: Db, data: ObjectId | WithoutId<TSessionCustomer>) => {
     const sessionId = await getSessionId();
     if (sessionId) {
-        let $set: Omit<TSessionCustomer, '_id'> = {};
-        if (data instanceof ObjectId) $set.customerId = data;
+        let $set: WithoutId<TSessionCustomer> = {};
+        const updates: any[] = [];
+        if (data instanceof ObjectId) {
+            $set.customerId = data;
+            updates.push({
+                $unset: [
+                    "customerEmail",
+                    "customerCompany",
+                    "customerFirstname",
+                    "customerLastname",
+                    "customerAddress1",
+                    "customerAddress2",
+                    "customerCountry",
+                    "customerState",
+                    "customerPostcode",
+                    "customerPhone",
+                ]
+            });
+        }
         else $set = data;
+        updates.unshift({$set});
         const w = await db.collection<TSessionCustomer>('sessions').updateOne(
             {_id: sessionId},
-            {$set}
+            updates
         );
         return w.modifiedCount > 0;
     }

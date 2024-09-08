@@ -6,6 +6,7 @@ import './globals.css'
 import type {Metadata, Viewport} from 'next'
 import config from '@/config'
 import lang from '@/data/lang'
+import currentLocale from '@/lib/currentLocale/server'
 import Html from '@/components/Html';
 import {ModalContext} from '@/components/Modal'
 import {NotificationContext} from '@/components/Notification'
@@ -50,7 +51,7 @@ export default async function RootLayout({
 }) {
     await initActions()
     return (
-        <Html>
+        <Html locale={currentLocale()}>
             <head>
                 <meta httpEquiv="X-UA-Compatible" content="IE=edge"></meta>
                 {config.facebookAppId && <meta property="fb:app_id" content={config.facebookAppId} />}

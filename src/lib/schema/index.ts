@@ -291,16 +291,12 @@ export function getSchemaProps(schema: Schema) {
     return inputsProps;
 }
 
-const schemas: {
-    [name: string]: () => Promise<{default: Schema}>,
-} = {
-    'login': async () => await import('@/lib/schema/login'),
-    'review': async () => await import('@/lib/schema/review'),
-    'customerData': async () => await import('@/lib/schema/customerData'),
-    'checkoutInfo': async () => await import('@/lib/schema/checkoutInfo'),
-};
 export async function getSchema(name: string) {
-    const schema = (await schemas[name]()).default;
+    let schema: Schema | undefined;
+    try {
+        schema = (await import(/* webpackMode: "eager" */`@/lib/schema/${name}`)).default;
+    }
+    catch {}
     if (!(schema instanceof Schema)) throw 'Invalid schema name';
     return schema;
 }

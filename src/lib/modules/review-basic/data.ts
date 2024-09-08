@@ -2,8 +2,8 @@
  * https://github.com/atmulyana/nextCart
  **/
 import type {TCustomer} from '@/data/types';
-import fn, {type Db, type ObjectId, toId} from '@/data/db-conn';
-import {timeAgo} from '@/lib/datetime';
+import fn, {type Db, getPagedList, type ObjectId, toId} from '@/data/db-conn';
+import {timeAgo} from '@/lib/datetime/server';
 
 type TReviewBase = {
     title: string,
@@ -40,70 +40,61 @@ export type TReviewSummary = {
 export const getReviews = fn(async (
     db: Db,
     productId: ObjectId,
-    page: number = 1,
-    numberOfItems: number = 5
+    pageIdx: number = 1
 ) => {
-    let skip = 0;
-    if(page > 1){
-        skip = (page - 1) * numberOfItems;
-    }
-
-    let reviews = await db.collection("reviews").aggregate<TReviewList['reviews'][0]>([
-        {
-            $match: {product: productId}
-        },
-        {
-            $sort: {
-                date: -1,
+    const pList = await getPagedList(
+        db.collection("reviews").aggregate<TReviewList['reviews'][0]>([
+            {
+                $match: {product: productId}
             },
-        },
-        {
-            $skip: skip
-        },
-        {
-            $limit: numberOfItems + 1
-        },
-        {
-            $lookup: {
-                from: 'customers',
-                localField: 'customer',
-                foreignField: '_id',
-                as: 'customer'
-            }
-        },
-        {
-            $set: {
-                _id: {$toString: '$_id'},
-                customer: {
-                    $cond: {
-                        if: { $isArray: "$customer" },
-                        then: {
-                            $concat: [
-                                {$arrayElemAt: ["$customer.firstName", 0]},
-                                ' ',
-                                {$arrayElemAt: ["$customer.lastName", 0]}
-                            ]
-                        },
-                        else: {
-                            $cond: {
-                                if: {$eq: [{$type: '$customer'}, "string"]},
-                                then: "$customer",
-                                else: "$$REMOVE"
+            {
+                $sort: {
+                    date: -1,
+                },
+            },
+            {
+                $lookup: {
+                    from: 'customers',
+                    localField: 'customer',
+                    foreignField: '_id',
+                    as: 'customer'
+                }
+            },
+            {
+                $set: {
+                    _id: {$toString: '$_id'},
+                    customer: {
+                        $cond: {
+                            if: { $isArray: "$customer" },
+                            then: {
+                                $concat: [
+                                    {$arrayElemAt: ["$customer.firstName", 0]},
+                                    ' ',
+                                    {$arrayElemAt: ["$customer.lastName", 0]}
+                                ]
+                            },
+                            else: {
+                                $cond: {
+                                    if: {$eq: [{$type: '$customer'}, "string"]},
+                                    then: "$customer",
+                                    else: "$$REMOVE"
+                                }
                             }
                         }
                     }
                 }
-            }
-        },
-        {
-            $project: {
-                product: 0,
             },
-        }
-    ]).toArray();
+            {
+                $project: {
+                    product: 0,
+                },
+            }
+        ]),
+        pageIdx
+    );
+
+    const {list: reviews, isNext, page} = pList;
     
-    const isNext = reviews.length > numberOfItems;
-    if (isNext) reviews.length = numberOfItems;
     for (let i = 0; i < reviews.length; i++) {
         reviews[i].timeAgo = timeAgo(reviews[i].date);
     }

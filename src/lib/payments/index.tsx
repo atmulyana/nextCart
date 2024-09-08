@@ -3,7 +3,7 @@
  **/
 import React from 'react';
 import appCfg from '@/config';
-import type {_Id, TOrder} from '@/data/types';
+import type {_Id, TOrder, WithoutId} from '@/data/types';
 import {cartTrans, deleteCart, getCart} from '@/data/cart';
 import * as order from '@/data/order';
 import {getSession} from '@/data/session';
@@ -149,7 +149,7 @@ export async function createOrder(data: OrderData, approved?: boolean) {
         const cart = await getCart();
         if (!cart) throw 'The are no items in your cart. Please add some items before checking out';
         const session = await getSession();
-        const ord: TOrder = {
+        const ord: WithoutId<TOrder> = {
             orderTotal: cart.totalCartAmount,
             orderShipping: cart.totalCartShipping,
             orderItemCount: cart.totalCartItems,
