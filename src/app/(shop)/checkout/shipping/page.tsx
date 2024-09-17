@@ -8,7 +8,7 @@ import {getCart, upsertCart} from '@/data/cart';
 import {getSession} from '@/data/session';
 import {currencySymbol, formatAmount} from '@/lib/common';
 import {updateTotalCart} from '@/lib/cart';
-import Template from '@/partials/Template';
+import Template from '@/subview/partials/Template';
 
 export function generateMetadata() {
     return {

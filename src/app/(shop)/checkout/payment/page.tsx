@@ -9,7 +9,7 @@ import {getSession} from '@/data/session';
 import {currencySymbol, formatAmount} from '@/lib/common';
 import modules from '@/lib//modules';
 import {getForms} from '@/lib/payments';
-import Template from '@/partials/Template';
+import Template from '@/subview/partials/Template';
 import DiscountForm from './DiscountForm';
 
 export function generateMetadata() {
@@ -44,7 +44,7 @@ export default async function CheckoutPayment() {
                 </>}
             </div>
             {modules.discount && <DiscountForm applyTitle={lang('Apply')} discountTitle={lang('Discount code')} />}
-            <ul className='bordered'>
+            <ul className='bordered !mb-0'>
                 {forms.map((form, idx) => <li key={idx}>{form}</li>)}
             </ul>
         </div>

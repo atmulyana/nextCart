@@ -4,7 +4,7 @@
  **/
 import {redirect} from 'next/navigation';
 import lang from '@/data/lang';
-import {initValidationActions} from '@/components/FormWithSchema/validation';
+import {initValidationActions} from '@/subview/components/FormWithSchema/validation';
 import {POST as createAccount} from './(shop)/customer/create/route';
 import {POST as saveAccount} from './(shop)/customer/save/route';
 import {POST as loginCustomerAction} from './(shop)/customer/login_action/route';

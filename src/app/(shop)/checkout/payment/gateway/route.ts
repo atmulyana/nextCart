@@ -2,16 +2,16 @@
  * https://github.com/atmulyana/nextCart
  **/
 import {notFound} from "next/navigation";
-import {getModule} from '@/lib/payments/routes';
+import {getRouteModule} from '@/lib/payments';
 
-export async function GET(request: Request) {
-    const module = await getModule(request.headers);
+export async function GET(request: Request, context?: any) {
+    const module = await getRouteModule(request.headers);
     if (!module.GET) return notFound();
-    return module.GET(request);
+    return await module.GET(request, context);
 }
  
-export async function POST(request: Request) {
-    const module = await getModule(request.headers);
+export async function POST(request: Request, context?: any) {
+    const module = await getRouteModule(request.headers);
     if (!module.POST) return notFound();
-    return module.POST(request);
+    return await module.POST(request, context);
 }

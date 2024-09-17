@@ -21,7 +21,7 @@ export type FormComponent = React.ComponentType<Config>;
 export type PaymentComponent = React.ComponentType<{cart: TCart, order: TOrder, session: TSession}>;
 export type PaymentCompleteComponent = React.ComponentType<{order: TOrder}>;
 
-export type RouteHandler = (request: Request) => Promise<Response | undefined>;
+export type RouteHandler = (request: Request, context?: any) => Promise<Response | undefined>;
 export type RouteType = 'route' | 'page';
 export type GatewayRoutes = {
     [path: string]: RouteType | {type: RouteType, mapPath?: string},

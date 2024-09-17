@@ -312,7 +312,7 @@ export async function cartTrans(fn: () => Promise<Response | void>, homeAfterCle
                 }
             });
             if (homeAfterClear && chartItemCount < 1) {
-                await redirectWithMessage('/', 'The are no items in your cart. Please add some items before checking out.');
+                await redirectWithMessage('/', 'There are no items in your cart. Please add some items before checking out.');
             }
             return Response.json(data, {status: response.status});
         }

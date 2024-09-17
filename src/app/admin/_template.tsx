@@ -1,4 +1,4 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-export {default} from '@/partials/Template';
+export {default} from '@/subview/partials/Template';

@@ -7,10 +7,10 @@ import type {Metadata, Viewport} from 'next'
 import config from '@/config'
 import lang from '@/data/lang'
 import currentLocale from '@/lib/currentLocale/server'
-import Html from '@/components/Html';
-import {ModalContext} from '@/components/Modal'
-import {NotificationContext} from '@/components/Notification'
-import {SessionProvider} from '@/components/SessionContext'
+import Html from '@/subview/components/Html';
+import {ModalContext} from '@/subview/components/Modal'
+import {NotificationContext} from '@/subview/components/Notification'
+import {SessionProvider} from '@/subview/components/SessionContext'
 import {initActions} from './actions'
 
 const title = 'Shop'

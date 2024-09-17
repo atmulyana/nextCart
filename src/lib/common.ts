@@ -100,6 +100,33 @@ export function ResponseMessage(message: string, params?: (number | {status?: nu
     return Response.json({message, ...props}, {status});
 }
 
+export function safeUrl(url: any, option: {base?: string | URL, default?: string} | string = {}) {
+    let Url: URL | undefined;
+    if (typeof(option) == 'string') option = {default: option};
+
+    if (option.base == '__OUTSIDE__') {
+        if (url instanceof URL) Url = url;
+        else if (typeof(url) == 'string') Url = new URL(url);
+        if (!Url || Url.protocol != 'https:') throw 'Invalid safe URL: ' + url;
+        return Url;
+    }
+
+    const baseUrl = new URL(option.base || config.baseUrl || 'http://localhost');
+    const defaultUrl = new URL('/', baseUrl);
+    Url = typeof(url) == 'string' ? new URL(url.trim() || option.default?.trim() || '/', baseUrl) :
+          url instanceof URL      ? url :
+                                    defaultUrl;
+    if (
+        Url.host != baseUrl.host ||
+        Url.port != baseUrl.port ||
+        Url.protocol != baseUrl.protocol ||
+        !Url.hostname ||
+        Url.username ||
+        Url.password
+    ) Url = defaultUrl;
+    return Url;
+}
+
 export function isIndexNumber(param: any) {
     return /^\d+$/.test(param);
 }

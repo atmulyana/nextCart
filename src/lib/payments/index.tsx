@@ -128,11 +128,11 @@ async function updateOrderedStock(data: TOrder['orderProducts']) {
     }
 }
 
-function emailNotif(to: string, orderId: _Id, transactionId: string) {
+function emailNotif(to: string, orderId: _Id, transactionId: string, message?: string, approved: boolean = true) {
     sendEmail(
         to,
         `Your payment with ${appCfg.cartTitle}`,
-        <OrderEmail orderId={orderId.toString()} transactionId={transactionId} />
+        <OrderEmail orderId={orderId.toString()} transactionId={transactionId} message={message} approved={approved} />
     );
 }
 
@@ -143,11 +143,11 @@ type OrderData = {
     [p: string]: any,
 }
 
-export async function createOrder(data: OrderData, approved?: boolean) {
-    let orderId: _Id | undefined;
+export async function createOrder(data: OrderData, approved?: boolean, emailMessage?: string) {
+    let orderId!: _Id;
     await cartTrans(async () => {
         const cart = await getCart();
-        if (!cart) throw 'The are no items in your cart. Please add some items before checking out';
+        if (!cart) throw 'There are no items in your cart. Please add some items before checking out';
         const session = await getSession();
         const ord: WithoutId<TOrder> = {
             orderTotal: cart.totalCartAmount,
@@ -171,7 +171,7 @@ export async function createOrder(data: OrderData, approved?: boolean) {
             ...data,
             orderProducts: cart.items,
         }
-        if (approved) ord.productStockUpdated = true;
+        if (approved && appCfg.trackStock) ord.productStockUpdated = true;
         orderId = await order.createOrder(ord);
         if (approved) {
             await updateOrderedStock(ord.orderProducts);
@@ -179,8 +179,10 @@ export async function createOrder(data: OrderData, approved?: boolean) {
             emailNotif(ord.orderEmail, orderId, data.orderPaymentId);
             return Response.json({}); //sets `chartItemCount` in session token to 0 
         }
+        else if (typeof(emailMessage) == 'string') {
+            emailNotif(ord.orderEmail, orderId, data.orderPaymentId, emailMessage, false);
+        }
     });
-    
     return orderId;
 }
 

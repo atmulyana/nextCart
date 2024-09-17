@@ -10,7 +10,7 @@ import {createPostHandler} from '@/lib/routeHandler';
 
 export const POST = createPostHandler(async () => {
     const cart = await getCart();
-    if (!cart) return ResponseMessage(lang('The are no items in your cart'), {status: 400, cart: null});
+    if (!cart) return ResponseMessage(lang('There are no items in your cart'), {status: 400, cart: null});
     const session = await getSession();
     delete cart.discount;
     await updateTotalCart(cart, session);

@@ -4,7 +4,7 @@
 import React from 'react';
 import type {Metadata} from 'next';
 import {loginCustomer} from '@/app/actions';
-import LoginForm from '@/partials/LoginForm';
+import LoginForm from '@/subview/partials/LoginForm';
 import lang from '@/data/lang';
 
 export function generateMetadata(): Metadata {

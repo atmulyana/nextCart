@@ -3,10 +3,10 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import Button from '@/components/SubmitButton';
-import {CartForm, useCart} from '@/components/Cart';
-import Icon from '@/components/Icon';
-import Input from '@/components/SubmittedInput';
+import Button from '@/subview/components/SubmitButton';
+import {CartForm, useCart} from '@/subview/components/Cart';
+import Icon from '@/subview/components/Icon';
+import Input from '@/subview/components/SubmittedInput';
 import {changeDiscount} from '@/app/actions';
 
 export default function DiscountForm({applyTitle, discountTitle}: {applyTitle: string, discountTitle: string}) {

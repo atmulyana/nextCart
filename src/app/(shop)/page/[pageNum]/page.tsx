@@ -5,7 +5,7 @@ import React from 'react';
 import config from '@/config';
 import lang from '@/data/lang';
 import {fnMeta} from '@/lib/common';
-import ProductList, {type ProductListProps} from '@/partials/ProductList';
+import ProductList, {type ProductListProps} from '@/subview/partials/ProductList';
 
 export const generateMetadata = fnMeta<{pageNum: string}>(async ({params: {pageNum}}) => {
     return {

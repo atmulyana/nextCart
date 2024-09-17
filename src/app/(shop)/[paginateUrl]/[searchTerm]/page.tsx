@@ -4,7 +4,7 @@
 import React from 'react';
 import config from '@/config';
 import {fnMeta} from '@/lib/common';
-import ProductList, {getTitle, type ProductListProps} from '@/partials/ProductList';
+import ProductList, {getTitle, type ProductListProps} from '@/subview/partials/ProductList';
 
 export const generateMetadata = fnMeta<{
     paginateUrl: string,

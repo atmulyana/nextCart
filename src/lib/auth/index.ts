@@ -7,7 +7,7 @@ import {cookies} from 'next/headers';
 import {redirect, RedirectType} from 'next/navigation';
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import type {NotificationParam} from '@/components/Notification';
+import type {NotificationParam} from '@/subview/components/Notification';
 //import {refreshSessionExpires} from "@/data/session";
 import config from './config';
 import {getRequestUrl, getSessionMessage as internalGetSessionMessage, setRedirectMessage} from './common';
@@ -77,7 +77,7 @@ export async function redirectWithMessage(
 ) {
     const session = await getSessionToken();
     if (!session) return;
-    if (url instanceof URL) url = url.pathname;
+    if (url instanceof URL) url = url.pathname + url.search;
     else if (!url.startsWith('/')) throw "Invalid URL: only absolute path accepted without protocol and hostname.";
     setRedirectMessage(session.id, message);
     revalidatePath(url);

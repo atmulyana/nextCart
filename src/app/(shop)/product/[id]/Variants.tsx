@@ -5,7 +5,7 @@
 import React from 'react';
 import type {TVariant} from '@/data/types';
 import config from '@/config/usable-on-client';
-import SubmittedSelect from '@/components/SubmittedSelect';
+import SubmittedSelect from '@/subview/components/SubmittedSelect';
 import {currencySymbol, formatAmount} from '@/lib/common';
 
 const Variants = React.memo(function Variants({labels: {option, outOfStock}, stockDisabled = false, items}: {

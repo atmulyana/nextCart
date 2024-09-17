@@ -5,7 +5,7 @@
 import React from 'react';
 import {Carousel, type CustomFlowbiteTheme} from 'flowbite-react';
 import type {TProductImagePath} from '@/data/types';
-import FlexImage from '@/components/FlexImage';
+import FlexImage from '@/subview/components/FlexImage';
 
 const theme: CustomFlowbiteTheme['carousel'] = {
     root: {

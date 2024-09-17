@@ -3,11 +3,9 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import {useFormStatus} from "react-dom";
 import {loadStripe, type Stripe, type StripeCardElement, type StripeCardElementOptions} from "@stripe/stripe-js";
-import Form from '@/components/Form';
-import Loading from '@/components/Loading';
-import {useNotification} from '@/components/Notification';
+import Form, {FormLoading} from '@/subview/components/Form';
+import {useNotification} from '@/subview/components/Notification';
 //import {inter} from '@/lib/font';
 import darkMode from '@/lib/darkMode';
 import './form.css';
@@ -101,7 +99,7 @@ export default function StripeFormClient({
         inputDoc?.head.appendChild(styleElm);
     }, [card]);
     
-    return <Form action={action} loading={<FormLoading isReady={card != null} />} className='block'>
+    return <Form action={action} loading={<FormLoading isLoading={!card} />} className='block'>
         <div className='mb-2'>{description}</div>
         <div ref={cardRef}></div>
         <input type='hidden' name='token' />
@@ -123,9 +121,4 @@ export default function StripeFormClient({
             }}
         >{buttonText}</button>
     </Form>;
-}
-
-export function FormLoading({isReady}: {isReady: boolean}) {
-    const {pending: isFormLoading} = useFormStatus();
-    return <Loading isLoading={isFormLoading || !isReady} />;
 }

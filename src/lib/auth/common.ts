@@ -3,7 +3,7 @@
  **/
 import {headers} from 'next/headers';
 import {NextRequest} from 'next/server';
-import type {NotificationParam} from '@/components/Notification';
+import type {NotificationParam} from '@/subview/components/Notification';
 import {getData, setData} from './intermittentData';
 
 const paramName = {

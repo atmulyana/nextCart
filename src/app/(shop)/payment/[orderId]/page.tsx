@@ -7,7 +7,7 @@ import {notFound} from 'next/navigation';
 import lang from '@/data/lang';
 import {getOrder} from '@/data/order';
 import {getPaymentModule} from '@/lib/payments';
-import Template from '@/partials/Template';
+import Template from '@/subview/partials/Template';
 
 export function generateMetadata() {
     return {

@@ -8,14 +8,17 @@ import Link from 'next/link';
 import {getErrorPageTexts} from './actions';
 
 export default function Error({
-  reset,
+    error,
+    reset,
 }: {
-  reset: () => void
+    error: Error,
+    reset: () => void,
 }) {
-    const [texts, setTexts] = React.useState(["Server can't process your request", "Reload", false, false]);
+    const [texts, setTexts] = React.useState(["Server can't process your request", "Reload"]);
 
     React.useEffect(() => {
         getErrorPageTexts().then(texts => setTexts(texts));
+        console.log(error)
     }, texts);
 
     return  <>

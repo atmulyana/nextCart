@@ -19,7 +19,7 @@ export const POST = createPostHandler(async (formData) => {
         }
     );
 
-    if (!cart) return response(lang('The are no items in your cart'));
+    if (!cart) return response(lang('There are no items in your cart'));
     
     const code = formData.getString('discountCode');
     

@@ -4,7 +4,7 @@
 import React from 'react';
 import type {Metadata} from 'next';
 import {redirect} from 'next/navigation';
-import LoginForm from '@/partials/LoginForm';
+import LoginForm from '@/subview/partials/LoginForm';
 import lang from '@/data/lang';
 import {userCount} from '@/data/user';
 import {POST} from '../login_action/route';

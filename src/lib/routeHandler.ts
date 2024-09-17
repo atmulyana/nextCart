@@ -8,9 +8,10 @@ import {getCart} from '@/data/cart';
 import {getSession} from '@/data/session';
 import {title} from '@/app/(shop)/layout';
 import {getSessionMessage} from './auth';
-import {isPlainObject, normalizeParamValue, type GetParam, type RouteParam} from './common';
+import {isPlainObject, normalizeParamValue, safeUrl, type GetParam, type RouteParam} from './common';
 
-export type Redirect = (url: any, defaultUrl?: string) => any;
+type RedirectOption = NonNullable<Parameters<typeof safeUrl>[1]>;
+export type Redirect = (url: any, option?: RedirectOption) => any;
 
 export type HandlerParams<P extends GetParam = {}, S extends GetParam = {}> = RouteParam<P, S> & {
     redirect: Redirect,
@@ -29,26 +30,21 @@ type PostRouteHandler = {
     responseJson: <T>(formData: FormData) => Promise<T>,
 };
 
-function safeUrl(url: any, option: {base?: string | URL, default?: string} | string = {}) {
-    if (typeof(option) == 'string') option = {default: option};
-    const baseUrl = new URL(option.base || 'http://localhost');
-    const defaultUrl = new URL('/', baseUrl);
-    let Url = typeof(url) == 'string' ? new URL(url.trim() || option.default?.trim() || '/', baseUrl) :
-              url instanceof URL      ? url :
-                                        defaultUrl;
-    if (
-        Url.host != baseUrl.host ||
-        Url.protocol != baseUrl.protocol ||
-        !Url.hostname ||
-        Url.username ||
-        Url.password
-    ) Url = defaultUrl;
-    return Url;
-}
-
-export function redirect(url: any, option: {base?: string | URL, default?: string} | string = {}) {
+export function redirect(url: any, option?: RedirectOption) {
     const Url = safeUrl(url, option);
     nextRedirect(Url.pathname + Url.search, RedirectType.replace);
+}
+
+function createRedirect(baseUrl?: string) {
+    return (url: any, option?: RedirectOption) => {
+        return Response.redirect(safeUrl(
+            url, 
+            {
+                base: baseUrl,
+                ...(typeof(option) == 'string' ? {default: option} : option)
+            })
+        );
+    };
 }
 
 async function applyCommonMobileData(response: any, isGet: boolean = false) {
@@ -96,7 +92,7 @@ export function createGetHandler<P extends GetParam, S extends GetParam, R>(hand
 
     async function GET(
         request: NextRequest,
-        {params}: {params?: P}
+        {params}: {params?: P} = {}
     ) {
         const searchParams: GetParam = {};
         request.nextUrl.searchParams.forEach((value, key) => {
@@ -115,10 +111,7 @@ export function createGetHandler<P extends GetParam, S extends GetParam, R>(hand
             }
         });
 
-        const _redirect = (sUrl: string, defaultUrl?: string) => {
-            return Response.redirect(safeUrl(sUrl, {base: request.url, default: defaultUrl}));
-        };
-        
+        const _redirect = createRedirect(request.url);
         const isFromMobile = request.headers.get('X-Requested-With') == 'expressCartMobile';
         
         const data = await getData({
@@ -168,9 +161,7 @@ export function createPostHandler(handler: PostHandler): PostRouteHandler {
             }
         }
         
-        const _redirect = (sUrl: string, defaultUrl?: string) => {
-            return Response.redirect(safeUrl(sUrl, {base: request.url, default: defaultUrl}));
-        };
+        const _redirect = createRedirect(request.url);
         const isFromMobile = request.headers.get('X-Requested-With') == 'expressCartMobile';
         return await submit(formData, _redirect, isFromMobile);
     }

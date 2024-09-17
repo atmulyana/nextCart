@@ -20,7 +20,7 @@ type ToRedirectItem = {
 function checkoutEmptyCart(auth: Session | null) {
     if ((auth?.customer?.chartItemCount ?? 0) < 1) return {
         path: '/',
-        message: 'The are no items in your cart. Please add some items before checking out.'
+        message: 'There are no items in your cart. Please add some items before checking out.'
     }
 }
 

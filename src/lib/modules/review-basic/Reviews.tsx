@@ -3,9 +3,9 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import Loading from '@/components/Loading';
-import {useNotification} from '@/components/Notification';
-import PagedList from '@/components/PagedList';
+import Loading from '@/subview/components/Loading';
+import {useNotification} from '@/subview/components/Notification';
+import PagedList from '@/subview/components/PagedList';
 import {isPlainObject} from '@/lib/common';
 import type {TReviewList} from './data';
 import RatingStars from './RatingStars';

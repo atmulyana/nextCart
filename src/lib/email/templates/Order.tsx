@@ -13,8 +13,8 @@ export default function EmailOrder({
 }: {
     message?: string,
     approved?: boolean,
-    orderId: string,
-    transactionId: string,
+    orderId?: string,
+    transactionId?: string,
 }) {
     return <div className="wrapper">
         <div className="container">
@@ -25,8 +25,8 @@ export default function EmailOrder({
                 </div>
                 <div className="panel-body">
                     <h3 className={approved ? 'text-success' : 'text-danger'}>{message ?? lang('Your payment was successfully completed')}</h3>
-                    <p><strong>{lang('Order ID')}: </strong>{orderId}</p>
-                    <p><strong>{lang('Transaction ID')}: </strong>{transactionId}</p>
+                    {orderId && <p><strong>{lang('Order ID')}: </strong>{orderId}</p>}
+                    {transactionId && <p><strong>{lang('Transaction ID')}: </strong>{transactionId}</p>}
                     <h4>{lang('Thanks for shopping with us. We hope you will shop with us again soon.')}</h4>
                 </div>
             </div>

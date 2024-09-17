@@ -2,12 +2,12 @@
  * https://github.com/atmulyana/nextCart
  **/
 import {notFound} from 'next/navigation';
-import type {NotificationParam} from '@/components/Notification';
+import type {NotificationParam} from '@/subview/components/Notification';
 import {isIndexNumber} from '@/lib/common';
 import {createGetHandler, type HandlerParams} from '@/lib/routeHandler';
 import {getProducts} from '@/data/product';
 import {getMenu, sortMenu} from '@/data/menu';
-import {getTitle} from '@/partials/ProductList';
+import {getTitle} from '@/subview/partials/ProductList';
 
 type Return = {
     title?: string,
