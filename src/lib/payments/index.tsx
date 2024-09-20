@@ -5,6 +5,7 @@ import React from 'react';
 import appCfg from '@/config';
 import type {_Id, TOrder, WithoutId} from '@/data/types';
 import {cartTrans, deleteCart, getCart} from '@/data/cart';
+import lang from '@/data/lang';
 import * as order from '@/data/order';
 import {getSession} from '@/data/session';
 import {getStock, updateStock} from '@/data/product';
@@ -131,7 +132,7 @@ async function updateOrderedStock(data: TOrder['orderProducts']) {
 function emailNotif(to: string, orderId: _Id, transactionId: string, message?: string, approved: boolean = true) {
     sendEmail(
         to,
-        `Your payment with ${appCfg.cartTitle}`,
+        `${lang('Your order with')} ${appCfg.cartTitle}`,
         <OrderEmail orderId={orderId.toString()} transactionId={transactionId} message={message} approved={approved} />
     );
 }
@@ -176,7 +177,7 @@ export async function createOrder(data: OrderData, approved?: boolean, emailMess
         if (approved) {
             await updateOrderedStock(ord.orderProducts);
             await deleteCart();
-            emailNotif(ord.orderEmail, orderId, data.orderPaymentId);
+            emailNotif(ord.orderEmail, orderId, data.orderPaymentId, emailMessage);
             return Response.json({}); //sets `chartItemCount` in session token to 0 
         }
         else if (typeof(emailMessage) == 'string') {

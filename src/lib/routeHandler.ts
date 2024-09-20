@@ -54,14 +54,21 @@ async function applyCommonMobileData(response: any, isGet: boolean = false) {
                 ('cart' in response) ? response.cart : await getCart()
             ) ?? {} 
         ) as Partial<NonNullable<Awaited<ReturnType<typeof getCart>>>>;
+        
         response.session = {
             ...(await getSession()),
             ...cart,
             discountCode: typeof(discount) == 'string' ? discount : discount?.code,
             cart: items,
-            ...(await getSessionMessage()),
         };
         response.config = config;
+        
+        const sessionMessage = await getSessionMessage();
+        if (sessionMessage.message) {
+            response.message = sessionMessage.message;
+            response.messageType = sessionMessage.type ?? 'danger';
+        }
+
         if ('cart' in response) {
             response.totalCartItems = cart.totalCartItems ?? 0;
             delete response.cart;

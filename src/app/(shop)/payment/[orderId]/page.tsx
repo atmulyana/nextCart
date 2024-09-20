@@ -29,7 +29,7 @@ export default async function Payment({params: {orderId}}: {params: {orderId: st
              order.orderStatus == 'Pending' ?
                 (
                     order.orderPaymentGateway.toLowerCase() == 'instore' ?
-                        <h2 className="text-[--color-warning]">${module.config.resultMessage.toString()}</h2> :
+                        <h2 className="text-[--color-warning]">{module.config.resultMessage.toString()}</h2> :
                         <h2 className="text-[--color-warning]">{lang('The payment for this order is pending. We will be in contact shortly.')}</h2>
                 ) :
                 <h2 className="text-[--color-danger]">{lang('Your payment has failed. Please try again or contact us.')}</h2>

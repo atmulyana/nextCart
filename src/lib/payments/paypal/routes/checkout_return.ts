@@ -39,14 +39,14 @@ export const GET = createGetHandler(async (
                     }
             
                     // fully approved
-                    if(payment.state == 'approved'){
+                    if (payment.state == 'approved') {
                         approved = true;
                         emailMessage = lang('Your payment was successfully completed');
                         paymentStatus = 'Paid';
                     }
             
                     // failed
-                    if(payment.failure_reason) {
+                    if (payment.failure_reason) {
                         approved = false;
                         emailMessage = `${lang('Your payment was failed')} - ${payment.failure_reason}`;
                         paymentStatus = 'Declined';

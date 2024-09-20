@@ -13,7 +13,8 @@ import {getPaymentConfig} from '../../';
 export const POST = createPostHandler(async (_, redirect, isFromMobile) => {
     const paypalConfig = await getPaymentConfig('paypal');
     const cart = await getCart();
-    if (!cart) return redirectWithMessage('/', lang('There are no items in your cart. Please add some items before checking out.'));
+    if (!cart || cart.totalCartAmount <= 0.0) return;
+    //if (!cart) return redirectWithMessage('/', lang('There are no items in your cart. Please add some items before checking out.'));
 
     const payment: Payment = {
         intent: 'sale',

@@ -34,7 +34,8 @@ export async function sendEmail(to: string, subject: string, body: React.ReactEl
         mailOptions.text = body;
     }
     else {
-        const bodyHtml = await render(body, {pretty: true}); //renderToStaticMarkup(body)
+        let bodyHtml = await render(body, {pretty: true}); //renderToStaticMarkup(body)
+        bodyHtml = bodyHtml.substring(bodyHtml.indexOf('<div')); //removes `<!DOCTYPE ... >`
         mailOptions.html = `<!DOCTYPE html>
 <html lang="en">
     <head>

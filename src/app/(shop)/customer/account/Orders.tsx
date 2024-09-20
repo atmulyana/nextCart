@@ -8,6 +8,7 @@ import PagedList from '@/subview/components/PagedList';
 import {currencySymbol, formatAmount, getStatusColor} from '@/lib/common';
 import {formatDate} from '@/lib/datetime/client';
 import currentLocale from '@/lib/currentLocale/client';
+import './slide.css';
 
 type TextProps = {
     id: string,
@@ -86,7 +87,7 @@ const OrderItem = React.memo(function OrderItem({
     viewClick,
 }: OrderProps) {
     return <div className='bordered !mt-0 !p-0 overflow-hidden'>
-        <div className='bg-black/5 dark:bg-white/10 border-b border-black/15 dark:border-white/15 px-5 py-3'>
+        <div className='bg-black/5 dark:bg-white/10 border-b border-black/15 dark:border-white/15 px-5 py-3 z-10'>
             {text.id}: {order._id.toString()} - {text.date}: {formatDate(order.orderDate)}
             <button
                 className='btn-outline-success btn-sm float-right'
@@ -95,7 +96,9 @@ const OrderItem = React.memo(function OrderItem({
                 {isOpen ? text.close : text.view}
             </button>
         </div>
-        <ul className={`bordered !m-5 ${isOpen ? 'flex' : '!hidden'}`}>
+        <ul className={`bordered !m-5 z-0 ${
+            isOpen ? 'slide-down' : '!hidden'
+        }`}>
             <li>
                 <strong>{text.status}:</strong>
                 <span
@@ -111,7 +114,8 @@ const OrderItem = React.memo(function OrderItem({
             </li>
             <li>
                 <strong>{text.id}:</strong>
-                <span className="float-right">{order._id.toString()}</span></li>
+                <span className="float-right">{order._id.toString()}</span>
+            </li>
             {order.orderExpectedBtc && <li>
                 <strong>{text.expectedBTC}:</strong>
                 <span className="float-right">{order.orderExpectedBtc}</span>

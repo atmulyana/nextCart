@@ -9,7 +9,7 @@ const Loading = React.memo(function Loading({isLoading, noBackdrop = false}: {
     noBackdrop?: boolean,
 }) {
     const loading = typeof(isLoading) == 'function' ? isLoading() : isLoading;
-    return <div className={`${loading ? 'block' : 'hidden'} absolute top-0 left-0 bottom-0 right-0 z-50`}>
+    return <div className={`${loading ? 'block' : 'hidden'} absolute top-0 left-0 bottom-0 right-0 z-40`}>
         {!noBackdrop && <div className='h-full w-full bg-[--fg-color] opacity-10'></div>}
         <div className='absolute top-0 left-0 bottom-0 right-0 z-10 flex items-center justify-center'>
             <div className='flex-initial box-content h-0 w-1/12 pt-1/12
