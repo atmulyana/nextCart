@@ -454,7 +454,11 @@ if (/(\?|&)replicaSet=/i.test(dbUrl)) {
     dbTrans = async <T>(fn: () => Promise<T>, options?: TransactionOptions): Promise<T> => {
         console.log('====== WITH TRANSACTION =======')
         const client = await getClient(),
-              db = await getDb();
+              db = await getDb(),
+              isNestedTrans = !!db.session;
+        
+        if (isNestedTrans) return await fn();
+
         const session = client.startSession();
         let redirect: Error | undefined;
         let result: T;

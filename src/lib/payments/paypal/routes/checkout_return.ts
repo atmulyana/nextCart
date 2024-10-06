@@ -7,16 +7,16 @@ import {dbTrans} from '@/data/db-conn';
 import lang from '@/data/lang';
 import {redirectWithMessage} from '@/lib/auth';
 import {ResponseMessage} from '@/lib/common';
-import {createGetHandler, type HandlerParams} from '@/lib/routeHandler';
+import {createGetHandler} from '@/lib/routeHandler';
 import type {NotificationParam} from '@/subview/components/Notification';
 import {getPaymentId, clearPaymentId} from '../data';
 import {createOrder} from '../../';
 
-export const GET = createGetHandler(async (
+export const GET = createGetHandler<{}, {paymentId: string, PayerID: string}>(async (
     {
         redirect,
         searchParams: {paymentId, PayerID}
-    }: HandlerParams<{}, {paymentId: string, PayerID: string}>
+    }
 ) => {
     const _paymentId = await getPaymentId();
     if (!PayerID || !_paymentId || paymentId != _paymentId) return ResponseMessage(lang('Forbidden'), 403);
@@ -76,7 +76,7 @@ export const GET = createGetHandler(async (
     });
 
     if (obj.message) {
-        return redirectWithMessage(
+        return await redirectWithMessage(
             obj.redirectUrl || '/checkout/payment',
             {
                 message: obj.message,

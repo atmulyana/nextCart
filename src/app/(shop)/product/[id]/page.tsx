@@ -23,7 +23,7 @@ import RelatedImageTitleItem from './RelatedImageTitleItem';
 import ReviewControls from './ReviewControls';
 import Variants from './Variants';
 
-type Props = Parameters<typeof GET.data>[0];
+type Props = Pick<Parameters<typeof GET.data>[0], 'params' | 'searchParams'>;
 
 export const generateMetadata = fnMeta<{
     id: string,

@@ -10,7 +10,7 @@ import Credentials from "next-auth/providers/credentials";
 import {newUrl} from '@/lib/payments/routes';
 import cfg from './config';
 import {toRedirect} from "./access";
-import {fetchMessage, getUrl, setRedirectMessage} from "./common";
+import {fetchMessage, getUrl, isFromMobile, setRedirectMessage} from "./common";
 
 type Cookies = ResponseInternal['cookies'];
 
@@ -68,7 +68,7 @@ async function initSession() {
         headers.get("x-forwarded-proto"),
         headers,
         process.env,
-        config.basePath
+        config
     );
     url.pathname += '/guest';
 
@@ -115,7 +115,7 @@ export const middleware = auth(async (request) => {
         const message = redirect.message?.trim(),
               redirectUrl = new URL(redirect.path, url);
         let response: NextResponse;
-        if (message)  setRedirectMessage(auth.id, message, redirect.messageType)
+        if (message) setRedirectMessage(auth.id, message, redirect.messageType)
         response = NextResponse.redirect(redirectUrl);
         setResponseCookies(response, cookies);
         return response;
@@ -124,7 +124,7 @@ export const middleware = auth(async (request) => {
     if (paymentUrl) {
         url.pathname = paymentUrl;
     }
-    else if (request.headers.get('X-Requested-With') == 'expressCartMobile' && request.method == 'GET' && !url.pathname.endsWith('/data')) {
+    else if (isFromMobile(request.headers) && request.method == 'GET' && !url.pathname.endsWith('/data')) {
         url.pathname += '/data';
     }
     const response = NextResponse.rewrite(url.toString(), {request});

@@ -137,15 +137,6 @@ export interface TSessionBasic {
     expires: Date;
 }
 
-export interface TSessionBlockonomics {
-    blockonomicsParams?: {
-        expectedBtc: number,
-        address: string,
-        timestamp: number,
-        pendingOrderId: ObjectId,
-    };
-}
-
 export interface TSessionCustomer {
     _id: ObjectId;
     customerId?: ObjectId;
@@ -170,7 +161,7 @@ export interface TSessionUser {
     isOwner?: boolean;
 }
 
-export class TSession implements TSessionBasic, TSessionCustomer, TSessionUser, TSessionBlockonomics {
+export class TSession implements TSessionBasic, TSessionCustomer, TSessionUser {
     _id!: ObjectId;
     expires!: Date;
     cart?: TCart;
@@ -192,7 +183,6 @@ export class TSession implements TSessionBasic, TSessionCustomer, TSessionUser, 
     usersName?: string;
     isAdmin?: boolean;
     isOwner?: boolean;
-    blockonomicsParams?: TSessionBlockonomics['blockonomicsParams'];
 }
 
 export type TUser = {

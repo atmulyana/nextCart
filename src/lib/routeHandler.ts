@@ -2,32 +2,35 @@
  * https://github.com/atmulyana/nextCart
  **/
 import type {NextRequest} from 'next/server';
+import {headers as nextHeaders} from 'next/headers';
 import {redirect as nextRedirect, RedirectType} from 'next/navigation';
 import config from '@/config/usable-on-client';
 import {getCart} from '@/data/cart';
 import {getSession} from '@/data/session';
 import {title} from '@/app/(shop)/layout';
 import {getSessionMessage} from './auth';
+import {isFromMobile as fromMobile} from './auth/common';
 import {isPlainObject, normalizeParamValue, safeUrl, type GetParam, type RouteParam} from './common';
 
 type RedirectOption = NonNullable<Parameters<typeof safeUrl>[1]>;
 export type Redirect = (url: any, option?: RedirectOption) => any;
 
 export type HandlerParams<P extends GetParam = {}, S extends GetParam = {}> = RouteParam<P, S> & {
-    redirect: Redirect,
-    isFromMobile: boolean,
+    redirect?: Redirect,
+    isFromMobile?: boolean,
+    headers?: Headers,
 }
-type GetHandler<P extends GetParam, S extends GetParam, R> = (reqParam: HandlerParams<P, S>) => R;
+type GetHandler<P extends GetParam, S extends GetParam, R> = (reqParam: Required<HandlerParams<P, S>>) => R;
 type GetRouteHandler<P extends GetParam, S extends GetParam, R> = {
     (request: NextRequest, context: {params: P}): Promise<Response>,
-    data: (args: Parameters<GetHandler<P, S, R>>[0]) => Promise<R extends Promise<any> ? Awaited<R> : R>,
+    data: (args: HandlerParams<P, S>) => Promise<R extends Promise<any> ? Awaited<R> : R>,
 };
 
 type PostHandler = (formData: FormData, redirect: Redirect, isFromMobile: boolean) => any;
 type PostRouteHandler = {
     (request: Request): Promise<Response>,
     response: (formData: FormData) => Promise<Response>,
-    responseJson: <T>(formData: FormData) => Promise<T>,
+    responseJson: <T = any>(formData: FormData) => Promise<T>,
 };
 
 export function redirect(url: any, option?: RedirectOption) {
@@ -60,6 +63,7 @@ async function applyCommonMobileData(response: any, isGet: boolean = false) {
             ...cart,
             discountCode: typeof(discount) == 'string' ? discount : discount?.code,
             cart: items,
+            ...response.session,
         };
         response.config = config;
         
@@ -79,7 +83,7 @@ async function applyCommonMobileData(response: any, isGet: boolean = false) {
     }
 }
 
-export function createGetHandler<P extends GetParam, S extends GetParam, R>(handler: GetHandler<P, S, R>): GetRouteHandler<P, S, R> {
+export function createGetHandler<P extends GetParam, S extends GetParam, R = any>(handler: GetHandler<P, S, R>): GetRouteHandler<P, S, R> {
     type _R = R extends Promise<any> ? Awaited<R> : R;
     async function getData(
         {
@@ -87,11 +91,12 @@ export function createGetHandler<P extends GetParam, S extends GetParam, R>(hand
             searchParams = {} as S,
             redirect: _redirect = redirect,
             isFromMobile = false,
+            headers = nextHeaders(),
         }: HandlerParams<P, S>
     ): Promise<_R> {
         normalizeParamValue(params);
         normalizeParamValue(searchParams);
-        let response = handler({params, searchParams, redirect: _redirect, isFromMobile});
+        let response = handler({params, searchParams, redirect: _redirect, isFromMobile, headers});
         if (response instanceof Promise) response = await response;
         if (isFromMobile) await applyCommonMobileData(response, true);
         return response as _R;
@@ -119,18 +124,21 @@ export function createGetHandler<P extends GetParam, S extends GetParam, R>(hand
         });
 
         const _redirect = createRedirect(request.url);
-        const isFromMobile = request.headers.get('X-Requested-With') == 'expressCartMobile';
+        const isFromMobile = fromMobile(request.headers);
         
         const data = await getData({
             params: (params || {}) as P,
             searchParams: searchParams as S,
             redirect: _redirect,
-            isFromMobile
+            isFromMobile,
+            headers: request.headers,
         });
         if (data instanceof Response) return data;
         return Response.json(data);
     }
-    GET.data = getData;
+    GET.data = async function(params: HandlerParams<P, S>) {
+        return await getData(params);
+    }
     
     return GET;
 }
@@ -169,7 +177,7 @@ export function createPostHandler(handler: PostHandler): PostRouteHandler {
         }
         
         const _redirect = createRedirect(request.url);
-        const isFromMobile = request.headers.get('X-Requested-With') == 'expressCartMobile';
+        const isFromMobile = fromMobile(request.headers);
         return await submit(formData, _redirect, isFromMobile);
     }
     POST.response = submit;

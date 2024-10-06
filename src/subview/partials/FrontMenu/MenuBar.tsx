@@ -24,17 +24,6 @@ export default React.memo(function FrontMenuBar({
     const [menuBtn, setMenuBtn] = React.useState<HTMLButtonElement>();
     const [visible, setVisible] = React.useState(false);
 
-    if (pathname == '/admin' || pathname.startsWith('/admin/')) return null;
-
-    const menuItems: WithoutId<TMenu>[] = [
-        {
-            title: homeMenuTitle,
-            link: '/',
-            order: 0,
-        },
-        ...items,
-    ];
-
     React.useEffect(() => {
         const btn = document.createElement('button');
         btn.classList.add('lg:hidden', 'py-1', 'text-xl/none');
@@ -49,6 +38,17 @@ export default React.memo(function FrontMenuBar({
         };
     }, []);
 
+    if (pathname == '/admin' || pathname.startsWith('/admin/')) return null;
+
+    const menuItems: WithoutId<TMenu>[] = [
+        {
+            title: homeMenuTitle,
+            link: '/',
+            order: 0,
+        },
+        ...items,
+    ];
+
     return <>
         {menuBtn && menuBtn.parentNode && createPortal(<Icon name="menu" />, menuBtn)}
         <nav className={`py-2 px-4 bg-gray-100 dark:bg-stone-950
@@ -62,7 +62,7 @@ export default React.memo(function FrontMenuBar({
                 <ul className="list-none my-0 !mr-auto pl-0 flex flex-col lg:flex-row">
                 {menuItems.map(item => (
                     <li key={item.link}>
-                        <Link href={item.link}
+                        <Link href={item.link} prefetch={false}
                             className={`block py-2 px-4 lg:px-2 ${pathname == item.link ? 'opacity-90' : 'opacity-50'}`}
                         >{item.title}</Link>
                     </li>

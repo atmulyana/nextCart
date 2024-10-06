@@ -6,7 +6,7 @@ import {POST} from '@/app/admin/logout/route';
 
 async function logout(formData: FormData) {
     "use server";
-    return POST.response(formData);
+    POST.response(formData);
 }
 
 export default async function AdminDashboard() {

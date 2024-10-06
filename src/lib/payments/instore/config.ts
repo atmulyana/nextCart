@@ -2,7 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import lang from '@/data/lang';
-import {type Config, PublicString} from '../types';
+import type {Config} from '../types';
 
 export default {
     get description() {

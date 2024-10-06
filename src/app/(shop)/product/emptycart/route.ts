@@ -10,7 +10,7 @@ import {createPostHandler} from '@/lib/routeHandler';
 export const POST = createPostHandler(async (formData) => {
     return await cartTrans(async () => {
         const session = await getSession();
-        const cartId = session.customerId || session._id;
+        const cartId = session._id;
         await deleteCart(cartId);
         return ResponseMessage(
             lang('Cart successfully emptied'),

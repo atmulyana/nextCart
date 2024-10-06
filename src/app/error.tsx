@@ -3,7 +3,6 @@
  * https://github.com/atmulyana/nextCart
  **/
 import * as React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import {getErrorPageTexts} from './actions';
 
@@ -18,12 +17,14 @@ export default function Error({
 
     React.useEffect(() => {
         getErrorPageTexts().then(texts => setTexts(texts));
-        console.log(error)
     }, texts);
+    React.useEffect(() => {
+        console.log(error)
+    }, [error]);
 
     return  <>
         <nav id="headerBar" className="flex items-center py-2 px-4 leading-normal">
-            <Link href="/"><Image src='/images/logo.png' alt='logo' width={317} height={82} /></Link>
+            <Link href="/"><img src='/images/logo.svg' alt='logo' style={{height: '80px'}} /></Link>
         </nav>
         <div id="container" className="text-center h-full py-8">
             <h3 className='text-center w-full'>{texts[0]}</h3>

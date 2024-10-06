@@ -63,9 +63,6 @@ const ReviewControls = React.memo(function ReviewControls({
     const session = useSession();
     const openModal = useModal();
 
-    if (!reviewModule) return null;
-    const {RatingStars, Reviews, ReviewForm} = reviewModule;
-
     React.useEffect(() => {
         const _reviewsCont = document.createElement('div');
         _reviewsCont.classList.add('flex-none', 'basis-full', openReview ? 'block' : 'hidden');
@@ -82,6 +79,9 @@ const ReviewControls = React.memo(function ReviewControls({
             reviewsCont?.classList.replace('block', 'hidden');
         }
     }, [openReview, reviewsCont]);
+
+    if (!reviewModule) return null;
+    const {RatingStars, Reviews, ReviewForm} = reviewModule;
 
     return <>
         <div ref={ctlCont} className='flex justify-between items-center flex-none'>

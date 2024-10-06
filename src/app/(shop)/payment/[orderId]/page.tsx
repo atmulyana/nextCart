@@ -18,10 +18,10 @@ export function generateMetadata() {
 export default async function Payment({params: {orderId}}: {params: {orderId: string}}) {
     const order = await getOrder(orderId);
     if (!order) return notFound();
-    const module = await getPaymentModule(order.orderPaymentGateway.toLowerCase());
+    const mod = await getPaymentModule(order.orderPaymentGateway.toLowerCase());
     
-    return <Template>{module.PaymentComplete ? (
-        <module.PaymentComplete order={order} />
+    return <Template>{mod.PaymentComplete ? (
+        <mod.PaymentComplete order={order} />
     ) : (    
         <div className='shrink-0 basis-full md:basis-5/6 mx-auto text-center pt-14'>
             {order.orderStatus == 'Paid' ?
@@ -29,7 +29,7 @@ export default async function Payment({params: {orderId}}: {params: {orderId: st
              order.orderStatus == 'Pending' ?
                 (
                     order.orderPaymentGateway.toLowerCase() == 'instore' ?
-                        <h2 className="text-[--color-warning]">{module.config.resultMessage.toString()}</h2> :
+                        <h2 className="text-[--color-warning]">{mod.config.resultMessage.toString()}</h2> :
                         <h2 className="text-[--color-warning]">{lang('The payment for this order is pending. We will be in contact shortly.')}</h2>
                 ) :
                 <h2 className="text-[--color-danger]">{lang('Your payment has failed. Please try again or contact us.')}</h2>

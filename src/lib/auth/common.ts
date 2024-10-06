@@ -87,3 +87,8 @@ export function getRequestUrl() {
         search: hdrs.get(paramName.urlQuery) ?? '',
     }
 }
+
+export function isFromMobile(hdrs?: Headers) {
+    hdrs ??= headers();
+    return hdrs.get('X-Requested-With') == 'expressCartMobile';
+}

@@ -19,7 +19,7 @@ export const GET = createGetHandler(async ({isFromMobile}) => {
     };
 
     if (isFromMobile) return Response.json({message: obj.message, messageType: obj.type});
-    else return redirectWithMessage(
+    else return await redirectWithMessage(
         '/checkout/payment',
         obj
     );

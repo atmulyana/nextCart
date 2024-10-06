@@ -25,7 +25,7 @@ const ColsToBasis = {
     4: 'basis-1/4'
 };
 
-export type ProductListProps = Parameters<typeof GET.data>[0];
+export type ProductListProps = Pick<Parameters<typeof GET.data>[0], 'params' | 'searchParams'>;
 
 class Title extends String {
     searchTerm?: string;

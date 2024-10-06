@@ -97,6 +97,7 @@ export async function getRouteModule(requestHeaders: Headers) {
         POST?: RouteHandler,
         metadata?: Metadata,
         generateMetadata?: (props: {params: any, searchParams: any}, parent: ResolvingMetadata) => Promise<Metadata> | Metadata,
+        getData?: () => any,
         Page?: PaymentComponent,
     } = {};
     const path = getGatewayPath(requestHeaders);
@@ -104,15 +105,16 @@ export async function getRouteModule(requestHeaders: Headers) {
     const route = await getRoute(path);
     if (!route) return mod;
     if (route.type == 'route') {
-        const module = await import(/* webpackMode: "eager" */`./${route.gateway}/routes/${route.routeName}`);
-        if (module.GET) mod.GET = module.GET as RouteHandler;
-        if (module.POST) mod.POST = module.POST as RouteHandler;
+        const _mod = await import(/* webpackMode: "eager" */`./${route.gateway}/routes/${route.routeName}`);
+        if (_mod.GET) mod.GET = _mod.GET as RouteHandler;
+        if (_mod.POST) mod.POST = _mod.POST as RouteHandler;
     }
     else if (route.type == 'page') {
-        const module = await import(/* webpackMode: "eager" */`./${route.gateway}/routes/${route.routeName}`);
-        if (typeof(module.metadata) == 'object') mod.metadata = module.metadata;
-        if (typeof(module.generateMetadata) == 'function') mod.generateMetadata = module.generateMetadata;
-        if (typeof(module.default) == 'function') mod.Page = module.default;
+        const _mod = await import(/* webpackMode: "eager" */`./${route.gateway}/routes/${route.routeName}`);
+        if (typeof(_mod.getData) == 'function') mod.getData = _mod.getData;
+        if (typeof(_mod.metadata) == 'object') mod.metadata = _mod.metadata;
+        if (typeof(_mod.generateMetadata) == 'function') mod.generateMetadata = _mod.generateMetadata;
+        if (typeof(_mod.default) == 'function') mod.Page = _mod.default;
     }
     return mod;
 }
@@ -187,17 +189,25 @@ export async function createOrder(data: OrderData, approved?: boolean, emailMess
     return orderId;
 }
 
-export async function updateOrder(id: _Id, data: Partial<OrderData>, approved?: boolean) {
+export enum ApprovalStatus {
+    Declined = 0,
+    Approved = 1,
+    Completed = 2,
+};
+
+export async function updateOrder(id: _Id, data: Partial<OrderData>, status?: ApprovalStatus) {
     await cartTrans(async () => {
         const ord = await order.getOrder(id);
         if (!ord) return;
         const {orderProducts, ...data2} = data;
-        if (approved) data2.productStockUpdated = true;
+        if (status == ApprovalStatus.Approved && appCfg.trackStock) data2.productStockUpdated = true;
         await order.updateOrder(id, data2);
-        if (approved && !ord.productStockUpdated) {
-            await updateOrderedStock(ord.orderProducts);
+        if (status) {
             await deleteCart();
-            emailNotif(ord.orderEmail, id, data.orderPaymentId ?? ord.orderPaymentId);
+            if (status == ApprovalStatus.Approved) {
+                if (!ord.productStockUpdated) await updateOrderedStock(ord.orderProducts);
+                emailNotif(ord.orderEmail, id, data.orderPaymentId ?? ord.orderPaymentId);
+            }
             return Response.json({}); //sets `chartItemCount` in session token to 0 
         }
     });

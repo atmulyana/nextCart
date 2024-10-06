@@ -94,7 +94,6 @@ export const getSession = fn(async (db: Db) => {
                     usersName: '$usersName',
                     isAdmin: '$isAdmin',
                     isOwner: '$isOwner',
-                    blockonomicsParams: 1,
                 }
             },
         ])

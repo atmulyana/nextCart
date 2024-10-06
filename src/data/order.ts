@@ -12,7 +12,7 @@ export const createOrder = fn(async (db: Db, order: WithoutId<TOrder>) => {
 export const updateOrder = fn(async (db: Db, id: _Id, order: Partial<TOrder>) => {
     await db.collection('orders').updateOne(
         {_id: toId(id)},
-        order
+        {$set: order},
     );
 });
 

@@ -2,10 +2,9 @@
  * https://github.com/atmulyana/nextCart
  **/
 import 'server-only';
-import {access, constants} from 'node:fs';
 //import {cache} from 'react';
 import sqlite from 'sqlite3';
-const serverRoot = require('next-server-root-dir');
+import {getRootPath} from 'next-server-root-dir';
 import currentLocale from '@/lib/currentLocale/server';
 import config from '@/config';
 let {defaultLocale} = config;
@@ -15,16 +14,9 @@ type Locale = {
     [locale: string]: string
 }
 
-import './data.sqlite'; //instructs webpack to bundle db file
-const dbPath: string = await new Promise(resolve => {
-    const path = `${serverRoot}/data/lang/data.sqlite`;
-    access(path, constants.F_OK, err => {
-        resolve(err
-            ? `${__dirname}/data.sqlite` //build-time
-            : path
-        );
-    });
-});
+import './data.sqlite'; //instructs Webpack to bundle db file
+const serverRoot = getRootPath();
+const dbPath = serverRoot ? `${serverRoot}/data/lang/data.sqlite` : `${__dirname}/data.sqlite`;
 async function connectDb(): Promise<sqlite.Database> {
     return new Promise((resolve, reject) => {
         const db = new sqlite.Database(

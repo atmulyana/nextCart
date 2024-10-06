@@ -93,6 +93,7 @@ export const CartOpenButton = React.memo(function CartOpenButton({cartText}: {ca
     if (pathname.toLowerCase().startsWith('/checkout')) return null;
     return <Link
         href="/checkout/cart"
+        prefetch={false}
         className="btn leading-none whitespace-nowrap"
         onClick={e => {
             e.preventDefault();
@@ -142,7 +143,7 @@ export const Cart = React.memo(function Cart({
         <h5 className="flex-none mb-3">{title}</h5>
         <div className="flex-initial min-h-0 overflow-auto cartBodyWrapper">
             {itemIds.map(cartItemId => (item = cart.items[cartItemId],
-            <div key={cartItemId} className="flex flex-row items-center pb-4 mx-4">
+            <div key={cartItemId} className="flex flex-row items-center pb-4">
                 <div className="flex-none basis-1/4 pl-0">
                     <FlexImage src={item.productImage} alt={item.title}/>
                 </div>

@@ -3,6 +3,7 @@
  **/
 import type {GatewayRoutes, Routes, RouteType} from './types';
 import appCfg from '@/config/usable-on-client';
+import {isFromMobile} from '../auth/common';
 
 let routes: Routes | undefined;
 const HEADER_NAME = 'x-payment-url';
@@ -34,9 +35,12 @@ export async function newUrl(request: Request) {
     const path = new URL(request.url).pathname;
     const route = await getRoute(path)
     if (route) {
-        request.headers.set(HEADER_NAME, new URL(request.url).pathname);
+        request.headers.set(HEADER_NAME, path);
         if (route.type == 'route') return '/checkout/payment/gateway';
-        else return '/payment';
+        else { //page
+            if (isFromMobile(request.headers)) return '/payment/data';
+            return '/payment';
+        }
     }
 }
 

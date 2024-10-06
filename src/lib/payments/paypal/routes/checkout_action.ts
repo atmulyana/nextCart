@@ -14,7 +14,7 @@ export const POST = createPostHandler(async (_, redirect, isFromMobile) => {
     const paypalConfig = await getPaymentConfig('paypal');
     const cart = await getCart();
     if (!cart || cart.totalCartAmount <= 0.0) return;
-    //if (!cart) return redirectWithMessage('/', lang('There are no items in your cart. Please add some items before checking out.'));
+    //if (!cart) return await redirectWithMessage('/', lang('There are no items in your cart. Please add some items before checking out.'));
 
     const payment: Payment = {
         intent: 'sale',
@@ -71,5 +71,5 @@ export const POST = createPostHandler(async (_, redirect, isFromMobile) => {
 
     if (typeof(obj.redirectUrl) == 'string') return redirect(obj.redirectUrl, {base: '__OUTSIDE__'});
     else if (isFromMobile) return Response.json(obj);
-    else return redirectWithMessage('/checkout/payment', obj.message || '');
+    else return await redirectWithMessage('/checkout/payment', obj.message || '');
 });

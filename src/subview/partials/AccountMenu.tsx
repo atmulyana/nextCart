@@ -51,7 +51,7 @@ const MemoizedAccountMenu = React.memo(function MemoizedAccountMenu({
                 <input type='hidden' name='referrerUrl' value={`${pathname}${searchParams ? '?' + searchParams : ''}`} />
             </form>
         </>) : (
-            <Link href="/customer/account" className="btn leading-none"><Icon name="user" /></Link>
+            <Link href="/customer/account" prefetch={false} className="btn leading-none"><Icon name="user" /></Link>
         )}
     </>;
 });

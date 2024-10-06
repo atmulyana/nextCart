@@ -3,7 +3,6 @@
  **/
 import * as React from 'react';
 import {headers} from "next/headers";
-import Image from 'next/image';
 import Link from 'next/link';
 import config from '@/config';
 import lang from '@/data/lang';
@@ -20,7 +19,7 @@ export default function NotFoundPage() {
     
     return <>
         <nav id="headerBar" className="flex items-center py-2 px-4 justify-between leading-normal">
-            <Link href="/"><Image src='/images/logo.png' alt='logo' width={317} height={82} /></Link>
+            <Link href="/"><img src='/images/logo.svg' alt='logo' style={{height: '80px'}} /></Link>
             <ul id="mainMenu" className="flex lg:flex-row ml-auto mb-0 mt-0 pl-0 list-none">
                 <li className="hidden sm:block mx-2">
                     <DarkModeMenu />

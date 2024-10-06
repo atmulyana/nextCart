@@ -7,7 +7,6 @@
  * found that the template is not re-rendered on every navigation. So, it's better that the
  * `Template` component below is inserted in every 'page.tsx'.
  **/
-import {cookies} from 'next/headers';
 import lang from '@/data/lang';
 import {refreshSessionExpires} from "@/data/session";
 import UrlFixer from '@/subview/components/UrlFixer';

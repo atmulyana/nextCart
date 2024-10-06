@@ -4,27 +4,15 @@
 import React from 'react';
 import Link from 'next/link';
 import lang from '@/data/lang';
-import {getCart, upsertCart} from '@/data/cart';
-import {getSession} from '@/data/session';
 import {currencySymbol, formatAmount} from '@/lib/common';
-import {updateTotalCart} from '@/lib/cart';
 import Template from '@/subview/partials/Template';
+import {updateShippingInCart} from './cart';
 
 export function generateMetadata() {
     return {
         title: `${lang('Checkout', 1)} - ${lang('Shipping')}`,
     };
 };
-
-export async function updateShippingInCart() {
-    const cart = await getCart();
-    const session = await getSession();
-    if (cart) {
-        await updateTotalCart(cart, session);
-        await upsertCart(cart._id, cart);
-    }
-    return cart;
-}
 
 export default async function CheckoutShipping() {
     const cart = await updateShippingInCart();
