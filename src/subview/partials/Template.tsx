@@ -24,6 +24,6 @@ export default async function Template({children}: {children: React.ReactNode}) 
     return <> 
         {children}
         <SessionUpdater value={session} />
-        <UrlFixer {...getRequestUrl()} />
+        <UrlFixer {...(await getRequestUrl())} />
     </>;
 }

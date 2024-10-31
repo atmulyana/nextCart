@@ -11,15 +11,15 @@ import DarkModeMenu from '@/subview/partials/DarkModeMenu';
 import FrontMenu from '@/subview/partials/FrontMenu';
 import LanguangeMenu from '@/subview/partials/LanguageMenu';
 
-export default function NotFoundPage() {
-    const pathname = headers().get('x-request-path');
+export default async function NotFoundPage() {
+    const pathname = (await headers()).get('x-request-path');
     let showFooter = false;
     if (pathname == '/admin' || pathname?.startsWith('/admin/')) showFooter = config.footer.shownForAdmin;
     else showFooter = config.footer.shownForCustomer;
     
     return <>
         <nav id="headerBar" className="flex items-center py-2 px-4 justify-between leading-normal">
-            <Link href="/"><img src='/images/logo.svg' alt='logo' style={{height: '80px'}} /></Link>
+            <Link href="/"><img src={`${config.baseUrl.path}/images/logo.svg`} alt='logo' style={{height: '80px'}} /></Link>
             <ul id="mainMenu" className="flex lg:flex-row ml-auto mb-0 mt-0 pl-0 list-none">
                 <li className="hidden sm:block mx-2">
                     <DarkModeMenu />

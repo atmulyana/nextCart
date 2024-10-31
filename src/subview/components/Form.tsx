@@ -3,10 +3,11 @@
  * https://github.com/atmulyana/nextCart
  **/
 import * as React from 'react';
-import {useFormState, useFormStatus} from "react-dom";
+import {useFormStatus} from "react-dom";
+import cfg from '@/config/usable-on-client';
+import {isPlainObject} from '@/lib/common';
 import Loading from './Loading';
 import {useNotification, type NotificationParam} from './Notification';
-import {isPlainObject} from '@/lib/common';
 
 type ActionFunction = (formData: FormData) => any;
 
@@ -56,7 +57,7 @@ const FormWithFunctionAction = React.forwardRef<
     const formRef = React.useRef<HTMLFormElement>(null);
     const submitted = React.useRef<typeof onSubmitted>(onSubmitted);
     const preventInvalidEvent = React.useRef(false);
-    const [response, formAction] = useFormState(action, initFormState);
+    const [response, formAction] = React.useActionState(action, initFormState);
     const notify = useNotification();
 
     React.useEffect(() => {
@@ -195,7 +196,12 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
         </FormWithFunctionAction>
     }
 
-    return <form role='form' {...props} ref={ref} action={action} className={`relative ${className}`}>
+    return <form role='form'
+        {...props}
+        ref={ref}
+        action={action && action.startsWith('/') && `${cfg.baseUrl}${action}` || action}
+        className={`relative ${className}`}
+    >
         {children}
         {loading}
     </form>;

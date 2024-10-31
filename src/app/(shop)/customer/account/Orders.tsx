@@ -7,7 +7,6 @@ import type {TOrder} from '@/data/types';
 import PagedList from '@/subview/components/PagedList';
 import {currencySymbol, formatAmount, getStatusColor} from '@/lib/common';
 import {formatDate} from '@/lib/datetime/client';
-import currentLocale from '@/lib/currentLocale/client';
 import './slide.css';
 
 type TextProps = {

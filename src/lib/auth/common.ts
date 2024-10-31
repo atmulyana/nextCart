@@ -3,6 +3,7 @@
  **/
 import {headers} from 'next/headers';
 import {NextRequest} from 'next/server';
+import appCfg from '@/config/usable-on-client';
 import type {NotificationParam} from '@/subview/components/Notification';
 import {getData, setData} from './intermittentData';
 
@@ -14,7 +15,7 @@ const paramName = {
 };
 
 export function getUrl(request: NextRequest) {
-    const url = new URL(request.url);
+    const url = request.nextUrl;
     request.headers.set(paramName.urlPath, url.pathname);
     request.headers.set(paramName.urlQuery, url.search);
     return url;
@@ -45,11 +46,16 @@ export function fetchMessage(sessionId: string, request: Request) {
 export function setRedirectMessage(
     sessionId: string,
     message: NotificationParam | string,
-    type?: NotificationParam['type']
+    type?: NotificationParam['type'] | number,
+    counter: number = 1
 ) {
+    if (typeof(type) == 'number') {
+        counter = type;
+        type = void(0);
+    }
     if (typeof(message) == 'string') {
-        setData(sessionId, paramName.message, message);
-        if (type) setData(sessionId, paramName.messageType, type);
+        setData(sessionId, paramName.message, message, counter);
+        if (type) setData(sessionId, paramName.messageType, type, counter);
     }
     else {
         setData(
@@ -57,13 +63,15 @@ export function setRedirectMessage(
             {
                 [paramName.message]: message.message,
                 [paramName.messageType]: message.type,
-            }
+            },
+            null,
+            counter
         )
     }
 }
 
-export function getSessionMessage(request?: Request, sessionId?: string) {
-    const hdrs = request?.headers ?? headers();
+export async function getSessionMessage(request?: Request, sessionId?: string) {
+    const hdrs = request?.headers ?? await headers();
     const msg: Partial<NotificationParam> = {};
     let val: string | null | undefined = hdrs.get(paramName.message);
     if (val) msg.message = val;
@@ -80,15 +88,15 @@ export function getSessionMessage(request?: Request, sessionId?: string) {
     return msg;
 }
 
-export function getRequestUrl() {
-    const hdrs = headers();
+export async function getRequestUrl() {
+    const hdrs = await headers();
     return {
         path: hdrs.get(paramName.urlPath) ?? '',
         search: hdrs.get(paramName.urlQuery) ?? '',
     }
 }
 
-export function isFromMobile(hdrs?: Headers) {
-    hdrs ??= headers();
+export async function isFromMobile(hdrs?: Headers) {
+    hdrs ??= await headers();
     return hdrs.get('X-Requested-With') == 'expressCartMobile';
 }

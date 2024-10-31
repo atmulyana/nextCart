@@ -3,7 +3,10 @@
  **/
 import type {NextAuthConfig, Session} from "next-auth";
 import {customAlphabet} from 'nanoid';
+import clientCfg from '@/config/usable-on-client';
 import sessionCfg from '@/config/session';
+
+process.env.AUTH_TRUST_HOST = clientCfg.baseUrl.host;
 
 const BASE64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 const nanoid = customAlphabet(BASE64_CHARS, 16);

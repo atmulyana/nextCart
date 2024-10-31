@@ -1,7 +1,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {Metadata, ResolvedMetadata, ResolvingMetadata} from "next";
+import type {Metadata, ResolvedMetadata, ResolvingMetadata, Route} from "next";
 import numeral from 'numeral';
 import config from '@/config/usable-on-client';
 
@@ -10,11 +10,24 @@ export type RouteParam<P extends GetParam = {}, S extends GetParam = {}> = {
     params: P,
     searchParams: S
 };
+export type PromiseProps<T extends {[p: string]: any}> = {
+    [p in keyof T]:  Promise<T[p]>
+} 
+type Props<P extends GetParam, S extends GetParam> = PromiseProps<RouteParam<P, S>>;
 
 export type GenerateMetadata<P extends GetParam, S extends GetParam> = (
     props: RouteParam<P, S>,
     parent: ResolvedMetadata
 ) => Promise<Metadata>;
+
+export async function awaitProps<T extends {[p: string]: Promise<any>}>(props: T) {
+    type Return = {
+        [p in keyof T]: Awaited<T[p]>
+    };
+    const props2: any = {};
+    for (let p in props) props2[p] = await props[p];
+    return props2 as Return;
+}
 
 export function normalizeParamValue(param: GetParam) {
     for (let p in param) {
@@ -70,19 +83,20 @@ export function meta(metadata: Metadata, parent?: ResolvedMetadata): Metadata {
 export function fnMeta<P extends GetParam = {}, S extends GetParam = {}>(
     metadata: Metadata | GenerateMetadata<P, S>
 ): (
-    props: RouteParam<P, S>,
+    props: Props<P, S>,
     parent: ResolvingMetadata
 ) => Promise<Metadata>  {
     return async function(
-        props: RouteParam<P, S>,
+        props: Props<P, S>,
         parent: ResolvingMetadata
     ) {
         const pMeta = await parent;
         let cMeta: Metadata;
         if (typeof(metadata) == 'function') {
-            if (props.params) normalizeParamValue(props.params);
-            if (props.searchParams) normalizeParamValue(props.searchParams);
-            cMeta = await metadata(props, pMeta);
+            const props2 = await awaitProps(props);
+            if (props2.params) normalizeParamValue(props2.params);
+            if (props2.searchParams) normalizeParamValue(props2.searchParams);
+            cMeta = await metadata(props2, pMeta);
         }
         else cMeta = metadata;
         return meta(cMeta, pMeta);
@@ -100,20 +114,30 @@ export function ResponseMessage(message: string, params?: (number | {status?: nu
     return Response.json({message, ...props}, {status});
 }
 
-export function safeUrl(url: any, option: {base?: string | URL, default?: string} | string = {}) {
+export function safeUrl(
+    url: string | URL,
+    option: {
+        base?: string | URL,
+        default?: string,
+        useBasePath?: boolean,
+    } | string = {}
+) {
     let Url: URL | undefined;
     if (typeof(option) == 'string') option = {default: option};
 
     if (option.base == '__OUTSIDE__') {
-        if (url instanceof URL) Url = url;
-        else if (typeof(url) == 'string') Url = new URL(url);
+        if (typeof(url) == 'string') Url = new URL(url);
+        else if (
+            url instanceof URL ||
+            typeof(url) == 'object' && (url as Object).constructor.name == 'NextURL'
+        ) Url = url;
         if (!Url || Url.protocol != 'https:') throw 'Invalid safe URL: ' + url;
         return Url;
     }
 
-    const baseUrl = new URL(option.base || config.baseUrl || 'http://localhost');
+    const baseUrl = new URL(option.base || config.baseUrl);
     const defaultUrl = new URL('/', baseUrl);
-    Url = typeof(url) == 'string' ? new URL(url.trim() || option.default?.trim() || '/', baseUrl) :
+    Url = typeof(url) == 'string' ? new URL(url.trim() || option.default?.trim() || '/', baseUrl) : 
           url instanceof URL      ? url :
                                     defaultUrl;
     if (
@@ -124,6 +148,9 @@ export function safeUrl(url: any, option: {base?: string | URL, default?: string
         Url.username ||
         Url.password
     ) Url = defaultUrl;
+    if (option.useBasePath) {
+        Url.pathname = config.baseUrl.path + Url.pathname;
+    }
     return Url;
 }
 

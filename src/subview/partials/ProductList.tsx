@@ -9,7 +9,7 @@ import type {TProductItem} from '@/data/types';
 import lang from '@/data/lang';
 import {addCartItem} from '@/app/actions';
 import {GET} from '@/app/(shop)/data/route';
-import {currencySymbol, formatAmount} from '@/lib/common';
+import {awaitProps, currencySymbol, formatAmount, type PromiseProps} from '@/lib/common';
 import {CartForm} from '@/subview/components/Cart';
 import FlexImage from '@/subview/components/FlexImage';
 import Paging from '@/subview/components/Paging';
@@ -25,7 +25,7 @@ const ColsToBasis = {
     4: 'basis-1/4'
 };
 
-export type ProductListProps = Pick<Parameters<typeof GET.data>[0], 'params' | 'searchParams'>;
+export type ProductListProps = PromiseProps<Pick<Parameters<typeof GET.data>[0], 'params' | 'searchParams'>>;
 
 class Title extends String {
     searchTerm?: string;
@@ -48,8 +48,9 @@ export function getTitle(paginateUrl?: string, searchTerm?: string) {
 }
 
 export default async function ProductList(props: ProductListProps) {
-    const data = await GET.data(props);
-    const {params: {paginateUrl = 'page', searchTerm}} = props;
+    const props2 = await awaitProps(props)
+    const data = await GET.data(props2);
+    const {params: {paginateUrl = 'page', searchTerm}} = props2;
     const title = getTitle(paginateUrl, searchTerm)
     const titleParts = title && title.split(': ');
 

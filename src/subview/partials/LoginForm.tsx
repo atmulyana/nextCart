@@ -13,10 +13,10 @@ export type LoginFormProps = {
     submitHandler: Exclude<NonNullable<React.ComponentProps<'form'>['action']>, string>,
 }
 
-export default function LoginForm({referrerUrl, submitHandler}: LoginFormProps) {
+export default async function LoginForm({referrerUrl, submitHandler}: LoginFormProps) {
     if (!referrerUrl) {
         try {
-            referrerUrl = headers().get('referrer');
+            referrerUrl = (await headers()).get('referrer');
         }
         catch {}
     }

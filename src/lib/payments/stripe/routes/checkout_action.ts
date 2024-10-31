@@ -6,12 +6,11 @@ import Stripe from 'stripe';
 import {getCart} from '@/data/cart';
 import lang from '@/data/lang';
 import {getSession} from '@/data/session';
-import {redirectWithMessage} from '@/lib/auth';
 import {ResponseMessage} from '@/lib/common';
 import {createPostHandler} from '@/lib/routeHandler';
 import {createOrder, getPaymentConfig} from '../../';
 
-export const POST = createPostHandler(async (formData) => {
+export const POST = createPostHandler(async (formData, redirect) => {
     const cart = await getCart();
     if (!cart || cart.totalCartAmount <= 0.0) return;
     const session = await getSession();
@@ -53,11 +52,11 @@ export const POST = createPostHandler(async (formData) => {
         charge.paid
     );
 
-    await redirectWithMessage(
+    await redirect(
         '/payment/' + orderId,
         charge.paid
-            ? {message: lang('Your payment was successfully completed'), type: 'success'}
-            : `${lang('Your payment was declined')}. ${lang('Please try again')}`
+            ? {message: lang('Your payment was successfully completed'), messageType: 'success'}
+            : {message: `${lang('Your payment was declined')}. ${lang('Please try again')}`}
     );
 });
 

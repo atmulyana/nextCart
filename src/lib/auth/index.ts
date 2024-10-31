@@ -3,7 +3,7 @@
  **/
 import {cache} from 'react';
 import {revalidatePath} from 'next/cache';
-import {cookies} from 'next/headers';
+import {cookies, headers} from 'next/headers';
 import {redirect, RedirectType} from 'next/navigation';
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
@@ -72,21 +72,29 @@ export const {signIn, signOut, auth, handlers, unstable_update: updateSessionTok
 export const getSessionToken = cache(auth);
 
 export async function redirectWithMessage(
-    url: string | URL,
+    url: string | URL /* including `NextURL` */,
     message: NotificationParam | string
 ) {
     const session = await getSessionToken();
-    if (!session) return;
-    if (url instanceof URL) url = url.pathname + url.search;
+    if (!session) return void(0) as never;
+    if (typeof(url) == 'object') url = url.pathname + url.search;
     else if (!url.startsWith('/')) throw "Invalid URL: only absolute path accepted without protocol and hostname.";
-    setRedirectMessage(session.id, message);
+    setRedirectMessage(
+        session.id,
+        message,
+
+        /** When invoked in a server (submit) action, the detination page will be rendered at least twice.
+         *  The first one will not be rendered at the client at all which causes the notification will not be shown.
+        */
+        (await headers()).get('Next-Action') ? 2 : 1
+    );
     revalidatePath(url);
-    cookies().set('x-revalidated-at', new Date().toISOString());
-    redirect(url, RedirectType.replace);
+    (await cookies()).set('x-revalidated-at', new Date().toISOString());
+    return redirect(url, RedirectType.replace);
 }
 
 export async function getSessionMessage(request?: Request) {
-    return internalGetSessionMessage(request, (await getSessionToken())?.id);
+    return await internalGetSessionMessage(request, (await getSessionToken())?.id);
 }
 
 export {getRequestUrl};

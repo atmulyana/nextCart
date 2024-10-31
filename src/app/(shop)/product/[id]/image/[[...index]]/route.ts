@@ -2,6 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 //import {notFound} from 'next/navigation'
+import cfg from '@/config/usable-on-client';
 import type {TProductImage} from '@/data/types';
 import {isIndexNumber, ResponseMessage} from '@/lib/common';
 import {getDefaultImage, getImage} from '@/data/product';
@@ -21,8 +22,9 @@ function notFound() {
 
 export async function GET(
     request: Request,
-    {params: {id, index}}: {params: {id: string, index?: string[]}}
+    {params}: {params: Promise<{id: string, index?: string[]}>}
 ) {
+    const {id, index} = await params;
     const indexes = index || [];
     if (indexes.length > 1 || indexes.length == 1 && !isIndexNumber(indexes[0])) return notFound();
     if (indexes.length < 1) { //default image
@@ -31,7 +33,7 @@ export async function GET(
             return responseImage(image);
         }
         else if (image === null) {
-            return Response.redirect(new URL('/images/placeholder.png', request.url));
+            return Response.redirect(cfg.baseUrl + '/images/placeholder.png');
         }
         else {
             return notFound();

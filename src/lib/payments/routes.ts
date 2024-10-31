@@ -1,8 +1,9 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {GatewayRoutes, Routes, RouteType} from './types';
+import {NextRequest} from 'next/server';
 import appCfg from '@/config/usable-on-client';
+import type {GatewayRoutes, Routes, RouteType} from './types';
 import {isFromMobile} from '../auth/common';
 
 let routes: Routes | undefined;
@@ -31,14 +32,14 @@ export async function getRoute(path: string): Promise<Routes[string] | undefined
     return routes[path];
 }
 
-export async function newUrl(request: Request) {
-    const path = new URL(request.url).pathname;
+export async function newUrl(request: NextRequest) {
+    const path = request.nextUrl.pathname;
     const route = await getRoute(path)
     if (route) {
         request.headers.set(HEADER_NAME, path);
         if (route.type == 'route') return '/checkout/payment/gateway';
         else { //page
-            if (isFromMobile(request.headers)) return '/payment/data';
+            if (await isFromMobile(request.headers)) return '/payment/data';
             return '/payment';
         }
     }

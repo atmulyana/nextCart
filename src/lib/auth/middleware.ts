@@ -61,7 +61,7 @@ function setResponseCookies(response: NextResponse, cookies: Cookies) {
 }
 
 async function initSession() {
-    const headers = new Headers(nextHeaders());
+    const headers = new Headers(await nextHeaders());
     let url = createActionURL(
         "callback",
         // @ts-expect-error `x-forwarded-proto` is not nullable, next.js sets it by default
@@ -124,7 +124,13 @@ export const middleware = auth(async (request) => {
     if (paymentUrl) {
         url.pathname = paymentUrl;
     }
-    else if (isFromMobile(request.headers) && request.method == 'GET' && !url.pathname.endsWith('/data')) {
+    else if (request.method == 'POST' && url.pathname.startsWith('/customer/reset/') && !request.headers.get('Next-Action')) {
+        const [token] = url.pathname.substring('/customer/reset/'.length).trim().split('/');
+        if (token) {
+            url.pathname = `/customer/reset/${token}/api`;
+        }
+    }
+    else if (await isFromMobile(request.headers) && request.method == 'GET' && !url.pathname.endsWith('/data')) {
         url.pathname += '/data';
     }
     const response = NextResponse.rewrite(url.toString(), {request});

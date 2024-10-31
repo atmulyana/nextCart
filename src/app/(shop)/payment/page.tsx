@@ -13,7 +13,7 @@ import Template from '@/subview/partials/Template';
 
 export async function generateMetadata(props: any, parent: ResolvingMetadata) {
     let metadata: Metadata = {};
-    const mod = await getRouteModule(headers());
+    const mod = await getRouteModule(await headers());
     if (mod.generateMetadata) {
         const meta = mod.generateMetadata(props, parent);
         metadata =  (meta instanceof Promise) ? (await meta) : meta; 
@@ -28,7 +28,7 @@ export async function generateMetadata(props: any, parent: ResolvingMetadata) {
 };
 
 export default async function Payment() {
-    const mod = await getRouteModule(headers());
+    const mod = await getRouteModule(await headers());
     if (!mod.Page) return notFound();
     const cart = await getCart();
     // if (!cart || cart.totalCartAmount <= 0.0) return notFound();

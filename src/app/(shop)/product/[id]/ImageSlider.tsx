@@ -4,6 +4,7 @@
  **/
 import React from 'react';
 import {Carousel, type CustomFlowbiteTheme} from 'flowbite-react';
+import cfg from '@/config/usable-on-client';
 import type {TProductImagePath} from '@/data/types';
 import FlexImage from '@/subview/components/FlexImage';
 
@@ -41,7 +42,7 @@ const ImageSlider = React.memo(function ImageSlider(
         <div className='relative rounded w-full pt-full overflow-hidden'>
             <div ref={slider} className='absolute top-0 right-0 bottom-0 left-0'>
             <Carousel slide={false} theme={theme} onSlideChange={slideChange}>
-                {images.map(img => <img key={img.id} src={img.path} alt='...' />)}
+                {images.map(img => <img key={img.id} src={`${cfg.baseUrl.path}${img.path}`} alt='...' />)}
             </Carousel>
             </div>
         </div>

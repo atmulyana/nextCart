@@ -8,15 +8,38 @@ export const getCustomerByEmail = fn(async (db: Db, email: string) => {
     return await db.collection<TCustomer>('customers').findOne({email});
 });
 
+export const getCustomerByResetToken = fn(async (db: Db, token: string) => {
+    return await db.collection<TCustomer>('customers').findOne({resetToken: token, resetTokenExpiry: {$gt: Date.now()}});
+});
+
 export const createCustomer = fn(async (db: Db, customer: WithoutId<TCustomer>) => {
     const w = await db.collection('customers').insertOne(customer);
     return w.insertedId;
 });
 
-export const updateCustomer = fn(async (db: Db, id: _Id, customer: Partial<WithoutId<TCustomer>>) => {
+type OptonalCustomerFields = keyof {
+    [F in keyof TCustomer as {} extends Pick<TCustomer, F> ? F : never]: TCustomer[F]
+};
+
+export const updateCustomer = fn(async (
+    db: Db,
+    id: _Id,
+    customer: Partial<WithoutId<TCustomer>>,
+    deletedFields: Array<OptonalCustomerFields> = []
+) => {
     const _id = toId(id);
-    if (_id) await db.collection('customers').updateOne(
-        {_id},
-        {$set: customer}
-    );
+    if (_id) {
+        const $unset = deletedFields.reduce(
+            (obj, field) => (obj[field] = '', obj),
+            {} as {[F in OptonalCustomerFields]?: ''}
+        );
+        const updates: {$set?: typeof customer, $unset?: typeof $unset} = {};
+        if (Object.keys(customer).length > 0) updates.$set = customer;
+        if (Object.keys($unset).length > 0) updates.$unset = $unset;
+    
+        await db.collection('customers').updateOne(
+            {_id},
+            updates
+        );
+    }
 });

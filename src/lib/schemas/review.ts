@@ -5,7 +5,7 @@ import z from '.';
 import lang from '@/data/lang';
 import {productExists} from '@/data/product';
 import {stripHtml} from 'string-strip-html';
-const {regex: badwordsList} = require('badwords-list') as {regex: RegExp};
+import {regexp as badwordsList} from 'badwords-list'
 
 export default z.form({
     title: z.preprocess(

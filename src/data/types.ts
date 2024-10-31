@@ -48,6 +48,8 @@ export type TCustomer = {
     state: string,
     postcode: string,
     phone: string,
+    resetToken?: string,
+    resetTokenExpiry?: number,
 }
 
 export type TDiscount = {

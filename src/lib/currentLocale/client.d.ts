@@ -6,5 +6,4 @@ declare global {
         __currenLocale__: string;
     }
 }
-declare function currentLocale(): string;
-export default currentLocale;
+export {default} from './';

@@ -15,6 +15,7 @@ export function generateMetadata(): Metadata {
     };
 }
 
-export default async function LoginPage({searchParams: {referrerUrl}}: {searchParams: {referrerUrl: string}}) {
+export default async function LoginPage({searchParams}: {searchParams: Promise<{referrerUrl: string}>}) {
+    const {referrerUrl} = await searchParams;
     return <LoginForm referrerUrl={referrerUrl} submitHandler={loginCustomer} />;
 }

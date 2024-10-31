@@ -3,6 +3,7 @@
  **/
 import type {TCustomer} from '@/data/types';
 import fn, {type Db, getPagedList, type ObjectId, toId} from '@/data/db-conn';
+import currentLocale from '@/lib/currentLocale/server';
 import {timeAgo} from '@/lib/datetime/server';
 
 type TReviewBase = {
@@ -95,8 +96,9 @@ export const getReviews = fn(async (
 
     const {list: reviews, isNext, page} = pList;
     
+    const locale = currentLocale();
     for (let i = 0; i < reviews.length; i++) {
-        reviews[i].timeAgo = timeAgo(reviews[i].date);
+        reviews[i].timeAgo = timeAgo(reviews[i].date, locale);
     }
 
     return {

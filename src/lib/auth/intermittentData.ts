@@ -1,12 +1,16 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-const DATA = new Map<string, Map<string, any>>();
+const DATA = new Map<string, Map<string, {
+    value: any,
+    counter: number,
+}>>();
 
 export function setData(
     sessionId: string,
     prop: string | {[name: string]: any},
     value?: any,
+    counter: number = 1
 ) {
     let data = DATA.get(sessionId);
     if (!data) {
@@ -15,11 +19,11 @@ export function setData(
     }
 
     if (typeof(prop) == 'string') {
-        if (value !== undefined) data.set(prop, value);
+        if (value !== undefined) data.set(prop, {value, counter});
     }
     else {
         for (let name in prop) {
-            data.set(name, prop[name]);
+            data.set(name, {value: prop[name], counter});
         }
     }
 
@@ -29,9 +33,18 @@ export function setData(
 export function getData<T = any>(sessionId: string, name:  string) {
     let data = DATA.get(sessionId);
     if (data) {
-        const value = data.get(name);
-        data.delete(name);
-        if (data.size < 1) DATA.delete(sessionId);
-        return value as T;
+        const dataVal = data.get(name);
+        if (dataVal) {
+            dataVal.counter--;
+            const value = dataVal.value;
+            if (dataVal.counter < 1) {
+                data.delete(name);
+                if (data.size < 1) DATA.delete(sessionId);
+            }
+            else {
+                data.set(name, dataVal);
+            }
+            return value as T;
+        }
     }
 }

@@ -2,25 +2,24 @@
  * https://github.com/atmulyana/nextCart
  **/
 import lang from '@/data/lang';
-import {redirectWithMessage} from '@/lib/auth';
 import {createGetHandler} from '@/lib/routeHandler';
 import type {NotificationParam} from '@/subview/components/Notification';
 import {clearPaymentId} from '../data';
 
-export const GET = createGetHandler(async ({isFromMobile}) => {
+export const GET = createGetHandler(async ({isFromMobile, redirect}) => {
     try {
         await clearPaymentId();
     }
     catch {}
 
-    const obj: NotificationParam = {
+    const notification = {
         message: lang('The payment was cancelled'),
-        type: 'danger',
+        messageType: 'danger' as NotificationParam['type'],
     };
 
-    if (isFromMobile) return Response.json({message: obj.message, messageType: obj.type});
-    else return await redirectWithMessage(
+    if (isFromMobile) return Response.json(notification);
+    else return await redirect(
         '/checkout/payment',
-        obj
+        notification
     );
 });

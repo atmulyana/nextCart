@@ -6,6 +6,7 @@ import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import lang from '@/data/lang';
 import {getOrder} from '@/data/order';
+import {getSession} from '@/data/session';
 import {getPaymentModule} from '@/lib/payments';
 import Template from '@/subview/partials/Template';
 
@@ -15,9 +16,11 @@ export function generateMetadata() {
     };
 };
 
-export default async function Payment({params: {orderId}}: {params: {orderId: string}}) {
+export default async function Payment({params}: {params: Promise<{orderId: string}>}) {
+    const {orderId} = await params;
     const order = await getOrder(orderId);
-    if (!order) return notFound();
+    const session = await getSession();
+    if (!order || !order.orderCustomer?.equals(session.customerId)) return notFound();
     const mod = await getPaymentModule(order.orderPaymentGateway.toLowerCase());
     
     return <Template>{mod.PaymentComplete ? (

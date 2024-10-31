@@ -3,6 +3,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
+import cfg from '@/config/usable-on-client';
 import {isPlainObject} from '@/lib/common';
 import Loading from './Loading';
 import {useNotification} from './Notification';
@@ -34,7 +35,7 @@ function PagedList<T extends List>({
     React.useEffect(() => {
         if (loading != 0) {
             const page = list ? (loading < 0 ? list.page - 1 : list.page + 1) : 1;
-            fetch(`${url}/${page}`)
+            fetch(`${cfg.baseUrl}${url}/${page}`)
             .then(response => {
                 if (!response.ok) throw response;
                 return response.json();

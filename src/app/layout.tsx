@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     description: config.cartDescription,
     keywords: config.cartTitle,
     referrer: 'origin',
-    metadataBase: new URL(config.baseUrl),
+    metadataBase: config.baseUrl,
     alternates: {
         canonical: config.baseUrl,
     },
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     twitter: {
         card: 'summary',
         title,
-        site: config.baseUrl,
+        site: config.baseUrl.toString(),
     },
 }
 export const viewport: Viewport = {

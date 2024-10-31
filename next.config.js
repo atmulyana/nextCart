@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 
+const cfg = require('./src/config/usable-on-client.json');
+
 const nextConfig = {
+    /** `basePath` must be set via `baseUrl` in "./src/config/usable-on-client.json" to make consistency in the entire app source code */
+    basePath: new URL(cfg.baseUrl).pathname.replace(/\/+$/, ''),
     webpack: (config, {dev, isServer}) => {
         if (isServer) {
             config.module.rules.push(
@@ -43,10 +47,11 @@ const nextConfig = {
         staleTimes: {
             dynamic: 0,
         },
-        serverComponentsExternalPackages: [
-            '@react-email/render',
-        ],
+        internal_disableSyncDynamicAPIWarnings: true,
     },
+    // serverExternalPackages: [
+    //     '@react-email/render',
+    // ],
 }
 
 module.exports = nextConfig;

@@ -21,7 +21,7 @@ export default customerData.extends({
     createAccount: z.boolean(),
     password: z.if(
         data => data.createAccount,
-        z.string(),
+        z.string().chain(str => str.min(4)),
         z.string().chain(str => str.optional()),
     ),
 });

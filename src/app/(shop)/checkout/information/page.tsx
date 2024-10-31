@@ -45,7 +45,7 @@ export default async function CheckoutInformation() {
                     <Input type='text' name='loginEmail' placeholder={lang('Email address')} />
                 </div>
                 <div className='mb-4'>
-                    <Input type='text' name='loginPassword' placeholder={lang('Password')} />
+                    <Input type='password' name='loginPassword' placeholder={lang('Password')} />
                 </div>
                 <div className='checkout-buttons'>
                     <Link href='/customer/forgotten' className='btn btn-primary'>{lang('Forgotten')}</Link>

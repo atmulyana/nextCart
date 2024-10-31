@@ -20,7 +20,7 @@ export default function EmailOrder({
         <div className="container">
             <div className="panel panel-default">
                 <div className="panel-heading">
-                    <img id="logo" />
+                    <img id="logo" src={`${config.baseUrl}/images/logo.svg`} />
                     <h1>{config.cartTitle}</h1>
                 </div>
                 <div className="panel-body">

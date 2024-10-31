@@ -5,7 +5,6 @@ import type {OrderStatus} from '@/data/types';
 import {ObjectId} from '@/data/db-conn';
 import {getCart} from '@/data/cart';
 import lang from '@/data/lang';
-import {redirectWithMessage} from '@/lib/auth';
 import {createPostHandler} from '@/lib/routeHandler';
 import {createOrder, getPaymentConfig} from '../../';
 
@@ -27,11 +26,11 @@ export const POST = createPostHandler(async (_, redirect) => {
         message
     );
 
-    return await redirectWithMessage(
+    await redirect(
         '/payment/' + orderId,
         {
             message,
-            type: 'success',
+            messageType: 'success',
         }
     );
 });

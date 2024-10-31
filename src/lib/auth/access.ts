@@ -2,6 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import type {Session} from "next-auth";
+import cfg from '@/config/usable-on-client';
 
 type Redirect = {
     path: string,
@@ -105,6 +106,7 @@ export function toRedirect(path: string, auth: Session | null) {
                     message,
                     messageType,
                     ...redirect,
+                    path: `${cfg.baseUrl.path}${redirect.path}`,
                 }
                 : null;
         }

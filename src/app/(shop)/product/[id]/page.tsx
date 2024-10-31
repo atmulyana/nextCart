@@ -13,7 +13,7 @@ import FrontMenu from '@/subview/partials/FrontMenu';
 import SubmitButton from '@/subview/components/SubmitButton';
 import SubmittedTextArea from '@/subview/components/SubmittedTextArea';
 import Template from '@/subview/partials/Template';
-import {currencySymbol, fixTags, fnMeta, formatAmount, snip} from '@/lib/common';
+import {awaitProps, currencySymbol, fixTags, fnMeta, formatAmount, snip, type PromiseProps} from '@/lib/common';
 import modules from '@/lib/modules';
 import {addCartItem} from '@/app/actions';
 import {GET} from './data/route';
@@ -23,7 +23,7 @@ import RelatedImageTitleItem from './RelatedImageTitleItem';
 import ReviewControls from './ReviewControls';
 import Variants from './Variants';
 
-type Props = Pick<Parameters<typeof GET.data>[0], 'params' | 'searchParams'>;
+type Props = PromiseProps<Pick<Parameters<typeof GET.data>[0], 'params' | 'searchParams'>>;
 
 export const generateMetadata = fnMeta<{
     id: string,
@@ -48,7 +48,7 @@ export default async function Product(props: Props) {
         reviews,
         images,
         relatedProducts,
-    } = await GET.data(props);
+    } = await GET.data(await awaitProps(props));
     const productId = product._id.toString();
 
     const labels = {

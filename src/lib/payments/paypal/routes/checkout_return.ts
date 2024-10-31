@@ -5,7 +5,6 @@ import paypal from 'paypal-rest-sdk';
 import type {OrderStatus} from '@/data/types';
 import {dbTrans} from '@/data/db-conn';
 import lang from '@/data/lang';
-import {redirectWithMessage} from '@/lib/auth';
 import {ResponseMessage} from '@/lib/common';
 import {createGetHandler} from '@/lib/routeHandler';
 import type {NotificationParam} from '@/subview/components/Notification';
@@ -76,11 +75,11 @@ export const GET = createGetHandler<{}, {paymentId: string, PayerID: string}>(as
     });
 
     if (obj.message) {
-        return await redirectWithMessage(
+        return await redirect(
             obj.redirectUrl || '/checkout/payment',
             {
                 message: obj.message,
-                type: obj.type || 'danger',
+                messageType: obj.type || 'danger',
             }
         );
     }
