@@ -4,21 +4,22 @@
 import type {TCustomer, TSessionCustomer} from '@/data/types';
 import {dbTrans, ObjectId, toId} from '@/data/db-conn';
 import {getCustomerByEmail} from '@/data/customer';
-import {setCustomerSession} from '@/data/session';
+import {getSession, setCustomerSession} from '@/data/session';
 import {updateOrderComment} from '@/data/cart';
 import {updateSessionToken} from '@/lib/auth'; 
 import {createPostHandler} from '@/lib/routeHandler';
 
 export const POST = createPostHandler(async (formData, redirect, isFromMobile) => {
     return await dbTrans(async () => {
-        let customerId: ObjectId | undefined;
-        if (formData.has('customerId')) {
-            customerId = toId(formData.getString('customerId'))
-        }
-        else {
-            const customer = await getCustomerByEmail(formData.getString('shipEmail'));
-            customerId = customer?._id;
-        }
+        // let customerId: ObjectId | undefined;
+        // if (formData.has('customerId')) {
+        //     customerId = toId(formData.getString('customerId'))
+        // }
+        // else {
+        //     const customer = await getCustomerByEmail(formData.getString('email'));
+        //     customerId = customer?._id;
+        // }
+        const {customerId} = await getSession();
         
         const custObj: Omit<TCustomer, '_id' | 'password'> = {
             email: formData.getString('email'),

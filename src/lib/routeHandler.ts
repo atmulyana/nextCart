@@ -4,21 +4,23 @@
 import {NextRequest} from 'next/server';
 import {headers as nextHeaders} from 'next/headers';
 import {redirect as nextRedirect, RedirectType} from 'next/navigation';
+import {getRedirectError} from 'next/dist/client/components/redirect';
 import config from '@/config';
 import {getCart} from '@/data/cart';
-import {getSession} from '@/data/session';
+import {getSession, refreshSessionExpires} from '@/data/session';
 import type {NotificationParam} from '@/subview/components/Notification';
 import {title} from '@/app/(shop)/layout';
 import {getSessionMessage, redirectWithMessage} from './auth';
 import {isFromMobile as fromMobile} from './auth/common';
 import {isPlainObject, normalizeParamValue, safeUrl, type GetParam, type RouteParam} from './common';
+import {validateForm} from './schemas';
 
 type RedirectOption = Exclude<NonNullable<Parameters<typeof safeUrl>[1]>, string> & {
     message?: string,
     messageType?: NotificationParam['type'],
 } | string;
 export type Redirect = <T extends RedirectOption>(url: any, option?: T) => (
-    T extends {message: string} ? Promise<never> : Response
+    T extends {message: string} ? Promise<never> : (Response | never)
 );
 
 export type HandlerParams<P extends GetParam = {}, S extends GetParam = {}> = RouteParam<P, S> & {
@@ -51,16 +53,16 @@ export const redirect = ((url: any, option?: RedirectOption) => {
         return nextRedirect(sUrl, RedirectType.replace);
 }) as Redirect;
 
-function createRedirect(reqUrl: NextRequest['nextUrl']) {
+function createRedirect(reqUrl: NextRequest['nextUrl'], isPost: boolean = false) {
     return ((url: string | URL, option?: RedirectOption) => {
         const Url = safeUrl(
             url, 
             {
                 base: reqUrl,
-                ...(typeof(option) == 'string' ? {default: option} : option)
+                ...(typeof(option) == 'string' ? {default: option} : option),
             }
         );
-
+        
         if (typeof(option) == 'object' && option?.message) {
             return redirectWithMessage(
                 reqUrl.basePath ? `${Url.pathname}${Url.search}` : `${config.baseUrl.path}${Url.pathname}${Url.search}`, 
@@ -71,25 +73,34 @@ function createRedirect(reqUrl: NextRequest['nextUrl']) {
             );
         }
 
-        Url.pathname = `${config.baseUrl.path}${Url.pathname}${Url.search}`;
-        return Response.redirect(Url);
+        if (Url.host != config.baseUrl.host || Url.protocol != config.baseUrl.protocol) {
+            Url.pathname = `${config.baseUrl.path}${Url.pathname}`;
+            return Response.redirect(Url);
+        }
+
+        if (isPost) throw getRedirectError(Url.pathname, RedirectType.replace, 303);
+        return redirect(Url.pathname, RedirectType.replace);
     }) as Redirect;
 }
 
 async function applyCommonMobileData(response: any, isGet: boolean = false) {
     if (isPlainObject(response)) {
-        const {discount, items = {}, ...cart} = (
+        const {discount, items = {}, totalCartItems: cartItemCount, ...cart} = (
             (
                 ('cart' in response) ? response.cart : await getCart()
             ) ?? {} 
         ) as Partial<NonNullable<Awaited<ReturnType<typeof getCart>>>>;
         
+        const sess = await getSession();
         response.session = {
-            ...(await getSession()),
+            ...response.session,
+            ...sess,
+            customerPresent: sess.customerPresent,
+            userPresent: sess.userPresent,
             ...cart,
+            cartItemCount,
             discountCode: typeof(discount) == 'string' ? discount : discount?.code,
             cart: items,
-            ...response.session,
         };
         response.config = config;
         
@@ -100,13 +111,14 @@ async function applyCommonMobileData(response: any, isGet: boolean = false) {
         }
 
         if ('cart' in response) {
-            response.totalCartItems = cart.totalCartItems ?? 0;
+            response.totalCartItems = cartItemCount ?? 0;
             delete response.cart;
         }
         if (isGet) {
             if (typeof(response.title) == 'undefined') response.title = title;
         }
     }
+    return response;
 }
 
 export function createGetHandler<P extends GetParam, S extends GetParam, R = any>(handler: GetHandler<P, S, R>): GetRouteHandler<P, S, R> {
@@ -122,8 +134,11 @@ export function createGetHandler<P extends GetParam, S extends GetParam, R = any
         if (!headers) headers = await nextHeaders();
         normalizeParamValue(params);
         normalizeParamValue(searchParams);
-        let response = await handler({params, searchParams, redirect: _redirect, isFromMobile, headers});
-        if (isFromMobile) await applyCommonMobileData(response, true);
+        let response = await handler({params, searchParams, redirect: _redirect, isFromMobile, headers}) ?? {};
+        if (isFromMobile) {
+            await refreshSessionExpires();
+            await applyCommonMobileData(response, true);
+        }
         return response as R;
     }
 
@@ -208,8 +223,32 @@ export function createPostHandler<P extends GetParam = {}, R = any>(handler: Pos
             for (let val of values) if (val) formData.append(p, String(val))
         }
         
-        const _redirect = createRedirect(request.nextUrl);
         const isFromMobile = await fromMobile(request.headers);
+        
+        if (isFromMobile) {
+            const schemaName = formSchemas[request.nextUrl.pathname];
+            if (schemaName) {
+                const validation = await validateForm(schemaName, formData);
+                if (!validation.success) {
+                    const validationData: {
+                        success: false,
+                        message?: string,
+                        inputMessages: {[name: string]: string},
+                    } = {
+                        success: false,
+                        inputMessages: {},
+                    };
+                    if ('message' in validation) validationData.message = validation.message;
+                    if ('messages' in validation) validationData.inputMessages = validation.messages;
+                    return Response.json({
+                        ...(await applyCommonMobileData({})),
+                        __validation__: validationData,
+                    });
+                }
+            }
+        }
+        
+        const _redirect = createRedirect(request.nextUrl, true);
         return await submit(formData, _redirect, isFromMobile);
     }
     POST.response = submit;
@@ -220,3 +259,14 @@ export function createPostHandler<P extends GetParam = {}, R = any>(handler: Pos
 
     return POST;
 }
+
+const formSchemas: {[path: string]: string} = {
+    '/admin/login_action': 'login',
+    '/customer/login_action': 'login',
+    '/customer/create': 'checkoutInfo',
+    '/customer/save': 'checkoutInfo',
+    '/customer/update': 'checkoutInfo',
+    '/customer/forgotten_action': 'forgottenPassword',
+    '/customer/reset': 'resetPassword', //TODO: prefix of path
+    '/product/addreview' : 'review',
+};

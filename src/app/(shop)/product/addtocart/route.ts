@@ -106,7 +106,14 @@ export const POST = createPostHandler(async (formData) => {
         const cartId = _cartId || session._id;
         await upsertCart(cartId, cart);
         await upsertCartItem(cartId, cartItemId, cartItem);
-        return response(lang('Cart successfully updated'), 200, {cartId});
+        return response(
+            lang('Cart successfully updated'),
+            200, 
+            {
+                cartId,
+                totalCartItems: cart.totalCartItems,
+            }
+        );
     },
     formData.has('homeAfterClear'));
 });

@@ -38,7 +38,7 @@ const ReviewControls = React.memo(function ReviewControls({
 }: {
     productId: string,
     data?: Return['reviews'],
-    reviewModule: TModules['review'],
+    reviewModule: TModules['reviews'],
     labels: {
         addReview: string,
         openReviews: string,

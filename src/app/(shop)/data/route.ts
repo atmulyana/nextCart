@@ -17,7 +17,9 @@ type Return = {
     filtered?: boolean,
     paginateUrl?: string,
     searchTerm?: string,
-    menu?: ReturnType<typeof sortMenu>,
+    menu?: {
+        items: ReturnType<typeof sortMenu>,
+    },
     message?: string,
     messageType?: NotificationParam['type'],
 };
@@ -26,7 +28,7 @@ export const GET = createGetHandler(async ({
     params,
     isFromMobile
 } : HandlerParams<{
-    paginateUrl?: string,
+    pageUrl?: string,
     searchTerm?: string,
     pageNum?: string,
 }>) => {
@@ -34,15 +36,15 @@ export const GET = createGetHandler(async ({
         pageNum = params.pageNum ? (
             isIndexNumber(params.pageNum) ? parseInt(params.pageNum, 10) : notFound()
         ) : 1,
-        {paginateUrl = 'page', searchTerm} = params,
-        title = getTitle(paginateUrl, searchTerm),
+        {pageUrl = 'page', searchTerm} = params,
+        title = getTitle(pageUrl, searchTerm),
         filtered = !!title?.searchTerm;
     let query = {};
     if (filtered) {
-        if (paginateUrl == 'category') {
+        if (pageUrl == 'category') {
             query = {tags: title.searchTerm};
         }
-        else if (paginateUrl == 'search') {
+        else if (pageUrl == 'search') {
             query = {$text: { $search: title.searchTerm }};
         }
         else {
@@ -59,8 +61,10 @@ export const GET = createGetHandler(async ({
     if (isFromMobile) {
         ret.searchTerm = title?.searchTerm;
         ret.filtered = filtered;
-        ret.paginateUrl = paginateUrl;
-        ret.menu = sortMenu(await getMenu());
+        ret.paginateUrl = pageUrl;
+        ret.menu = {
+            items: sortMenu(await getMenu()),
+        };
     }
     return ret;
 });

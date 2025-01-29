@@ -5,6 +5,6 @@ import reviewModule from './review-basic/server';
 
 export default {
     discount: null,
-    review: reviewModule,
+    reviews: reviewModule,
     shipping: null,
 };

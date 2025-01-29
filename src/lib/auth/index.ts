@@ -5,12 +5,13 @@ import {cache} from 'react';
 import {revalidatePath} from 'next/cache';
 import {cookies, headers} from 'next/headers';
 import {redirect, RedirectType} from 'next/navigation';
+import {getRedirectError} from 'next/dist/client/components/redirect';
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import type {NotificationParam} from '@/subview/components/Notification';
 //import {refreshSessionExpires} from "@/data/session";
 import config from './config';
-import {getRequestUrl, getSessionMessage as internalGetSessionMessage, setRedirectMessage} from './common';
+import {getRequestUrl, getSessionMessage as internalGetSessionMessage, isFromMobile, setRedirectMessage} from './common';
 
 export const {signIn, signOut, auth, handlers, unstable_update: updateSessionToken} = NextAuth({
     ...config,
@@ -90,6 +91,7 @@ export async function redirectWithMessage(
     );
     revalidatePath(url);
     (await cookies()).set('x-revalidated-at', new Date().toISOString());
+    if (await isFromMobile()) throw getRedirectError(url, RedirectType.replace, 303);
     return redirect(url, RedirectType.replace);
 }
 

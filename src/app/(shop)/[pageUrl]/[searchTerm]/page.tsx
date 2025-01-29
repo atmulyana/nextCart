@@ -7,10 +7,10 @@ import {fnMeta} from '@/lib/common';
 import ProductList, {getTitle, type ProductListProps} from '@/subview/partials/ProductList';
 
 export const generateMetadata = fnMeta<{
-    paginateUrl: string,
+    pageUrl: string,
     searchTerm: string
-}>(async ({params: {paginateUrl, searchTerm}}) => {
-    const title = getTitle(paginateUrl, searchTerm);
+}>(async ({params: {pageUrl, searchTerm}}) => {
+    const title = getTitle(pageUrl, searchTerm);
     if (title) {
         return {
             title: title.toString(),

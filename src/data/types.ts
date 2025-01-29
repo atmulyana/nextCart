@@ -96,6 +96,14 @@ export type TOrder = {
     [p: string]: any,
 }
 
+export type TPage = {
+    _id: ObjectId,
+    content: string,
+    enabled: boolean,
+    name: string,
+    slug: string,
+}
+
 type TProductBase = {
     _id: ObjectId,
     productPermalink: string,

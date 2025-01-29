@@ -4,16 +4,22 @@
 const bcrypt = require('bcryptjs');
 import type {TCustomer, TSessionCustomer, WithoutId} from '@/data/types';
 import {dbTrans} from '@/data/db-conn';
-import {createCustomer} from '@/data/customer';
-import {setCustomerSession} from '@/data/session';
 import {updateOrderComment} from '@/data/cart';
-import {createPostHandler} from '@/lib/routeHandler';
+import {createCustomer, getCustomerByEmail} from '@/data/customer';
+import lang from '@/data/lang';
+import {setCustomerSession} from '@/data/session';
 import {updateSessionToken} from '@/lib/auth'; 
+import {ResponseMessage} from '@/lib/common';
+import {createPostHandler} from '@/lib/routeHandler';
 
 export const POST = createPostHandler(async (formData, redirect, isFromMobile) => {
     return await dbTrans(async () => {
+        const email = formData.getString('email');
+        const existingCustomer = await getCustomerByEmail(email);
+        if (existingCustomer) return ResponseMessage(lang('A customer already exists with that email address'), 400);
+        
         const customer: WithoutId<TCustomer> = {
-            email: formData.getString('email'),
+            email,
             company: formData.getString('company'),
             firstName: formData.getString('firstName'),
             lastName: formData.getString('lastName'),

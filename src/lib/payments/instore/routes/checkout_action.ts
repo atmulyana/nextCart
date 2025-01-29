@@ -8,7 +8,7 @@ import lang from '@/data/lang';
 import {createPostHandler} from '@/lib/routeHandler';
 import {createOrder, getPaymentConfig} from '../../';
 
-export const POST = createPostHandler(async (_, redirect) => {
+export const POST = createPostHandler(async (_, redirect, isFromMobile) => {
     const cart = await getCart();
     if (!cart || cart.totalCartNetAmount <= 0.0) return;
     const cfg = await getPaymentConfig('instore');
@@ -25,6 +25,12 @@ export const POST = createPostHandler(async (_, redirect) => {
         true,
         message
     );
+
+    if (isFromMobile) {
+        return Response.json({
+            paymentId: orderId
+        });
+    }
 
     await redirect(
         '/payment/' + orderId,

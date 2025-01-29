@@ -3,6 +3,7 @@
  **/
 import numeral from 'numeral';
 import Stripe from 'stripe';
+import type {NotificationParam} from '@/subview/components/Notification';
 import {getCart} from '@/data/cart';
 import lang from '@/data/lang';
 import {getSession} from '@/data/session';
@@ -10,7 +11,7 @@ import {ResponseMessage} from '@/lib/common';
 import {createPostHandler} from '@/lib/routeHandler';
 import {createOrder, getPaymentConfig} from '../../';
 
-export const POST = createPostHandler(async (formData, redirect) => {
+export const POST = createPostHandler(async (formData, redirect, isFromMobile) => {
     const cart = await getCart();
     if (!cart || cart.totalCartAmount <= 0.0) return;
     const session = await getSession();
@@ -52,11 +53,26 @@ export const POST = createPostHandler(async (formData, redirect) => {
         charge.paid
     );
 
+    const messageObj: {message: string, messageType: NotificationParam['type']} = charge.paid
+        ? {
+            message: lang('Your payment was successfully completed'),
+            messageType: 'success'
+        }
+        : {
+            message: `${lang('Your payment was declined')}. ${lang('Please try again')}`,
+            messageType: 'danger'
+        };
+    
+    if (isFromMobile) {
+        return Response.json({
+            paymentId: orderId,
+            ...messageObj
+        });
+    }
+
     await redirect(
         '/payment/' + orderId,
-        charge.paid
-            ? {message: lang('Your payment was successfully completed'), messageType: 'success'}
-            : {message: `${lang('Your payment was declined')}. ${lang('Please try again')}`}
+        messageObj
     );
 });
 

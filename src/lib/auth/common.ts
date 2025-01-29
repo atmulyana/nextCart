@@ -3,7 +3,6 @@
  **/
 import {headers} from 'next/headers';
 import {NextRequest} from 'next/server';
-import appCfg from '@/config/usable-on-client';
 import type {NotificationParam} from '@/subview/components/Notification';
 import {getData, setData} from './intermittentData';
 

@@ -7,7 +7,8 @@ import {generateMetadata} from '../page';
 
 export const GET = createGetHandler(async () => {
     return {
-        cart: updateShippingInCart(),
+        cart: await updateShippingInCart(),
+        cartReadOnly: true,
         title: generateMetadata().title,
     };
 });

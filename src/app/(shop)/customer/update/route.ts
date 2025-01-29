@@ -5,22 +5,23 @@ import type {TCustomer, TSessionCustomer} from '@/data/types';
 import {dbTrans, ObjectId, toId} from '@/data/db-conn';
 import {getCustomerByEmail, updateCustomer} from '@/data/customer';
 import lang from '@/data/lang';
-import {setCustomerSession} from '@/data/session';
+import {getSession, setCustomerSession} from '@/data/session';
 import {updateSessionToken} from '@/lib/auth'; 
 import {ResponseMessage} from '@/lib/common';
 import {createPostHandler} from '@/lib/routeHandler';
 
 export const POST = createPostHandler(async (formData) => {
     return await dbTrans(async () => {
-        let customerId: ObjectId | undefined;
-        if (formData.has('customerId')) {
-            customerId = toId(formData.getString('customerId'))
-        }
-        else {
-            const customer = await getCustomerByEmail(formData.getString('shipEmail'));
-            customerId = customer?._id;
-        }
-        if (!customerId) return;
+        // let customerId: ObjectId | undefined;
+        // if (formData.has('customerId')) {
+        //     customerId = toId(formData.getString('customerId'))
+        // }
+        // else {
+        //     const customer = await getCustomerByEmail(formData.getString('email'));
+        //     customerId = customer?._id;
+        // }
+        const {customerId} = await getSession();
+        if (!customerId) return ResponseMessage(lang('Customer data not found'), 404);
         
         const custObj: Omit<TCustomer, '_id' | 'password'> = {
             email: formData.getString('email'),

@@ -128,8 +128,8 @@ export function safeUrl(
     if (option.base == '__OUTSIDE__') {
         if (typeof(url) == 'string') Url = new URL(url);
         else if (
-            url instanceof URL ||
-            typeof(url) == 'object' && (url as Object).constructor.name == 'NextURL'
+            url instanceof URL
+            //|| typeof(url) == 'object' && (url as Object).constructor.name == 'NextURL'
         ) Url = url;
         if (!Url || Url.protocol != 'https:') throw 'Invalid safe URL: ' + url;
         return Url;
@@ -142,7 +142,6 @@ export function safeUrl(
                                     defaultUrl;
     if (
         Url.host != baseUrl.host ||
-        Url.port != baseUrl.port ||
         Url.protocol != baseUrl.protocol ||
         !Url.hostname ||
         Url.username ||

@@ -7,7 +7,7 @@ import {getProduct, getProducts} from '@/data/product';
 import {createGetHandler, type HandlerParams} from '@/lib/routeHandler';
 import modules from '@/lib/modules/server';
 
-type TReviewModule = NonNullable<typeof modules.review>;
+type TReviewModule = NonNullable<typeof modules.reviews>;
 export type Return = {
     title?: string,
     result: TProduct,
@@ -63,10 +63,10 @@ export const GET = createGetHandler(async ({
         images,
         relatedProducts,
     };
-    if (modules.review) {
+    if (modules.reviews) {
         ret.reviews = {
-            ...(await modules.review.getReviews(product._id)),
-            ...(await modules.review.getReviewSummary(product._id)),
+            ...(await modules.reviews.getReviews(product._id)),
+            ...(await modules.reviews.getReviewSummary(product._id)),
         };
     }
     if (isFromMobile) {

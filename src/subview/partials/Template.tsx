@@ -11,12 +11,11 @@ import lang from '@/data/lang';
 import {refreshSessionExpires} from "@/data/session";
 import UrlFixer from '@/subview/components/UrlFixer';
 import {SessionUpdater} from '@/subview/components/SessionContext';
-import {getRequestUrl, getSessionMessage, getSessionToken} from '@/lib/auth';
+import {getRequestUrl, getSessionMessage} from '@/lib/auth';
 
 export default async function Template({children}: {children: React.ReactNode}) {
-    const session = await getSessionToken();
+    const {token: session} = await refreshSessionExpires();
     if (session) {
-        await refreshSessionExpires(new Date(session.expires), session.id);
         const msg = await getSessionMessage();
         if (msg.message) session.message = lang(msg.message);
         session.messageType = msg.type;

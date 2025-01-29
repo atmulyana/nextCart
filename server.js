@@ -18,11 +18,16 @@ const options = {
     cert: readFileSync(`${__dirname}/certificates/localhost.crt`),
 };
 
+function isFromMobile(headers) {
+    return headers['x-requested-with'] == 'expressCartMobile';
+}
+
 app.prepare().then(() => {
     httpsServer(options, (req, res) => {
+        const fromMobile = isFromMobile(req.headers);
         const url = new URL(`https://${req.headers.host || baseUrl.host}${req.url}`)
-        if (url.host != baseUrl.host || url.pathname == '/' && baseUrl.pathname != '/') {
-            url.host = baseUrl.host;
+        if (!fromMobile && url.host != baseUrl.host || url.pathname == '/' && baseUrl.pathname != '/') {
+            if (!fromMobile) url.host = baseUrl.host;
             url.pathname = baseUrl.pathname;
             res.writeHead(308, {
                 Location: url.href,
@@ -55,7 +60,7 @@ if (port == DEFAULT_PORT) {
     httpServer((req, res) => {
         //Automatically redirects from http to https
         res.writeHead(308, {
-            Location: `https://${baseUrl.host}${req.url}`,
+            Location: `https://${isFromMobile(req.headers) ? req.headers.host : baseUrl.host}${req.url}`,
         }).end();
     })
     .listen(80)

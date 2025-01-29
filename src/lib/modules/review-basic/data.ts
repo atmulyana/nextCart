@@ -112,7 +112,7 @@ export const getReviewSummary = fn(async (
     db: Db,
     productId: ObjectId
 ) => {
-    return (await db.collection("reviews").aggregate<TReviewSummary>([
+    let summary = (await db.collection("reviews").aggregate<TReviewSummary>([
         {
             $match: {product: productId}
         },
@@ -165,6 +165,23 @@ export const getReviewSummary = fn(async (
             }
         }
     ]).toArray())[0];
+    if (!summary) {
+        summary = {
+            highestRating: 0,
+            average: 0,
+            count: 0,
+            featured: {
+                review:  {
+                    title: '',
+                    description: '',
+                    rating: 0,
+                    date: new Date(),
+                },
+                customer: null,
+            }
+        }
+    }
+    return summary;
 });
 
 export const createReview = fn(async (

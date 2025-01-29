@@ -3,7 +3,7 @@
  **/
 import lang from '@/data/lang';
 import {str} from '@/lib/common';
-import type {Config} from '../types';
+import {PublicString, type Config} from '../types';
 
 /***
  * Create `config-local.json` in the same directory to overwrite the value of the configuration properties.
@@ -20,7 +20,7 @@ export default {
     //Overwrite in `config-local.json`
     apiKey: "<Your Blockonomics API key>",
     
-    hostUrl: "https://www.blockonomics.co",
+    hostUrl: new PublicString("https://www.blockonomics.co"),
     newAddressApi: "/api/new_address",
     priceApi: "/api/price?currency=",
 } as Config;

@@ -51,16 +51,6 @@ export default async function Product(props: Props) {
     } = await GET.data(await awaitProps(props));
     const productId = product._id.toString();
 
-    const labels = {
-        empty: lang('No review yet'),
-        title: lang('Title'),
-        desc: lang('Description'),
-        rating: lang('Rating'),
-        error: lang("Server can't process your request"),
-        titlePlaceholder: lang('Love it.'),
-        descPlaceholder: lang('Product is great. Does everything it said it can do.'),
-    };
-
     return <Template>
         <FrontMenu />
         <div className='flex-none basis-full sm:basis-2/3 sm:mx-auto pt-8'>
@@ -115,7 +105,7 @@ export default async function Product(props: Props) {
                     <ReviewControls
                         productId={productId}
                         data={reviews}
-                        reviewModule={modules.review}
+                        reviewModule={modules.reviews}
                         labels={{
                             addReview: lang('Add review'),
                             openReviews: lang('Reviews'),

@@ -4,10 +4,10 @@
 import lang from '@/data/lang';
 import {getSession} from '@/data/session';
 import {ResponseMessage} from '@/lib/common';
-import {createGetHandler} from '@/lib/routeHandler';
+import {createPostHandler} from '@/lib/routeHandler';
 
 
-export const GET = createGetHandler(async () => {
+export const POST = createPostHandler(async () => {
     const session = await getSession();
     if (session.customerPresent) {
         return ResponseMessage(lang('Customer logged in'), 200);

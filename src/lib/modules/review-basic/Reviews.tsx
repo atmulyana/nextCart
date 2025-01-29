@@ -3,10 +3,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import Loading from '@/subview/components/Loading';
-import {useNotification} from '@/subview/components/Notification';
 import PagedList from '@/subview/components/PagedList';
-import {isPlainObject} from '@/lib/common';
 import type {TReviewList} from './data';
 import RatingStars from './RatingStars';
 
@@ -18,7 +15,6 @@ const Reviews = React.memo(function Reviews({
         title,
         desc,
         rating,
-        error = 'Error',
     } = {}
 }: {
     productId: string,

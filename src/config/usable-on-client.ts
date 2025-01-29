@@ -39,6 +39,10 @@ class BaseURL extends URL {
         const str = super.toString();
         return str.replace(BaseURL.reDirSepTrimEnd, '');
     }
+
+    toJSON() {
+        return this.toString();
+    }
 }
 
 const {baseUrl, ...baseConfig} = require('./usable-on-client.json') as UsableOnClientConfig;

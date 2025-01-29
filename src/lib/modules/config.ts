@@ -3,6 +3,6 @@
  **/
 export default {
     discount: 'discount-voucher',
-    review: 'review-basic',
+    reviews: 'review-basic',
     shipping: 'shipping-basic',
 };

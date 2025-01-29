@@ -1,1 +1,1 @@
-{"options":{"pipeline":[{"$lookup":{"from":"customers","localField":"customer","foreignField":"_id","as":"customer"}},{"$lookup":{"foreignField":"_id","as":"product","from":"products","localField":"product"}}],"viewOn":"reviews"},"indexes":[],"collectionName":"reviews_join","type":"view"}
+{"options":{"viewOn":"reviews","pipeline":[{"$lookup":{"from":"customers","localField":"customer","foreignField":"_id","as":"customer"}},{"$lookup":{"foreignField":"_id","as":"product","from":"products","localField":"product"}}]},"indexes":[],"collectionName":"reviews_join","type":"view"}

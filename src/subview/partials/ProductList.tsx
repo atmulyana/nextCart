@@ -31,16 +31,16 @@ class Title extends String {
     searchTerm?: string;
 }
 
-export function getTitle(paginateUrl?: string, searchTerm?: string) {
+export function getTitle(pageUrl?: string, searchTerm?: string) {
     searchTerm = searchTerm?.trim() || '';
     let title: Title | undefined;
-    if (paginateUrl == 'category') {
+    if (pageUrl == 'category') {
         title = new Title(`${lang('Category')}: ${searchTerm}`);
     }
-    else if (paginateUrl == 'search') {
+    else if (pageUrl == 'search') {
         title = new Title(`${lang('Search results')}: ${searchTerm}`);
     }
-    else if (paginateUrl && paginateUrl != 'page') {
+    else if (pageUrl && pageUrl != 'page') {
         notFound();
     }
     if (title) title.searchTerm = searchTerm;
@@ -50,14 +50,14 @@ export function getTitle(paginateUrl?: string, searchTerm?: string) {
 export default async function ProductList(props: ProductListProps) {
     const props2 = await awaitProps(props)
     const data = await GET.data(props2);
-    const {params: {paginateUrl = 'page', searchTerm}} = props2;
-    const title = getTitle(paginateUrl, searchTerm)
+    const {params: {pageUrl = 'page', searchTerm}} = props2;
+    const title = getTitle(pageUrl, searchTerm)
     const titleParts = title && title.split(': ');
 
     const itemBasis = ColsToBasis[config.productsPerRow] || ColsToBasis[3];
     const itemClass = `relative ${itemBasis} grow-0 shrink-0 px-1`;
 
-    const pageHref = title?.searchTerm ? `/${paginateUrl}/${encodeURIComponent(title.searchTerm)}` : `/${paginateUrl}`;
+    const pageHref = title?.searchTerm ? `/${pageUrl}/${encodeURIComponent(title.searchTerm)}` : `/${pageUrl}`;
     const totalPage = Math.ceil(data.totalProductCount / config.productsPerPage);
 
     return <Template>

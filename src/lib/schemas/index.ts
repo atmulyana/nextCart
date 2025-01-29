@@ -301,6 +301,34 @@ export async function getSchema(name: string) {
     return schema;
 }
 
+
+
+export async function validateForm(schemaName: string, formData: FormData) {
+    let schema!: Schema;
+    try {
+        schema = await getSchema(schemaName);
+    }
+    catch {
+        return {
+            success: false,
+            message: 'Invalid schema name',
+        } as {
+            success: false,
+            message: string,
+        };
+    }
+
+    const inputNames = Object.keys(schema.shape);
+    const inputValues: InputProps = {};
+    for (let name of inputNames) {
+        let value: FormDataEntryValue[] | FormDataEntryValue | null = formData.getAll(name);
+        if (value.length < 1) value = null;
+        else if (value.length == 1) value = value[0];
+        inputValues[name] = value;
+    }
+    return await schema.validate(inputValues);
+}
+
 const {coerce, ..._zod} = zod;
 const z = {
     ..._zod,

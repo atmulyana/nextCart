@@ -131,7 +131,7 @@ export const middleware = auth(async (request) => {
         }
     }
     else if (await isFromMobile(request.headers) && request.method == 'GET' && !url.pathname.endsWith('/data')) {
-        url.pathname += '/data';
+        url.pathname = url.pathname.replace(/\/+$/, '') + '/data';
     }
     const response = NextResponse.rewrite(url.toString(), {request});
     setResponseCookies(response, cookies);

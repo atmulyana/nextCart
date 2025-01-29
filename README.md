@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## **nextCart**
+This project rewrites [expressCart](https://github.com/atmulyana/expressCart) project by using *Nextjs*. It can also
+serve as a server for [expressCartMobile](https://github.com/atmulyana/expressCartMobile) app.
 
-## Getting Started
+#### **Database**
+As *expressCart*, this application uses #MongoDb*. However, it uses *replicaset* to allow the execution of database
+transaction. The database transaction keeps the data integrity. To create a *replicaset*, add the lines below to
+`mongod.conf` file:
 
-First, run the development server:
+    replication:
+      replSetName: "rs0"
+      oplogSizeMB: 2000
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Then restart *MongoDb* server. After that, open mongo shell by typing console command:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+    mongosh
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+After mongo shell shows up, type the command:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+    rs.initiate()
 
-## Learn More
+Make sure, you get response a JSON which includes **`ok: 1`**. You may exit from mongo shell by typing `exit`.
+You must also include the name of *replicaset* (in this case, it's `rs0`) in the connection string of database.
+If don't change the name of *replicaset* then you do nothing because we have set `databaseConnectionString` in
+`config.json` to be <code>mongodb://127.0.0.1:27017/nextcart?<strong>replicaSet=rs0</strong></code>.
+  
+For initial database, you may restore the database from the backup packaged in this project. Type the command
+below in console after you change the current directory to the top directory of project:
 
-To learn more about Next.js, take a look at the following resources:
+    mongorestore ./_db
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+It's assumed your database server at IP and port `127.0.0.1:27017`. If not, you may use `--uri` option. Please
+find the documentation for using it.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+#### **How to run the application**
+For development, you can run the application by the console command:
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+    npm run dev

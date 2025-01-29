@@ -37,11 +37,11 @@ function checkoutCustomerMustExist(auth: Session | null) {
 }
 
 function customerNeedsLogin(auth: Session | null) {
-    if (!auth?.customer?.id) return '/customer/login';
+    if (!auth?.customer?.email) return '/customer/login';
 }
 
 function customerHasLoggedIn(auth: Session | null) {
-    if (auth?.customer?.id) return '/customer/account';
+    if (auth?.customer?.email) return '/customer/account';
 }
 
 function adminNeedsLogin(auth: Session | null) {

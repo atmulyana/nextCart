@@ -1,6 +1,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
+import type {Session} from 'next-auth';
 import {TSession} from '@/data/types';
 import type {TSessionBasic, TSessionCustomer, TSessionUser, WithoutId} from '@/data/types';
 import {getSessionToken} from '@/lib/auth';
@@ -11,15 +12,19 @@ export async function getSessionId() {
     return session?.id ? ObjectId.createFromBase64(session.id) : null;
 }
 
-export const refreshSessionExpires = fn(async (db: Db, expires: Date, sessId?: string) => {
-    const sessionId = sessId ? ObjectId.createFromBase64(sessId) : await getSessionId();
+export const refreshSessionExpires = fn(async (db: Db, expires?: Date, sessId?: string) => {
+    let token: Session | null = null;
+    if (!sessId && (token = await getSessionToken())) {
+        sessId = token.id;
+        if (!expires) expires = new Date(token.expires);
+    }
+    const sessionId = sessId ? ObjectId.createFromBase64(sessId) : null;
     let isNew: boolean | undefined;
-    if (sessionId) {
+    if (sessionId && expires) {
         const w = await db.collection<TSessionBasic>('sessions').updateOne(
             {_id: sessionId},
             {
                 $set: {
-                    //_id: sessionId,
                     expires
                 }
             },
@@ -31,7 +36,8 @@ export const refreshSessionExpires = fn(async (db: Db, expires: Date, sessId?: s
     }
     return {
         sessionId,
-        isNew
+        isNew,
+        token,
     };
 });
 
@@ -108,7 +114,7 @@ export const getSession = fn(async (db: Db) => {
 });
 
 export const setCustomerSession = fn(async (db: Db, data: ObjectId | WithoutId<TSessionCustomer>) => {
-    const sessionId = await getSessionId();
+    const {sessionId} = await refreshSessionExpires(); //creates session if not exists
     if (sessionId) {
         let $set: WithoutId<TSessionCustomer> = {};
         const updates: any[] = [];
@@ -167,7 +173,7 @@ export const clearCustomerSession = fn(async (db: Db) => {
 });
 
 export const setUserSession = fn(async (db: Db, userId: ObjectId) => {
-    const sessionId = await getSessionId();
+    const {sessionId} = await refreshSessionExpires(); //creates session if not exists
     if (sessionId) {
         const w = await db.collection<TSessionUser>('sessions').updateOne(
             {_id: sessionId},
@@ -196,4 +202,18 @@ export const clearUserSession = fn(async (db: Db) => {
         return w.modifiedCount > 0;
     }
     return false;
+});
+
+export const deleteExpiredSessions = fn(async (db: Db) => {
+    const sessions = db.collection<TSession>('sessions');
+    const expiredIds = await sessions.distinct('_id', {expires: {$lt: new Date()}});
+    await db.collection('cartItems').deleteMany({
+        '_id.cartId': {$in: expiredIds}
+    });
+    await db.collection('cart').deleteOne({
+        _id: {$in: expiredIds}
+    });
+    await sessions.deleteMany({
+        _id: {$in: expiredIds}
+    });
 });

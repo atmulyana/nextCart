@@ -11,7 +11,6 @@ import Input from '@/subview/components/SubmittedInput';
 import SubmitButton from '@/subview/components/SubmitButton';
 import Template from '@/subview/partials/Template';
 import {POST} from './api/route';
-import cfg from '@/config'
 
 export function generateMetadata(): Metadata {
     return  {

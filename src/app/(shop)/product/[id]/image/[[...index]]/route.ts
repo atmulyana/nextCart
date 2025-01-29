@@ -1,8 +1,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-//import {notFound} from 'next/navigation'
-import cfg from '@/config/usable-on-client';
+import {/*notFound,*/ redirect} from 'next/navigation'
 import type {TProductImage} from '@/data/types';
 import {isIndexNumber, ResponseMessage} from '@/lib/common';
 import {getDefaultImage, getImage} from '@/data/product';
@@ -33,7 +32,7 @@ export async function GET(
             return responseImage(image);
         }
         else if (image === null) {
-            return Response.redirect(cfg.baseUrl + '/images/placeholder.png');
+            return redirect('/images/placeholder.png');
         }
         else {
             return notFound();

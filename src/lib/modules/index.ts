@@ -9,13 +9,13 @@ export type {TCustomerAddress};
 
 export type TModules = {
     discount?: typeof discountModule,
-    review?: typeof reviewModule,
+    reviews?: typeof reviewModule,
     shipping?: typeof shippingModule,
 };
 
 const modules: TModules = {
     discount: discountModule,
-    review: reviewModule,
+    reviews: reviewModule,
     shipping: shippingModule,
 };
 export default modules;

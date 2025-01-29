@@ -24,6 +24,7 @@ export const POST = createPostHandler(async (formData) => {
             {
                 status,
                 cart: isEmpty ? null : (cart ?? null),
+                totalCartItems: cart?.totalCartItems ?? 0
             }
         );
         
@@ -45,7 +46,7 @@ export const POST = createPostHandler(async (formData) => {
         }
         
         await upsertCart(cartId, cart);
-        return response('', 200);
+        return response(lang('Product successfully removed'), 200);
     },
     formData.has('homeAfterClear'));
 });
