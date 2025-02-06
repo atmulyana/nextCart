@@ -5,6 +5,7 @@
 import {redirect} from 'next/navigation';
 import lang from '@/data/lang';
 import {initValidationActions} from '@/subview/components/FormWithSchema/validation';
+import {POST as adminLogoutAction} from './admin/logout/route';
 import {POST as createAccount} from './(shop)/customer/create/route';
 import {POST as saveAccount} from './(shop)/customer/save/route';
 import {POST as loginCustomerAction} from './(shop)/customer/login_action/route';
@@ -21,6 +22,10 @@ export async function initActions() {
     //There is a bug when using a server action which imports a module containing top level `await`
     //See: https://github.com/vercel/next.js/issues/54282
     await initValidationActions();
+}
+
+export async function adminLogout(formData: FormData) {
+    return await adminLogoutAction.responseJson(formData);
 }
 
 export async function saveCheckoutInfo(formData: FormData) {

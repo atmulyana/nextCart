@@ -11,6 +11,18 @@ export type UsableOnClientConfig = {
     currencySymbol: string,
     currencyISO: string,
     maxQuantity: number,
+    modules: {
+        enabled: { 
+            discount?: string,
+            reviews?: string,
+            shipping?: string,
+        },
+        loaded: {
+            discount?: string,
+            reviews?: string,
+            shipping?: string,
+        },
+    },
     paymentGateway: string[],
     trackStock: boolean,
     showRelatedProducts: boolean,

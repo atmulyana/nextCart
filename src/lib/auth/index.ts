@@ -47,8 +47,8 @@ export const {signIn, signOut, auth, handlers, unstable_update: updateSessionTok
             async authorize({userId, userAdmin, userOwner}) {
                 let session = await auth(),
                     id = userId as string,
-                    isAdmin = userAdmin as (boolean | undefined),
-                    isOwner = userOwner as (boolean | undefined);
+                    isAdmin = userAdmin == 'true',
+                    isOwner = userOwner == 'true';
                 return {
                     isCustomer: false,
                     id,

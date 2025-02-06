@@ -120,6 +120,8 @@ export type TProduct = TProductBase & {
     productStock: number,
     productStockDisable?: boolean,
     productSubscription: string,
+    productGtin?: string,
+    productBrand?: string,
     tags: string[],
 //    images: TProductImage[],
     imageCount: number,

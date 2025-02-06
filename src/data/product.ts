@@ -59,7 +59,7 @@ export const getVariant = fn(async (db: Db, id: {productId: _Id, variantId: _Id}
     });
 });
 
-export const getDefaultImage =  fn(async (db: Db, id: _Id): Promise<TProductImage | undefined | null> => {
+export const getDefaultImage = fn(async (db: Db, id: _Id): Promise<TProductImage | undefined | null> => {
     const products = await db.collection('products').aggregate<{image: TProductImage | null}>([
         {
             $match: {
@@ -246,4 +246,10 @@ export const productExists = fn(async (db: Db, productId: _Id) => {
     const id = toId(productId);
     if (!id) return false;
     return await db.collection('products').countDocuments({_id: id}) > 0;
+});
+
+export const getActiveProductCount = fn(async (db: Db) => {
+    return await db.collection('products').countDocuments({
+        productPublished: true
+    });
 });

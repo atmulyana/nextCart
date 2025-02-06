@@ -23,18 +23,6 @@ export const metadata: Metadata = {
     alternates: {
         canonical: config.baseUrl,
     },
-    openGraph: {
-        siteName: config.cartTitle,
-        type: 'website',
-        title,
-        url: config.baseUrl,
-        description: config.cartDescription,
-    },
-    twitter: {
-        card: 'summary',
-        title,
-        site: config.baseUrl.toString(),
-    },
 }
 export const viewport: Viewport = {
     width: 'device-width',
@@ -42,7 +30,6 @@ export const viewport: Viewport = {
     maximumScale: 1,
     userScalable: false,
 }
-if (config.twitterHandle && metadata.twitter) metadata.twitter.site = config.twitterHandle
 
 export default async function RootLayout({
         children

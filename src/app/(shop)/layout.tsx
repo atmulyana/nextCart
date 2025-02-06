@@ -22,6 +22,18 @@ export const generateMetadata = fnMeta(async () => {
     title = `${lang('Shop')}: ${config.cartTitle}`;
     return {
         title,
+        openGraph: {
+            siteName: config.cartTitle,
+            type: 'website',
+            title,
+            url: config.baseUrl,
+            description: config.cartDescription,
+        },
+        twitter: {
+            card: 'summary',
+            title,
+            site: config.twitterHandle ? config.twitterHandle : config.baseUrl.toString(),
+        },
     };
 });
 
@@ -64,7 +76,7 @@ export default async function ShopLayout({
             </ul>
         </nav>
         <SideCart />
-        <div id="container" className="relative flex flex-wrap h-full w-full mx-auto mb-[40px]">
+        <div id="container" className="relative flex flex-wrap h-full w-full mx-auto mb-10">
             {children}
         </div>
         {config.footer.shownForCustomer && <Footer />}

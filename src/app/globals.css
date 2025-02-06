@@ -82,7 +82,7 @@
     a {
         text-decoration: none;
     }
-    a[href]:not(.btn):hover {
+    a[href]:not(.btn,.nohover):hover {
         text-decoration: underline;
     }
     button:disabled, a.disabled {

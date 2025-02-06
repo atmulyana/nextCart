@@ -30,13 +30,31 @@ export const generateMetadata = fnMeta<{
 }>(async ({params: {id}}) => {
     const product = await getProduct(id);
     if (product) {
-        const desc = stripHtml(product.productDescription).result.trim();
+        let description = snip(stripHtml(product.productDescription).result.trim()) || `${config.cartTitle} - ${product.productTitle}`;
+        const pageUrl = config.baseUrl + '/product/' + id;
         return {
             alternates: {
-                canonical: config.baseUrl + '/product/' + id,
+                canonical: pageUrl,
+            },
+            description,
+            openGraph: {
+                type: 'website',
+                
+                /** set by `fnMeta` */
+                //title: product.productTitle,
+                //url: pageUrl,
+                //description,
+                
+                images: `${pageUrl}/image`,
             },
             title: product.productTitle,
-            description: desc ? snip(desc) : `${config.cartTitle} - ${product.productTitle}`,
+            // twitter: {
+            //     card: 'product',
+                
+            //     /** set by `fnMeta` */
+            //     //title: product.productTitle,
+            //     //site: pageUrl,
+            // },
         };
     }
     return {};
@@ -50,9 +68,62 @@ export default async function Product(props: Props) {
         relatedProducts,
     } = await GET.data(await awaitProps(props));
     const productId = product._id.toString();
+    const pageUrl = config.baseUrl + '/product/' + productId;
 
+    const ldJson: any = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": product.productTitle,
+        "offers": {
+            "price": product.productPrice,
+            "priceCurrency": config.currencyISO,
+            "availability": product.productStock > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+            "url": pageUrl
+        },
+        "sku": productId,
+        "image": pageUrl + '/image',
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": reviews?.average ?? 0,
+            "reviewCount": reviews?.count ?? 0
+        },
+        "url": pageUrl,
+    };
+    if (product.productGtin) {
+        ldJson.gtin = product.productGtin;
+    }
+    if (product.productBrand) {
+        ldJson.brand = {
+            "@type": "Organization",
+            "name": product.productBrand,
+        };
+    }
+    if (reviews && reviews.count > 0) {
+        ldJson.review = {
+            "@type": "Review",
+            "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": reviews.featured.review.rating,
+                "bestRating": reviews.highestRating
+            },
+            "author": {
+                "@type": "Person",
+                "name": `${reviews.featured.customer?.firstName} ${reviews.featured.customer?.lastName}`.trim()
+            }
+        };
+    }
+    if (product.productDescription) {
+        ldJson.description = snip(product.productDescription);
+    }
+    
     return <Template>
         <FrontMenu />
+        <section>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(ldJson) }}
+            />
+        </section>
         <div className='flex-none basis-full sm:basis-2/3 sm:mx-auto pt-8'>
             <div className='flex flex-wrap gap-y-8'>
                 <div className='flex-none basis-full md:basis-1/2'>

@@ -1,0 +1,6 @@
+/** 
+ * https://github.com/atmulyana/nextCart
+ **/
+body {
+    @apply bg-gray-50 dark:bg-gray-950;
+}

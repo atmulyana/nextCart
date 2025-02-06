@@ -42,41 +42,28 @@ export function normalizeParamValue(param: GetParam) {
 }
 
 export function meta(metadata: Metadata, parent?: ResolvedMetadata): Metadata {
-    const {title, alternates} = metadata;
-    if (title) {
-        if (metadata.openGraph) {
-            if (!metadata.openGraph.title) metadata.openGraph.title = title;
-        }
-        else {
-            const pOg = parent?.openGraph as any;
-            metadata.openGraph = {...pOg, title};
-        }
-        if (metadata.twitter) {
-            if (!metadata.twitter.title) metadata.twitter.title = title;
-        }
-        else {
-            const pX = parent?.twitter as any;
-            metadata.twitter = {...pX, title};
-        }
-    }
+    const {title, description, alternates} = metadata;
+    const meta: {
+        title?: typeof title,
+        description?: string,
+        url?: string,
+    } = {};
+    if (title) meta.title = title;
+    if (description) meta.description = description;
     if (alternates?.canonical) {
         const url = typeof(alternates.canonical) == 'object' && !(alternates.canonical instanceof URL) 
             ? alternates.canonical.url : alternates.canonical;
-        if (metadata.openGraph) {
-            if (!metadata.openGraph.url) metadata.openGraph.url = url;
-        }
-        else {
-            const pOg = parent?.openGraph as any;
-            metadata.openGraph = {...pOg, url};
-        }
-        if (metadata.twitter) {
-            if (!metadata.twitter.site) metadata.twitter.site = url.toString();
-        }
-        else {
-            const pX = parent?.twitter as any;
-            metadata.twitter = {...pX, site: url.toString()};
-        }
+        meta.url = url.toString();
     }
+
+    if (parent?.openGraph/*prevents "admin" pages to have `openGraph` metadata*/) {
+        metadata.openGraph = { ...(parent?.openGraph as any), ...meta, ...metadata.openGraph };
+    }
+
+    if (parent?.twitter/*prevents "admin" pages to have `twitter` metadata*/) {
+        metadata.twitter = { ...(parent?.twitter as any), ...meta, site: meta.url, ...metadata.twitter };
+    }
+
     return metadata;
 }
 

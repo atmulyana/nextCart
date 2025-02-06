@@ -48,3 +48,59 @@ export const getOrders = fn(async (
         pageIdx
     );
 });
+
+export const getOrderSummary = fn(async (db: Db) => {
+    const orders = db.collection("orders");
+    const orderCount = await orders.countDocuments({});
+    const orderAmounts = await orders.aggregate([
+        { $match: {} },
+        { 
+            $group: {
+                _id: null,
+                sum: { $sum: '$orderTotal' }
+            }
+        }
+    ]).toArray();
+    const productsSolds = await orders.aggregate([
+        { $match: {} },
+        { 
+            $group: {
+                _id: null,
+                sum: { $sum: '$orderProductCount' }
+            }
+        }
+    ]).toArray();
+    const topProducts = await orders.aggregate([
+        {
+            $project: { _id: 0 }
+        },
+        {
+            $project: {
+                o: { $objectToArray: '$orderProducts' } 
+            }
+        },
+        {
+            $unwind: '$o'
+        },
+        {
+            $group: {
+                _id: '$o.v.productId',
+                title: { $last: '$o.v.title' },
+                count: { $sum: '$o.v.quantity' },
+            } 
+        },
+        { 
+            $sort: { count: -1 }
+        },
+        { 
+            $limit: 5
+        }
+    ]).toArray();
+
+    return {
+        orderCount,
+        orderAmount: orderAmounts.length > 0 ? orderAmounts[0].sum : 0,
+        productsSold: productsSolds.length > 0 ? productsSolds[0].sum : 0,
+        topProducts,
+    };
+});

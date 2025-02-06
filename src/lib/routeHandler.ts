@@ -79,7 +79,7 @@ function createRedirect(reqUrl: NextRequest['nextUrl'], isPost: boolean = false)
         }
 
         if (isPost) throw getRedirectError(Url.pathname, RedirectType.replace, 303);
-        return redirect(Url.pathname, RedirectType.replace);
+        return nextRedirect(Url.pathname, RedirectType.replace);
     }) as Redirect;
 }
 

@@ -7,13 +7,20 @@ import DropDown from '@/subview/components/DropDown';
 import darkMode from '@/lib/darkMode';
 
 type DarkModeMenuClientProps = {
-    menuTitle: string,
+    className?: string,
+    menuTitle: React.ReactNode,
     onTitle: string,
     offTitle: string,
     bySystemTitle: string,
 };
 
-export default function DarkModeMenuClient({menuTitle, onTitle, offTitle, bySystemTitle}: DarkModeMenuClientProps) {
+export default function DarkModeMenuClient({
+    className = 'btn-primary text-base/none',    
+    menuTitle,
+    onTitle,
+    offTitle,
+    bySystemTitle
+}: DarkModeMenuClientProps) {
     const [value, setValue] = React.useState<boolean|null>(null);
     React.useLayoutEffect(() => {
         setValue(darkMode.value);
@@ -22,7 +29,7 @@ export default function DarkModeMenuClient({menuTitle, onTitle, offTitle, bySyst
     const iconChecked = 'check-square',
           iconNotChecked = 'square';
     return <DropDown
-        className='btn-primary text-[16px]/none'
+        className={className}
         label={menuTitle}
         items={[
             {

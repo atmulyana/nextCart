@@ -1,6 +1,6 @@
 {
   "name": "next-cart",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "private": true,
   "scripts": {
     "predev": "node ./src/data/lang/createData.js",
@@ -20,7 +20,7 @@
     "bcryptjs": "^2.4.3",
     "countries-list": "^3.1.0",
     "cross-env": "^7.0.3",
-    "flowbite": "^2.2.0",
+    "flowbite": "^3.1.1",
     "flowbite-react": "^0.10.1",
     "jssimpledateformat": "^3.0.0",
     "mongodb": "^6.3.0",
@@ -49,7 +49,7 @@
     "eslint-config-next": "^15.0.0",
     "file-loader": "^6.2.0",
     "postcss": "^8.4.35",
-    "tailwindcss": "^3.3.0",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
 }
