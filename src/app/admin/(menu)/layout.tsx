@@ -11,6 +11,7 @@ import Icon from '@/subview/components/Icon';
 import DarkModeMenu from '@/subview/partials/DarkModeMenu';
 import LanguangeMenu from '@/subview/partials/LanguageMenu';
 import Footer from '@/subview/partials/Footer';
+import {SearchIcon} from './search';
 
 export default async function ShopLayout({
     children,
@@ -30,12 +31,15 @@ export default async function ShopLayout({
                             <Link href='/admin' className='inline-block py-2 px-4 w-4/5'>
                                 <img src='/images/logo.svg' alt='Logo' className='h-12' />
                             </Link>
-                            <a href='#' className='inline-block w-1/12 text-center text-gray-500'>
-                                <Icon name='search' />
-                            </a>
+                            <SearchIcon
+                                customerText={lang('Customer')}
+                                noItemText={lang('Nothing found')}
+                                orderText={lang('Order')}
+                                productText={lang('Product')}
+                            />
                         </li>
                         <li>
-                            <Link href='/admin/dashboard' className='block py-2 px-4 text-slate-700 dark:text-slate-700 nohover'>
+                            <Link href='/admin/dashboard' className='block py-2 px-4 text-slate-700 dark:text-slate-700 noline'>
                                 <Icon name='bar-chart' /> &nbsp; {lang('Dashboard')}
                             </Link>
                         </li>
@@ -43,38 +47,38 @@ export default async function ShopLayout({
                             <span>{lang('Data Management')}</span>
                         </h6>
                         <li className={session?.user?.isAdmin ? 'h-10' : ''}>
-                            <Link href='/admin/products' className={`inline-block py-2 px-4 text-slate-700 dark:text-slate-700 nohover${
+                            <Link href='/admin/products' className={`inline-block py-2 px-4 text-slate-700 dark:text-slate-700 noline${
                                 session?.user?.isAdmin ? ' w-4/5' : ''
                             }`}>
                                 <Icon name='tag' /> &nbsp; {lang('Products')}
                             </Link>
-                            {session?.user?.isAdmin && <Link href='/admin/product/new' className='inline-block w-1/12 text-gray-500 nohover'>
+                            {session?.user?.isAdmin && <Link href='/admin/product/new' className='inline-block w-1/12 text-gray-500 noline'>
                                 <Icon name='plus' />
                             </Link>}
                         </li>
                         <li className='h-10'>
-                            <Link href='/admin/orders' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 w-4/5 nohover'>
+                            <Link href='/admin/orders' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 w-4/5 noline'>
                                 <Icon name='package' /> &nbsp; {lang('Orders')}
                             </Link>
-                            <Link href='/admin/order/create' className='inline-block w-1/12 text-gray-500 nohover'>
+                            <Link href='/admin/order/create' className='inline-block w-1/12 text-gray-500 noline'>
                                 <Icon name='plus' />
                             </Link>
                         </li>
                         <li>
-                            <Link href='/admin/customers' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 nohover'>
+                            <Link href='/admin/customers' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 noline'>
                                 <Icon name='users' /> &nbsp; {lang('Customers')}
                             </Link>
                         </li>
                         <li className='h-10'>
-                            <Link href='/admin/users' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 w-4/5 nohover'>
+                            <Link href='/admin/users' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 w-4/5 noline'>
                                 <Icon name='user' /> &nbsp; {lang('Users')}
                             </Link>
-                            <Link href='/admin/user/new' className='inline-block w-1/12 text-gray-500 nohover'>
+                            <Link href='/admin/user/new' className='inline-block w-1/12 text-gray-500 noline'>
                                 <Icon name='plus' />
                             </Link>
                         </li>
                         {config.modules.enabled.reviews && <li>
-                            <Link href='/admin/reviews' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 nohover'>
+                            <Link href='/admin/reviews' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 noline'>
                                 <Icon name='star' /> &nbsp; {lang('Reviews')}
                             </Link>
                         </li>}
@@ -98,22 +102,22 @@ export default async function ShopLayout({
 
                         </li>
                         <li>
-                            <Link href='/admin/settings' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 nohover'>
+                            <Link href='/admin/settings' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 noline'>
                                 <Icon name='sliders' /> &nbsp; {lang('General settings')}
                             </Link>
                         </li>
                         <li>
-                            <Link href='/admin/settings/menu' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 nohover'>
+                            <Link href='/admin/settings/menu' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 noline'>
                                 <Icon name='menu' /> &nbsp; {lang('Menu')}
                             </Link>
                         </li>
                         <li>
-                            <Link href='/admin/settings/pages' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 nohover'>
+                            <Link href='/admin/settings/pages' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 noline'>
                                 <Icon name='file-text' /> &nbsp; {lang('Static pages')}
                             </Link>
                         </li>
                         {session?.user?.isAdmin && <li>
-                            <Link href='/admin/settings/discounts' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 nohover'>
+                            <Link href='/admin/settings/discounts' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 noline'>
                                 <Icon name='code' /> &nbsp; {lang('Discount codes')}
                             </Link>
                         </li>}

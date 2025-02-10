@@ -4,12 +4,28 @@
 import type {_Id, TCustomer, WithoutId} from './types';
 import fn, {type Db, toId} from './db-conn';
 
+export const getCustomer = fn(async (db: Db, id: _Id) => {
+    return await db.collection<TCustomer>('customers').findOne({_id: toId(id)});
+});
+
 export const getCustomerByEmail = fn(async (db: Db, email: string) => {
     return await db.collection<TCustomer>('customers').findOne({email});
 });
 
 export const getCustomerByResetToken = fn(async (db: Db, token: string) => {
     return await db.collection<TCustomer>('customers').findOne({resetToken: token, resetTokenExpiry: {$gt: Date.now()}});
+});
+
+export const getCustomersByName = fn(async (db: Db, name: string, limit: number = 0) => {
+    const $regex = new RegExp(name, 'i');
+    let rs = db.collection<TCustomer>('customers').find({
+        $or: [
+            { firstName: { $regex } },
+            { lastName: { $regex } },
+        ]
+    });
+    if (limit > 0) rs = rs.limit(limit);
+    return await rs.toArray();
 });
 
 export const createCustomer = fn(async (db: Db, customer: WithoutId<TCustomer>) => {

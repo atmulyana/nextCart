@@ -127,7 +127,8 @@ export const getProducts = fn(async (
     db: Db,
     page: number = 1,
     query: Object = {},
-    numberOfItems: number = config.productsPerPage
+    numberOfItems: number = config.productsPerPage,
+    includeTotalNumber: boolean = true
 ) => {
     let skip = 0;
     if(page > 1){
@@ -173,12 +174,55 @@ export const getProducts = fn(async (
             },
         }
     ]).toArray();
-    const totalItems = await products.countDocuments(query);
+    const totalItems = includeTotalNumber ? await products.countDocuments(query) : -1;
 
     return {
         data,
         totalItems
     };
+});
+
+export const getProductsByValue = fn(async (db: Db, value: number, limit: number = 0) => {
+    let rs = db.collection('products').aggregate<
+        Omit<TProduct, 'imageCount' | 'imgaeDefaultIndex' | 'tags'> & {variant?: TVariant}
+    >([
+        {
+            $lookup: {
+                from: 'variants',
+                localField: '_id',
+                foreignField: 'product',
+                as: 'variant'
+            }
+        },
+        {
+            $unwind: {
+                path: "$variant",
+                preserveNullAndEmptyArrays: true,
+            } 
+        },
+        {
+            $match: {
+                $or: [
+                    {$and: [
+                        {variant: {$exists: false}},
+                        {productPrice: value},
+                    ]},
+                    {$and: [
+                        {variant: {$exists: true}},
+                        {'variant.price': value},
+                    ]},
+                ]
+            }
+        },
+        {
+            $project: {
+                images: 0,
+                tags: 0,
+            },
+        }
+    ]);
+    if (limit > 0) rs = rs.limit(limit);
+    return await rs.toArray();
 });
 
 export const getStock = fn(async (db: Db, productId: _Id, variantId?: _Id) => {

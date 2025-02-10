@@ -36,7 +36,7 @@ export type TCartItem = {
 }
 
 export type TCustomer = {
-    _id: ObjectId,
+    _id: _Id,
     email: string,
     password: string,
     company: string,
@@ -104,8 +104,8 @@ export type TPage = {
     slug: string,
 }
 
-type TProductBase = {
-    _id: ObjectId,
+export type TProductBase = {
+    _id: _Id,
     productPermalink: string,
     productTitle: string,
     productPrice: number,
@@ -207,9 +207,9 @@ export type TUser = {
 };
 
 export type TVariant = {
-    _id: ObjectId,
+    _id: _Id,
     title: string,
     price: number,
     stock: number,
-    product: ObjectId,
+    product: _Id,
 }

@@ -23,7 +23,7 @@ export default async function AdminDashboard() {
         <div className='flex flex-wrap'>
             <div className='basis-1/2 shrink-0 px-3.5 pb-7'>
                 <div className='flex flex-col break-words bg-white dark:bg-black bg-clip-border
-                                border-solid border rounded border-black/15 dark:border-white/15'>
+                                border-solid border rounded border-blurry'>
                     <div className='flex-auto p-5 min-h-px text-center'>
                         <h5 className='mb-3'>{lang('Orders placed')}</h5>
                         <h6 className='-mt-1.5 mb-2 text-gray-500'>{lang('Total number of orders placed')}</h6>
@@ -33,7 +33,7 @@ export default async function AdminDashboard() {
             </div>
             <div className='basis-1/2 shrink-0 px-3.5 pb-7'>
                 <div className='flex flex-col break-words bg-white dark:bg-black bg-clip-border
-                                border-solid border rounded border-black/15 dark:border-white/15'>
+                                border-solid border rounded border-blurry'>
                     <div className='flex-auto p-5 min-h-px text-center'>
                         <h5 className='mb-3'>{lang('Order total value')}</h5>
                         <h6 className='-mt-1.5 mb-2 text-gray-500'>{lang('Total value of orders placed')}</h6>
@@ -43,7 +43,7 @@ export default async function AdminDashboard() {
             </div>
             <div className='basis-1/2 shrink-0 px-3.5 pb-7'>
                 <div className='flex flex-col break-words bg-white dark:bg-black bg-clip-border
-                                border-solid border rounded border-black/15 dark:border-white/15'>
+                                border-solid border rounded border-blurry'>
                     <div className='flex-auto p-5 min-h-px text-center'>
                         <h5 className='mb-3'>{lang('Products for sale')}</h5>
                         <h6 className='-mt-1.5 mb-2 text-gray-500'>{lang('Number of products for sale')}</h6>
@@ -53,7 +53,7 @@ export default async function AdminDashboard() {
             </div>
             <div className='basis-1/2 shrink-0 px-3.5 pb-7'>
                 <div className='flex flex-col break-words bg-white dark:bg-black bg-clip-border
-                                border-solid border rounded border-black/15 dark:border-white/15'>
+                                border-solid border rounded border-blurry'>
                     <div className='flex-auto p-5 min-h-px text-center'>
                         <h5 className='mb-3'>{lang('Total products sold')}</h5>
                         <h6 className='-mt-1.5 mb-2 text-gray-500'>{lang('Number of products sold')}</h6>
@@ -63,7 +63,7 @@ export default async function AdminDashboard() {
             </div>
             <div className='basis-full shrink-0 px-3.5 pb-7'>
                 <div className='flex flex-col break-words bg-white dark:bg-black bg-clip-border
-                                border-solid border rounded border-black/15 dark:border-white/15'>
+                                border-solid border rounded border-blurry'>
                     <div className='flex-auto p-5 min-h-px text-center'>
                         <h5 className='mb-3'>{lang('Top products sold')}</h5>
                         <ul className='pl-0 list-none'>{summary.topProducts.length > 0

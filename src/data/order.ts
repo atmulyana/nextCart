@@ -20,6 +20,30 @@ export const getOrder = fn(async (db: Db, id: _Id) => {
     return await db.collection<TOrder>('orders').findOne({_id: toId(id)});
 });
 
+export const getOrdersByEmail = fn(async (db: Db, email: string, limit: number = 0) => {
+    let rs = db.collection<TOrder>('orders').find({orderEmail: email});
+    if (limit > 0) rs = rs.limit(limit);
+    return await rs.toArray();
+});
+
+export const getOrdersByValue = fn(async (db: Db, value: number, limit: number = 0) => {
+    let rs = db.collection<TOrder>('orders').find({orderTotal: value});
+    if (limit > 0) rs = rs.limit(limit);
+    return await rs.toArray();
+});
+
+export const getOrdersByName = fn(async (db: Db, name: string, limit: number = 0) => {
+    const $regex = new RegExp(name, 'i');
+    let rs = db.collection<TOrder>('orders').find({
+        $or: [
+            { orderFirstname: { $regex } },
+            { orderLastname: { $regex } },
+        ]
+    });
+    if (limit > 0) rs = rs.limit(limit);
+    return await rs.toArray();
+});
+
 export const getOrders = fn(async (
     db: Db,
     customerId: _Id | undefined,

@@ -7,11 +7,15 @@ import {Modal, type ModalProps} from 'flowbite-react';
 
 type ConfirmModalProps = {
     title?: string,
+    titleClass?: string,
+    bodyClass?: string,
     content?: React.ReactNode,
+    contentClass?: string,
     okLabel?: string,
     okBtnStyle?: string,
     cancelLabel?: string,
     cancelBtnStyle?: string,
+    position?: ModalProps['position'],
     size?: ModalProps['size'],
     onOk?: (btnOk: HTMLButtonElement) => any,
 };
@@ -59,7 +63,9 @@ export function useToCloseModal() {
 
 const ConfirmModal = React.memo(function ConfirmModal({
     title = 'Confirm',
+    titleClass='px-4',
     content = 'Are you sure you want to proceed?',
+    contentClass='space-y-6 px-6',
     okLabel = 'Confirm',
     okBtnStyle = 'btn-danger',
     cancelLabel = 'Close',
@@ -84,15 +90,16 @@ const ConfirmModal = React.memo(function ConfirmModal({
         }
     }, [ctx]);
     
-    return <Modal show={open} size={ctx.size || size} dismissible popup
+    return <Modal show={open} position={ctx.position} size={ctx.size || size} dismissible popup
         onClose={() => {
             setOpen(false);
             if (!ctx.isResolved) doResolve(false);
         }}
     >
-        {ctx.title !== '' && <Modal.Header><div className='px-4'>{ctx.title || title}</div></Modal.Header>}
-        <Modal.Body className='relative'>{ctx.content ||
-            <div className="space-y-6 px-6">
+        {ctx.title !== '' && <Modal.Header><div className={ctx.titleClass || titleClass}>{ctx.title || title}</div></Modal.Header>}
+        <Modal.Body className={`relative ${ctx.bodyClass ?? ''}`}>{
+            ctx.content ||
+            <div className={ctx.contentClass || contentClass}>
                 {content}
             </div>
         }</Modal.Body>

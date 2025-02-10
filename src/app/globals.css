@@ -82,7 +82,7 @@
     a {
         text-decoration: none;
     }
-    a[href]:not(.btn,.nohover):hover {
+    a[href]:not(.btn,.noline):hover {
         text-decoration: underline;
     }
     button:disabled, a.disabled {
@@ -188,6 +188,9 @@
     }
     ul.bordered > li {
         @apply block border [&:not(:first-child)]:border-t-0 border-black/25 dark:border-white/25 first:rounded-t last:rounded-b px-5 py-3;
+    }
+    .border-blurry {
+        @apply border-black/15 dark:border-white/15;
     }
 
     .checkout-left-pane {

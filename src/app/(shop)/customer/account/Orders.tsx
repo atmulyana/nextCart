@@ -86,10 +86,10 @@ const OrderItem = React.memo(function OrderItem({
     viewClick,
 }: OrderProps) {
     return <div className='bordered !mt-0 !p-0 overflow-hidden'>
-        <div className='bg-black/5 dark:bg-white/10 border-b border-black/15 dark:border-white/15 px-5 py-3 z-10'>
+        <div className='relative bg-black/5 dark:bg-white/10 border-b border-blurry px-5 py-3 z-10'>
             {text.id}: {order._id.toString()} - {text.date}: {formatDate(order.orderDate)}
             <button
-                className='btn-outline-success btn-sm float-right'
+                className='btn-outline-success btn-sm absolute right-5 top-1/2 -translate-y-1/2'
                 onClick={() => viewClick(order._id.toString())}
             >
                 {isOpen ? text.close : text.view}
