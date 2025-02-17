@@ -1,6 +1,6 @@
 {
   "name": "next-cart",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "private": true,
   "scripts": {
     "predev": "node ./src/data/lang/createData.js",
@@ -32,6 +32,7 @@
     "paypal-rest-sdk": "^1.8.1",
     "react": "^18",
     "react-dom": "^18",
+    "reactjs-common": "^0.0.3",
     "sqlite3": "^5.1.6",
     "string-strip-html": "^13.4.6",
     "stripe": "^17.0.0",

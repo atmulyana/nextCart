@@ -126,7 +126,7 @@ async function updateOrderedStock(data: TOrder['orderProducts']) {
             const currentStock = await getStock(product.productId, product.variantId) ?? 0;
             let newStock = currentStock - product.quantity;
             if (newStock < 1) newStock = 0;
-            await updateStock(product, newStock);
+            await updateStock(product, newStock, currentStock);
         });
     }
 }

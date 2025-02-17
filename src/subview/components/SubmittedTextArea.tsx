@@ -6,20 +6,61 @@ import * as React from 'react';
 import {useFormStatus} from "react-dom";
 import {useSchemaProps} from './SchemaContext';
 
-export default function SubmittedTextArea({children, name, value, onChange, ...props}: Omit<React.ComponentProps<'textarea'>, 'disabled'>) {
-    const {pending} = useFormStatus();
+type InputProps = React.ComponentProps<'textarea'>;
+type Props = Omit<InputProps, 'disabled'> & {useState?: boolean};
+type StatedProps = Omit<InputProps, 'defaultValue' | 'onChange'> & {
+    onChange: NonNullable<Props['onChange']>,
+};
+
+const StatedTextArea = React.forwardRef<HTMLTextAreaElement, StatedProps>(function StatedTextArea(
+    {
+        value,
+        onChange,
+        ...props
+    },
+    ref
+) {
     const [val, setVal] = React.useState(value);
-    const getProps = useSchemaProps();
 
     React.useEffect(() => {
         setVal(value);
     }, [value]);
     
-    const changeHandler = React.useCallback<React.ChangeEventHandler<HTMLTextAreaElement>>(ev => {
+    const changeHandler = (ev: React.ChangeEvent<HTMLTextAreaElement>) => {
         setVal(ev.target.value);
+        onChange(ev);
+    };
+
+    return <textarea ref={ref} {...props} value={val} onChange={changeHandler} />;
+});
+
+const _SubmittedTextArea = React.memo(function _SubmittedTextArea({
+    $ref,
+    name,
+    defaultValue,
+    onChange,
+    useState,
+    ...props
+}: Props & {
+    $ref: React.Ref<HTMLTextAreaElement>
+}) {
+    const {pending} = useFormStatus();
+    const getProps = useSchemaProps();
+
+    const changeHandler = React.useCallback<React.ChangeEventHandler<HTMLTextAreaElement>>(ev => {
         if (ev.target.validity.customError) ev.target.setCustomValidity('');
         if (typeof(onChange) == 'function') onChange(ev);
     }, [onChange]);
 
-    return <textarea {...props} {...getProps(name)} value={val} onChange={changeHandler} disabled={pending}>{children}</textarea>;
-}
+    if (defaultValue === undefined && (onChange === undefined || useState)) {
+        return <StatedTextArea ref={$ref} {...props} {...getProps(name)} disabled={pending} onChange={changeHandler} />;
+    }
+    else {
+        return <textarea ref={$ref} {...props} {...getProps(name)} defaultValue={defaultValue} disabled={pending} onChange={changeHandler} />;
+    }
+});
+
+const SubmittedTextArea = React.forwardRef<HTMLTextAreaElement, Props>(function SubmittedTextArea(props, ref) {
+    return <_SubmittedTextArea {...props} $ref={ref} />;
+});
+export default SubmittedTextArea;

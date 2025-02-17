@@ -259,9 +259,12 @@ export const getStock = fn(async (db: Db, productId: _Id, variantId?: _Id) => {
     return null;
 });
 
-export const updateStock = fn(async (db: Db, id: { productId: _Id, variantId?: _Id}, newStock: number) => {
-    if(id.variantId){
-        await db.collection('variants').updateOne(
+export const updateStock = fn(async (db: Db, id: { productId: _Id, variantId?: _Id}, newStock: number, oldStock?: number) => {
+    const variants = db.collection('variants'),
+          products = db.collection('products');
+    if (oldStock === undefined) oldStock = await getStock(id.productId, id.variantId) ?? 0;
+    if (id.variantId) {
+        await variants.updateOne(
             {
                 _id: toId(id.variantId)
             }, 
@@ -271,9 +274,48 @@ export const updateStock = fn(async (db: Db, id: { productId: _Id, variantId?: _
                 }
             }
         );
+
+        await products.updateOne(
+            {
+                _id: toId(id.productId)
+            },
+            [
+                {
+                    $set: {
+                        productStock: {$subtract: ['$productStock', oldStock - newStock]}
+                    }
+                }
+            ]
+        );
+
+        /***
+         * Unfotunately, these statements below can't be used because the stock count of the updated variant hasn't changed
+         * before committing the DB transaction. Therefore, we use the above one.
+        newStock = (await variants.aggregate([
+            {
+                $match: {product: toId(id.productId)}
+            },
+            {
+                $group: {
+                    _id: null, //"$product",
+                    totalStock: {$sum: "$stock"},
+                }
+            }
+        ]).toArray())[0]?.totalStock ?? 0;
+        await products.updateOne(
+            {
+                _id: toId(id.productId)
+            },
+            {
+                $set: {
+                    productStock: newStock
+                }
+            }
+        );
+        ***/
     }
     else {
-        await db.collection('products').updateOne(
+        await products.updateOne(
             {
                 _id: toId(id.productId)
             },

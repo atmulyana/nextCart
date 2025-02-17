@@ -31,7 +31,16 @@ export default function CustomerDataForm({data}: {data?: TSessionCustomer | null
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
             <Select name='country' value={data?.customerCountry ?? ''}>
                 <option key={-1} value="" disabled>{lang('Select Country')}</option>
-                {Object.values(countries).map((item, idx) => <option key={idx} value={item.name}>{item.name}</option>)}
+                {Object.values(countries)
+                    .sort(
+                        (a, b,) => a.name < b.name ? -1 :
+                                   a.name > b.name ? 1 :
+                                   0
+                    )
+                    .map(
+                        (item, idx) => <option key={idx} value={item.name}>{item.name}</option>
+                    )
+                }
             </Select> 
         </div>
         <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4'>

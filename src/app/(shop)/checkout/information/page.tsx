@@ -77,7 +77,14 @@ export default async function CheckoutInformation() {
                         <Input type='password' name='password' placeholder={lang('Password')} />
                     </div>
                     <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4 flex items-center'>
-                        <Input name='createAccount' id="createAccountCheckbox" type='checkbox' value='1' onChange={createAccountCheckboxChange} />
+                        <Input
+                            name='createAccount'
+                            id="createAccountCheckbox"
+                            type='checkbox'
+                            value='1'
+                            onChange={createAccountCheckboxChange}
+                            useState
+                        />
                         <label htmlFor='createAccountCheckbox' className='ml-1'>{lang('Create account')}</label>
                     </div>
                 </div>}
