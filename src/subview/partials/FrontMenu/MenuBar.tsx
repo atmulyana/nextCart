@@ -76,23 +76,40 @@ export default React.memo(function FrontMenuBar({
 
 const SearchForm = React.memo(function SearchForm({searchButtonLabel, searchPlaceHolder}: {searchButtonLabel:string, searchPlaceHolder: string}) {
     const router = useRouter();
-    const searchText = React.useRef<HTMLInputElement>(null);
+    const searchText = React.useRef<HTMLInputElement | null>(null);
+    const path = usePathname();
+    let searchVal = '';
+    if (path.startsWith('/search/')) {
+        searchVal = decodeURIComponent(path.substring('/search/'.length));
+    }
 
     return <div className="relative flex flex-wrap items-stretch mt-0 !ml-auto sm:w-auto">
-        <input ref={searchText} name="frm_search" id="frm_search" type="search" placeholder={searchPlaceHolder} aria-label="Search" 
-            className="relative sm:inline-block z-0 flex-1 sm:w-auto min-w-0 sm:align-middle rounded-r-none"
+        <input
+            ref={inpRef => {
+                searchText.current = inpRef;
+                // if (inpRef) {
+                //     inpRef.addEventListener('search', () => { /** NOT working on Safari **/
+                //         ((inpRef as HTMLInputElement).nextSibling as HTMLButtonElement).click();
+                //     });
+                // }
+            }}
+            type="search"
+            aria-label="Search" 
+            placeholder={searchPlaceHolder}
+            className="flex-1 min-w-0 !rounded-r-none"
+            defaultValue={searchVal}
             onKeyDown={e => {
-                if (e.key == "Enter") document.getElementById("btn_search")?.click();
+                if (e.key == "Enter") ((e.target as HTMLInputElement).nextSibling as HTMLButtonElement).click();
             }}
         />
-        <div className="flex -ml-px">
-            <button id="btn_search" type="submit"
-                className="relative m-0 z-[1] rounded-l-none btn-outline-success" 
-                onClick={() => {
-                    const searchTerm = searchText.current?.value.trim();
-                    if (searchTerm) router.push(`/search/${encodeURIComponent(searchTerm)}`);
-                }}
-            >{searchButtonLabel}</button>
-        </div>
+        <button type="button"
+            className="-ml-px rounded-l-none btn-outline-success" 
+            onClick={() => {
+                const searchTerm = searchText.current?.value.trim();
+                const newPath = searchTerm ? `/search/${encodeURIComponent(searchTerm)}` : '/';
+                if (newPath != path) router.push(newPath);
+                else router.refresh();
+            }}
+        >{searchButtonLabel}</button>
     </div>
 });

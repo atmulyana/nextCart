@@ -219,13 +219,20 @@ function CartItemForm({id, quantity, homeAfterClear}: {id: string, quantity: num
                 type="number" 
                 name="quantity"
                 defaultValue={quantity}
-                className="flex-1 text-center z-0 rounded-none" 
+                className="flex-1 text-center z-0 !rounded-none" 
                 maxLength={2} 
                 onFocus={e => {
                     sQuantity = e.currentTarget.value;
                 }}
                 onBlur={e => {
                     if (sQuantity != e.currentTarget.value) e.currentTarget.form?.requestSubmit();
+                }}
+                onKeyDown={e => {
+                    if (e.key == "Enter") {
+                        e.preventDefault(); //don't auto-submit
+                        e.currentTarget.blur(); //triggers `onBlur` event
+                        //if (sQuantity != e.currentTarget.value) e.currentTarget.form?.requestSubmit();
+                    }
                 }}
             />
             <SubmitButton

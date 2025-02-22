@@ -3,7 +3,7 @@
  **/
 import type {SortDirection} from 'mongodb';
 import config from '@/config';
-import type {_Id, TProduct, TProductImage, TProductItem, TVariant} from './types';
+import type {_Id, TCartItem, TOrder, TProduct, TProductImage, TProductItem, TVariant} from './types';
 import fn, {type Db, toId} from './db-conn';
 
 export const getProduct = fn(async (db: Db, id: _Id): Promise<TProduct | undefined> => {
@@ -126,7 +126,12 @@ function getSort(): {[field: string]: SortDirection} {
 export const getProducts = fn(async (
     db: Db,
     page: number = 1,
-    query: Object = {},
+    query: {
+        $sort?: {
+            [f: string]: 1|-1,
+        },
+        [exp: string]: any,
+    } = {},
     numberOfItems: number = config.productsPerPage,
     includeTotalNumber: boolean = true
 ) => {
@@ -134,14 +139,15 @@ export const getProducts = fn(async (
     if(page > 1){
         skip = (page - 1) * numberOfItems;
     }
+    let {$sort = getSort(), ...$match} = query;
 
     const products = db.collection<TProductItem>('products');
     const data = await products.aggregate<TProductItem>([
         {
-            $match: query
+            $match
         },
         {
-            $sort: getSort(),
+            $sort,
         },
         {
             $skip: skip
@@ -174,7 +180,7 @@ export const getProducts = fn(async (
             },
         }
     ]).toArray();
-    const totalItems = includeTotalNumber ? await products.countDocuments(query) : -1;
+    const totalItems = includeTotalNumber ? await products.countDocuments($match) : -1;
 
     return {
         data,
@@ -328,6 +334,13 @@ export const updateStock = fn(async (db: Db, id: { productId: _Id, variantId?: _
     }
 });
 
+export const setProductPublished = fn(async (db: Db, productId: _Id, published: boolean) => {
+    const id = toId(productId);
+    if (!id) return false;
+    const w = await db.collection('products').updateOne({_id: id}, {$set: {productPublished: published}});
+    return w.modifiedCount > 0;
+});
+
 export const productExists = fn(async (db: Db, productId: _Id) => {
     const id = toId(productId);
     if (!id) return false;
@@ -338,4 +351,34 @@ export const getActiveProductCount = fn(async (db: Db) => {
     return await db.collection('products').countDocuments({
         productPublished: true
     });
+});
+
+export const deleteProduct = fn(async (db: Db, productId: _Id) => {
+    const id = toId(productId);
+    if (!id) return false;
+    
+    const orders = await db.collection<TOrder>('orders').aggregate([
+        {
+            $project: {
+                products: {$objectToArray: "$orderProducts"}
+            }
+        },
+        {
+            $match: {
+                'products.v.productId': id
+            }
+        },
+        {
+            $limit: 1
+        }
+    ]).toArray();
+    if (orders.length > 0) {
+        await setProductPublished(id, false);
+        return 0;
+    }
+
+    db.collection<TCartItem>('cartItems').deleteMany({productId: id});
+    db.collection('reviews').deleteMany({product: id});
+    db.collection<TVariant>('variants').deleteMany({product: id});
+    return (await db.collection<TProduct>('products').deleteOne({_id: id})).deletedCount > 0;
 });

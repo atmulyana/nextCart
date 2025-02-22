@@ -4,6 +4,7 @@
  **/
 import * as React from 'react';
 import {useFormStatus} from "react-dom";
+import {useRouter} from 'next/navigation';
 import cfg from '@/config/usable-on-client';
 import {isPlainObject} from '@/lib/common';
 import Loading from './Loading';
@@ -21,6 +22,7 @@ export type FormProps = Omit<React.ComponentProps<'form'>, 'action'> & {
         readonly invalidInput: boolean,
         readonly data?: any,
     }) => void,
+    refreshThreshold?: NotificationParam['type'],
     validate?: (formData: FormData, action: ActionFunction) => any,
 };
 
@@ -50,6 +52,7 @@ const FormWithFunctionAction = React.forwardRef<
         getResponseMessage = getMessage,
         method,
         onSubmitted,
+        refreshThreshold,
         ...props
     },
     ref
@@ -59,6 +62,7 @@ const FormWithFunctionAction = React.forwardRef<
     const preventInvalidEvent = React.useRef(false);
     const [response, formAction] = React.useActionState(action, initFormState);
     const notify = useNotification();
+    const router = useRouter();
 
     React.useEffect(() => {
         submitted.current = onSubmitted;
@@ -117,19 +121,25 @@ const FormWithFunctionAction = React.forwardRef<
         }
         if (notification) notify(notification.message, notification?.type);
 
-        if (typeof(submitted.current) == 'function') {
-            submitted.current({
-                get message() {
-                    return notification?.message;
-                },
-                get type() {
-                    return notification?.type ?? 'danger';
-                },
-                get invalidInput() {
-                    return false;
-                },
-                data: response,
-            });
+        const responseData = {
+            get message() {
+                return notification?.message;
+            },
+            get type() {
+                return notification?.type ?? 'danger';
+            },
+            get invalidInput() {
+                return false;
+            },
+            data: response,
+        };
+
+        if (typeof(submitted.current) == 'function') submitted.current(responseData);
+        if (refreshThreshold) {
+            const messageTypes: Array<NotificationParam['type']> = ['danger', 'warning', 'success', 'info'];
+            if (messageTypes.indexOf(responseData.type) >= messageTypes.indexOf(refreshThreshold)) {
+                router.refresh();
+            }
         }
 
         if (formRef.current && isPlainObject(response) && isPlainObject(response.__validation_messages__)) {

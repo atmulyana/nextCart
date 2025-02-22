@@ -39,18 +39,19 @@ export const GET = createGetHandler(async ({
         {pageUrl = 'page', searchTerm} = params,
         title = getTitle(pageUrl, searchTerm),
         filtered = !!title?.searchTerm;
-    let query = {};
+    let query: {[p: string]: any} = {};
     if (filtered) {
         if (pageUrl == 'category') {
             query = {tags: title.searchTerm};
         }
         else if (pageUrl == 'search') {
-            query = {$text: { $search: title.searchTerm }};
+            query = {$text: {$search: title.searchTerm}};
         }
         else {
             notFound();
         }
     }
+    query.productPublished = {$ne: false};
     const results = await getProducts(pageNum, query);
     const ret: Return = {
         title: title as (string | undefined),

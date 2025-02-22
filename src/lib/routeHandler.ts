@@ -7,6 +7,7 @@ import {redirect as nextRedirect, RedirectType} from 'next/navigation';
 import {getRedirectError} from 'next/dist/client/components/redirect';
 import config from '@/config';
 import {getCart} from '@/data/cart';
+import lang from '@/data/lang';
 import {getSession, refreshSessionExpires} from '@/data/session';
 import type {NotificationParam} from '@/subview/components/Notification';
 import {title} from '@/app/(shop)/layout';
@@ -186,7 +187,16 @@ export function createGetHandler<P extends GetParam, S extends GetParam, R = any
 
 export function createPostHandler<P extends GetParam = {}, R = any>(handler: PostHandler): PostRouteHandler<P, R> {
     async function submit(formData: FormData, _redirect: Redirect = redirect, isFromMobile: boolean = false): Promise<Response> {
-        let response: any = await handler(formData, _redirect, isFromMobile);
+        let response: any;
+        try {
+            response = await handler(formData, _redirect, isFromMobile);
+        }
+        catch {
+            response = {
+                message: lang("Server can't process your request"),
+                messageType: 'danger',
+            };
+        }
         if (isFromMobile) await applyCommonMobileData(response);
         return response instanceof Response ? response :
                isPlainObject(response)      ? Response.json(response) :       
@@ -258,6 +268,23 @@ export function createPostHandler<P extends GetParam = {}, R = any>(handler: Pos
     };
 
     return POST;
+}
+
+export function createFormAction(handler: (formData: FormData, redirect: Redirect) => any) {
+    return async function submit(formData: FormData) {
+        let response: any;
+        try {
+            response = handler(formData, redirect);
+            if (response instanceof Promise) response = await response;
+        }
+        catch {
+            response = {
+                message: lang("Server can't process your request"),
+                messageType: 'danger',
+            };
+        }
+        return response;
+    }
 }
 
 const formSchemas: {[path: string]: string} = {

@@ -2,6 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import {notFound} from 'next/navigation';
+import type {ObjectId} from '@/data/db-conn';
 import type {TProduct, TProductImagePath, TProductItem, TVariant} from '@/data/types';
 import {getProduct, getProducts} from '@/data/product';
 import {createGetHandler, type HandlerParams} from '@/lib/routeHandler';
@@ -65,8 +66,8 @@ export const GET = createGetHandler(async ({
     };
     if (modules.reviews) {
         ret.reviews = {
-            ...(await modules.reviews.getReviews(product._id)),
-            ...(await modules.reviews.getReviewSummary(product._id)),
+            ...(await modules.reviews.getReviews(product._id as ObjectId)),
+            ...(await modules.reviews.getReviewSummary(product._id as ObjectId)),
         };
     }
     if (isFromMobile) {

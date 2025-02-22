@@ -2,6 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
+import config from '@/config';
 import {getOrderSummary} from '@/data/order';
 import {getActiveProductCount} from '@/data/product';
 import lang from '@/data/lang';
@@ -10,7 +11,7 @@ import FlexImage from '@/subview/components/FlexImage';
 
 export const generateMetadata = fnMeta(async () => {
     return {
-        title: `${lang('Shop')}: ${lang('Dashboard')}`,
+        title: `${config.cartTitle}: ${lang('Dashboard')}`,
     };
 });
 
