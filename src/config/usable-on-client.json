@@ -3,6 +3,7 @@
     "baseUrl": "http://localhost:3000",
     "productsPerRow": 3,
     "productsPerPage": 6,
+    "itemsPerPage": 10,
     "currencySymbol": "$",
     "currencyISO": "USD",
     "maxQuantity": 25,

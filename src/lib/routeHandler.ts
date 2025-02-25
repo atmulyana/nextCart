@@ -191,7 +191,8 @@ export function createPostHandler<P extends GetParam = {}, R = any>(handler: Pos
         try {
             response = await handler(formData, _redirect, isFromMobile);
         }
-        catch {
+        catch (ex) {
+            if (isFromMobile) throw ex;
             response = {
                 message: lang("Server can't process your request"),
                 messageType: 'danger',

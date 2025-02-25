@@ -9,7 +9,6 @@ import lang from '@/data/lang';
 import {getProducts} from '@/data/product';
 import {awaitProps, fnMeta, isIndexNumber} from '@/lib/common';
 import Form from '@/subview/components/Form';
-import Icon from '@/subview/components/Icon';
 import Paging from '@/subview/components/Paging';
 import SearchBox from '@/subview/components/SearchBox';
 import {remove, updatePublished} from '../actions';
@@ -25,11 +24,11 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
     const {params: {pageIdx = ['1'], search}} = await awaitProps(props);
     if (pageIdx.length > 1 || !isIndexNumber(pageIdx[0])) return notFound();
     const pageNum = parseInt(pageIdx[0]);
+    if (pageNum < 1) return notFound();
 
-    const totalItemsPerPage = 10;
     const query: any = {$sort: {productAddedDate: -1}};
     if (search?.trim()) query.$text = {$search: decodeURIComponent(search).trim()};
-    const products = await getProducts(pageNum, query, totalItemsPerPage);
+    const products = await getProducts(pageNum, query, 10);
     let _id: string = '';
 
     return <>
@@ -45,14 +44,16 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
                 <strong>{lang('Published')}</strong>&nbsp;&nbsp;
                 <strong>{lang('Delete')}</strong>
             </li>
-            {products.data.map(p => (_id = p._id.toString(),
+            {!products.data || products.data.length < 1 ? (
+                <li className='bg-[--bg-color] text-center'>{lang('No products found')}</li>
+            ) : products.data.map(p => (_id = p._id.toString(),
                 <li key={_id} className='!flex bg-[--bg-color]'>
-                    <Link href={`/admin/product/edit/${_id}`} className='flex-1'>{p.productTitle}</Link>&nbsp;&nbsp;
+                    <Link href={`/admin/products/edit/${_id}`} className='flex-1'>{p.productTitle}</Link>&nbsp;&nbsp;
                     <span className='relative'>
                         <strong className='opacity-0'>{lang('Published')}</strong>
                         <Form
                             action={updatePublished}
-                            className='absolute left-0 top-0 right-0 bottom-0 text-center'
+                            className='!absolute left-0 top-0 right-0 bottom-0 text-center'
                             loading={null}
                             refreshThreshold='danger'
                         >
@@ -64,7 +65,7 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
                         <strong className='opacity-0'>{lang('Delete')}</strong>
                         <Form 
                             action={remove}
-                            className='absolute left-0 top-0 right-0 bottom-0 text-center text-[--color-danger]'
+                            className='!absolute left-0 top-0 right-0 bottom-0 text-center text-[--color-danger]'
                             loading={null}
                             refreshThreshold='warning'
                         >
@@ -77,7 +78,7 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
         </ul>
         <div className='flex justify-center w-full'>
             <Paging
-                pageCount={Math.ceil(products.totalItems / totalItemsPerPage)}
+                pageCount={Math.ceil(products.totalItems / products.itemsPerPage)}
                 selectedPage={pageNum}
                 href={search ? `/admin/products/filter/${search}` : '/admin/products'}
             />

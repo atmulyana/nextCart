@@ -1,8 +1,9 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {_Id, TOrder, WithoutId} from '@/data/types';
-import fn, {type Db, getPagedList, toId} from './db-conn';
+import type {_Id, OrderStatus, TOrder, WithoutId} from '@/data/types';
+import {emailRegex, getOrderStatuses, nameRegex, postalCodeRegex} from '@/lib/common';
+import fn, {type Db, getPagedList, paging, toId} from './db-conn';
 
 export const createOrder = fn(async (db: Db, order: WithoutId<TOrder>) => {
     const result = await db.collection('orders').insertOne(order);
@@ -16,35 +17,84 @@ export const updateOrder = fn(async (db: Db, id: _Id, order: Partial<TOrder>) =>
     );
 });
 
+export const updateOrderStatus = fn(async (db: Db, id: _Id, status: OrderStatus) => {
+    if (!getOrderStatuses().includes(status)) throw 'Invalid status';
+    return (await db.collection<TOrder>('orders').updateOne(
+        {_id: toId(id)},
+        {$set: {orderStatus: status}},
+    )).modifiedCount > 0;
+});
+
+export const deleteOrder = fn(async (db: Db, id: _Id) => {
+    /** TODO: should reverse the product stock, perhaps for 'Pending' status */
+    return (await db.collection('orders').deleteOne({_id: toId(id)})).deletedCount > 0;
+});
+
 export const getOrder = fn(async (db: Db, id: _Id) => {
     return await db.collection<TOrder>('orders').findOne({_id: toId(id)});
 });
 
-export const getOrdersByEmail = fn(async (db: Db, email: string, limit: number = 0) => {
-    let rs = db.collection<TOrder>('orders').find({orderEmail: email});
-    if (limit > 0) rs = rs.limit(limit);
-    return await rs.toArray();
+export const getOrders = fn(async (db: Db, {
+    search,
+    status,
+    page,
+    limit,
+    sort = {orderDate: -1},
+} : {
+    search?: string,
+    status?: OrderStatus,
+    page?: number,
+    limit?: number,
+    sort?: {[f: string]: 1|-1}
+}) => {
+    const query: {[f: string]: any} = {};
+    search = search?.trim();
+    if (search) {
+        const words = search.trim().split(/\s+/);
+        const emails: Array<string> = [], names: Array<string> = [], zips: Array<string> = [];
+        for (let word of words) {
+            if (emailRegex.test(word)) emails.push(word);
+            else if (nameRegex.test(word)) names.push(word);
+            else if (postalCodeRegex) zips.push(word);
+        }
+        
+        if (emails.length == 1) query.orderEmail = emails[0]
+        else if (emails.length > 1) query.orderEmail = {$in: emails};
+        
+        if (names.length > 0) query.$text = {$search: names.join(' ')};
+
+        if (zips.length == 1) query.orderPostcode = zips[0]
+        else if (zips.length > 1) query.orderPostcode = {$in: zips};
+    }
+    if (status) {
+        query.orderStatus = status;
+    }
+    const rs = db.find<TOrder>('orders', query);
+    return paging(rs, limit, page, sort);
 });
 
-export const getOrdersByValue = fn(async (db: Db, value: number, limit: number = 0) => {
-    let rs = db.collection<TOrder>('orders').find({orderTotal: value});
-    if (limit > 0) rs = rs.limit(limit);
-    return await rs.toArray();
+export const getOrdersByEmail = fn(async (db: Db, email: string, page?: number, limit?: number) => {
+    const rs = db.find<TOrder>('orders', {orderEmail: email});
+    return  paging(rs, limit, page);
 });
 
-export const getOrdersByName = fn(async (db: Db, name: string, limit: number = 0) => {
+export const getOrdersByValue = fn(async (db: Db, value: number, page?: number, limit?: number) => {
+    const rs = db.find<TOrder>('orders', {orderTotal: value});
+    return paging(rs, limit, page);
+});
+
+export const getOrdersByName = fn(async (db: Db, name: string, page?: number, limit?: number) => {
     const $regex = new RegExp(name, 'i');
-    let rs = db.collection<TOrder>('orders').find({
+    const rs = db.find<TOrder>('orders', {
         $or: [
             { orderFirstname: { $regex } },
             { orderLastname: { $regex } },
         ]
     });
-    if (limit > 0) rs = rs.limit(limit);
-    return await rs.toArray();
+    return paging(rs, limit, page);
 });
 
-export const getOrders = fn(async (
+export const getOrdersByCustomerId = fn(async (
     db: Db,
     customerId: _Id | undefined,
     pageIdx: number = 1

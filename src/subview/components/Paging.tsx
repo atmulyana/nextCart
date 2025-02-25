@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 type Props = {
     pageCount: number,
-    href: string,
+    href: string | ((page: number) => string),
     selectedPage: number,
     maxVisibleCount?: number,
     containerClass?: string,
@@ -37,6 +37,7 @@ const Paging = React.memo(function Paging({
     disabledClass = 'text-neutral-600 dark:text-neutral-400',
 }: Props) {
     if (pageCount < 2) return null;
+    const getHref = typeof(href) == 'function' ? href : ((page: number) => `${href}/${page}`);
     
     const middlePageDistance = Math.floor(maxVisibleCount / 2); 
     let start = selectedPage - middlePageDistance;
@@ -59,10 +60,10 @@ const Paging = React.memo(function Paging({
             numbers.push(<PageItem key={page} className={selectedItemClass} text={page} />);
         }
         else {
-            numbers.push(<PageLink key={page} className={itemClass} href={`${href}/${page}`} text={page} />);
+            numbers.push(<PageLink key={page} className={itemClass} href={getHref(page)} text={page} />);
         }
     }
-    
+
     return <ul className={`flex list-none pl-0 mt-0 ${containerClass}`}>
         {isFirstVisible ? (
             <>
@@ -71,7 +72,7 @@ const Paging = React.memo(function Paging({
             </>
         ) : (
             <>
-                <PageLink className={itemClass} href={`${href}/1`} text={1} />
+                <PageLink className={itemClass} href={getHref(1)} text={1} />
                 <PageItem className={itemClass} text='...' />
             </>
         )}
@@ -79,7 +80,7 @@ const Paging = React.memo(function Paging({
         {selectedPage <= 1 ? (
             <PageItem className={disbaledItemClass} text='&laquo;' />
         ) : (
-            <PageLink className={itemClass} href={`${href}/${selectedPage - 1}`} text='&laquo;' />
+            <PageLink className={itemClass} href={getHref(selectedPage - 1)} text='&laquo;' />
         )}
 
         {numbers}
@@ -87,7 +88,7 @@ const Paging = React.memo(function Paging({
         {selectedPage >= pageCount ? (
             <PageItem className={disbaledItemClass} text='&raquo;' />
         ) : (
-            <PageLink className={itemClass} href={`${href}/${selectedPage + 1}`} text='&raquo;' />
+            <PageLink className={itemClass} href={getHref(selectedPage + 1)} text='&raquo;' />
         )}
         
         {isLastVisible ? (
@@ -98,7 +99,7 @@ const Paging = React.memo(function Paging({
         ) : (
             <>
                 <PageItem className={itemClass} text='...' />
-                <PageLink className={itemClass} href={`${href}/${pageCount}`} text={pageCount} />
+                <PageLink className={itemClass} href={getHref(pageCount)} text={pageCount} />
             </>
         )}
     </ul>;

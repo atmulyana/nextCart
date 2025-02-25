@@ -4,7 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import lang from '@/data/lang';
-import {getOrders} from '@/data/order';
+import {getOrdersByCustomerId} from '@/data/order';
 import {getSession} from '@/data/session';
 import Breadcrumb from '@/subview/components/Breadcrumb';
 import FormWithSchema from '@/subview/components/FormWithSchema';
@@ -22,7 +22,7 @@ export function generateMetadata() {
 
 export default async function CustomerAccount() {
     const session = await getSession();
-    const orders = await getOrders(session.customerId);
+    const orders = await getOrdersByCustomerId(session.customerId);
     for (let order of orders.list) {
         order._id = order._id.toString();
         if (typeof(order.orderPaymentId) == 'object') order.orderPaymentId = (order.orderPaymentId as Object).toString();

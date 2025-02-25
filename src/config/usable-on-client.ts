@@ -8,6 +8,7 @@ export type UsableOnClientConfig = {
     baseUrl: BaseURL,
     productsPerRow: 1 | 2 | 3 | 4,
     productsPerPage: number,
+    itemsPerPage: number,
     currencySymbol: string,
     currencyISO: string,
     maxQuantity: number,

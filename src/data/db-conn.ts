@@ -15,6 +15,7 @@ import {
     type DeleteResult,
     type Document,
     type Filter,
+    type FindCursor,
     type InsertManyResult,
     type InsertOneOptions,
     type InsertOneResult,
@@ -22,6 +23,7 @@ import {
     MongoClient,
     type OptionalUnlessRequiredId,
     type ReplaceOptions,
+    type Sort,
     type TransactionOptions,
     type UpdateFilter,
     type UpdateOptions,
@@ -32,7 +34,10 @@ import appCfg from '@/config';
 const {databaseConnectionString: dbUrl} = appCfg;
 import type {_Id} from './types';
 
-type Db = MongoDb & {session?: ClientSession}
+type Db = MongoDb & {
+    find: <T extends Document = Document>(collectionName: string, $match: Document) => AggregationCursor<T>,
+    session?: ClientSession,
+}
 export {type Db, ObjectId};
 
 // function cache<F extends Function>(fn: F): F {
@@ -150,6 +155,10 @@ const [getClient, getDb] = (function() {
                     return Reflect.get(target, prop, receiver);
                 },
             });
+
+            db.find = <T extends Document = Document>(collectionName: string, $match: Document) => {
+                return db.collection(collectionName).aggregate<T>().match($match);
+            };
         }
         return db;
     }
@@ -497,11 +506,41 @@ else {
 }
 export {dbTrans};
 
+export async function paging<T = any>(rs: AggregationCursor<T>, limit: number = appCfg.itemsPerPage, page: number = 1, sort?: Sort) {
+    let count = -1;
+    let rs2 = rs.clone();
+    if (sort) rs = rs.sort(sort);
+    if (limit > 0) {
+        if (page > 0) rs = rs.skip((page-1) * limit);
+        rs = rs.limit(limit);
+    }
+
+    return {
+        data: await rs.toArray(),
+        count: async () => {
+            if (count < 0) {
+                /** `rs` and `r2` shares `pipeline` instance (unfortunately) */
+                if ('$limit' in rs2.pipeline[rs2.pipeline.length - 1]) rs2.pipeline.length--;
+                if ('$skip' in rs2.pipeline[rs2.pipeline.length - 1]) rs2.pipeline.length--;
+                if ('$sort' in rs2.pipeline[rs2.pipeline.length - 1]) rs2.pipeline.length--;
+                
+                count = (await rs2.group<{count: number}>({_id: null, count: {$sum: 1}}).toArray())[0]?.count ?? 0;
+            }
+            return count;
+        },
+        itemsPerPage: limit,
+        pageCount: async function() {
+            if (limit < 1) return 1;
+            return Math.ceil(await this.count() / limit);
+        },
+    };
+}
+
 
 export async function getPagedList<T>(
-    query: AggregationCursor<T>,
+    query: AggregationCursor<T> | FindCursor<T>,
     page: number = 1,
-    numberOfItems: number = 5
+    numberOfItems: number = appCfg.itemsPerPage
 ) {
     let skip = 0;
     if (page > 1) {

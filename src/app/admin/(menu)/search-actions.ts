@@ -7,9 +7,8 @@ import {getCustomer, getCustomerByEmail, getCustomersByName} from "@/data/custom
 import {getOrder, getOrdersByEmail, getOrdersByName, getOrdersByValue} from "@/data/order";
 import {getProduct, getProducts, getProductsByValue} from "@/data/product";
 import type {TCustomer, TOrder, TProductBase, TVariant} from "@/data/types";
+import {emailRegex, numericRegex} from '@/lib/common';
 
-const emailRegex = /\S+@\S+\.\S+/;
-const numericRegex = /^\d*\.?\d*$/;
 const searchLimit = 5;
 
 export async function globalSearch(formData: FormData) {
@@ -44,16 +43,16 @@ export async function globalSearch(formData: FormData) {
     else if (emailRegex.test(keywords)) {
         const custumer  = await getCustomerByEmail(keywords);
         if (custumer) ret.customers = [custumer];
-        ret.orders = await getOrdersByEmail(keywords, searchLimit);
+        ret.orders = (await getOrdersByEmail(keywords, 1, searchLimit)).data;
     }
     else if (numericRegex.test(keywords)) {
         const value = parseFloat(keywords);
-        ret.orders = await getOrdersByValue(value, searchLimit);
+        ret.orders = (await getOrdersByValue(value, 1, searchLimit)).data;
         ret.products = await getProductsByValue(value, searchLimit);
     }
     else {
         ret.customers = await getCustomersByName(keywords, searchLimit);
-        ret.orders = await getOrdersByName(keywords, searchLimit);
+        ret.orders = (await getOrdersByName(keywords, 1, searchLimit)).data;
         ret.products = (await getProducts(1, {$text: {$search: keywords}}, searchLimit, false)).data;
     }
 

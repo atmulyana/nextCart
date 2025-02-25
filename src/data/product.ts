@@ -184,7 +184,8 @@ export const getProducts = fn(async (
 
     return {
         data,
-        totalItems
+        itemsPerPage: numberOfItems,
+        totalItems,
     };
 });
 

@@ -1,7 +1,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {Metadata, ResolvedMetadata, ResolvingMetadata, Route} from "next";
+import type {Metadata, ResolvedMetadata, ResolvingMetadata} from "next";
 import numeral from 'numeral';
 import config from '@/config/usable-on-client';
 
@@ -175,13 +175,23 @@ export const str = (template: string | null | undefined, params: {[name: string]
 
 const statusColors: {[status: string]: string} = {
     Paid: 'success',
+    Declined: 'danger',
     Approved: 'success',
     'Approved - Processing': 'success',
     Failed: 'danger',
     Completed: 'success',
     Shipped: 'success',
     Pending: 'warning',
+    Created: 'warning',
 };
 export function getStatusColor(status: string) {
     return statusColors[status] || 'danger';
 }
+export function getOrderStatuses() {
+    return Object.keys(statusColors);
+}
+
+export const emailRegex = /\S+@\S+\.\S+/;
+export const nameRegex = /^[a-zA-Z']+$/;
+export const numericRegex = /^\d*\.?\d+$/;
+export const postalCodeRegex = /^[a-zA-Z]{0,3}\d{3,}[a-zA-Z]{0,3}$/;

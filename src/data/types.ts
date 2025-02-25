@@ -67,10 +67,10 @@ export type TMenu = {
     order: number,
 }
 
-export type OrderStatus = 'Paid' | 'Declined' | 'Approved' | 'Approved - Processing' | 'Failed' | 'Completed' | 'Shipped' | 'Pending';
+export type OrderStatus = 'Paid' | 'Declined' | 'Approved' | 'Approved - Processing' | 'Failed' | 'Completed' | 'Shipped' | 'Pending' | 'Created';
 export type TOrder = {
     _id: _Id,
-    orderPaymentId: string,
+    orderPaymentId: _Id,
     orderPaymentGateway: string,
     orderTotal: number,
     orderShipping: number,
