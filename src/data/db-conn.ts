@@ -32,6 +32,7 @@ import {
 } from 'mongodb';
 import appCfg from '@/config';
 const {databaseConnectionString: dbUrl} = appCfg;
+import {isRedirectError} from '@/lib/common';
 import type {_Id} from './types';
 
 type Db = MongoDb & {
@@ -477,8 +478,8 @@ if (/(\?|&)replicaSet=/i.test(dbUrl)) {
                 async () => {
                     try {
                         result = await fn();
-                    } catch (err) {
-                        if ((err instanceof Error) && err.message == 'NEXT_REDIRECT') {
+                    } catch (err: any) {
+                        if (isRedirectError(err)) {
                             redirect = err;
                         }
                         else {

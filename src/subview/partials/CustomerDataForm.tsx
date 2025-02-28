@@ -3,33 +3,33 @@
  **/
 import React from 'react';
 import {countries} from 'countries-list';
-import type {TSessionCustomer} from '@/data/types';
+import type {TCustomer, TSessionCustomer} from '@/data/types';
 import lang from '@/data/lang';
 import Input from '@/subview/components/SubmittedInput';
 import Select from '@/subview/components/SubmittedSelect';
 
-export default function CustomerDataForm({data}: {data?: TSessionCustomer | null}) {
+export default function CustomerDataForm({data}: {data?: (Partial<Omit<TSessionCustomer, '_id'>> & Partial<TCustomer>) | null}) {
     return <div className='flex flex-wrap -mx-4'>
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <Input name='email' placeholder={lang('Email address')} value={data?.customerEmail ?? ''} /> 
+            <Input name='email' placeholder={lang('Email address')} value={data?.customerEmail ?? data?.email ?? ''} /> 
         </div>
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <Input name='company' placeholder={lang('Company name')} value={data?.customerCompany ?? ''} /> 
+            <Input name='company' placeholder={lang('Company name')} value={data?.customerCompany ?? data?.company ?? ''} /> 
         </div>
         <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4'>
-            <Input name='firstName' placeholder={lang('First name')} value={data?.customerFirstname ?? ''} /> 
+            <Input name='firstName' placeholder={lang('First name')} value={data?.customerFirstname ?? data?.firstName ?? ''} /> 
         </div>
         <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4'>
-            <Input name='lastName' placeholder={lang('Last name')} value={data?.customerLastname ?? ''} /> 
+            <Input name='lastName' placeholder={lang('Last name')} value={data?.customerLastname ?? data?.lastName ?? ''} /> 
         </div>
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <Input name='address1' placeholder={lang('Address 1')} value={data?.customerAddress1 ?? ''}  /> 
+            <Input name='address1' placeholder={lang('Address 1')} value={data?.customerAddress1 ?? data?.address1 ?? ''}  /> 
         </div>
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <Input name='address2' placeholder={`${lang("Address 2")} (${lang("optional")})`} value={data?.customerAddress2 ?? ''} /> 
+            <Input name='address2' placeholder={`${lang("Address 2")} (${lang("optional")})`} value={data?.customerAddress2 ?? data?.address2 ?? ''} /> 
         </div>
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <Select name='country' value={data?.customerCountry ?? ''}>
+            <Select name='country' value={data?.customerCountry ?? data?.country ?? ''}>
                 <option key={-1} value="" disabled>{lang('Select Country')}</option>
                 {Object.values(countries)
                     .sort(
@@ -44,13 +44,13 @@ export default function CustomerDataForm({data}: {data?: TSessionCustomer | null
             </Select> 
         </div>
         <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4'>
-            <Input name='state' placeholder={lang('State')} value={data?.customerState ?? ''} /> 
+            <Input name='state' placeholder={lang('State')} value={data?.customerState ?? data?.state ?? ''} /> 
         </div>
         <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4'>
-            <Input name='postcode' placeholder={lang('Post code')} value={data?.customerPostcode ?? ''} /> 
+            <Input name='postcode' placeholder={lang('Post code')} value={data?.customerPostcode ?? data?.postcode ?? ''} /> 
         </div>
         <div className='basis-full grow-0 shrink-0 mb-4 px-4'>
-            <Input name='phone' placeholder={lang("Phone number")} value={data?.customerPhone ?? ''} /> 
+            <Input name='phone' placeholder={lang("Phone number")} value={data?.customerPhone ?? data?.phone ?? ''} /> 
         </div>
     </div>;
 }

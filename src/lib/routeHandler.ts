@@ -13,7 +13,7 @@ import type {NotificationParam} from '@/subview/components/Notification';
 import {title} from '@/app/(shop)/layout';
 import {getSessionMessage, redirectWithMessage} from './auth';
 import {isFromMobile as fromMobile} from './auth/common';
-import {isPlainObject, normalizeParamValue, safeUrl, type GetParam, type RouteParam} from './common';
+import {isPlainObject, isRedirectError, normalizeParamValue, safeUrl, type GetParam, type RouteParam} from './common';
 import {validateForm} from './schemas';
 
 type RedirectOption = Exclude<NonNullable<Parameters<typeof safeUrl>[1]>, string> & {
@@ -192,7 +192,7 @@ export function createPostHandler<P extends GetParam = {}, R = any>(handler: Pos
             response = await handler(formData, _redirect, isFromMobile);
         }
         catch (ex) {
-            if (isFromMobile) throw ex;
+            if (isFromMobile || isRedirectError(ex)) throw ex;
             response = {
                 message: lang("Server can't process your request"),
                 messageType: 'danger',
@@ -278,7 +278,8 @@ export function createFormAction(handler: (formData: FormData, redirect: Redirec
             response = handler(formData, redirect);
             if (response instanceof Promise) response = await response;
         }
-        catch {
+        catch (err: any) {
+            if (isRedirectError(err)) throw err;
             response = {
                 message: lang("Server can't process your request"),
                 messageType: 'danger',

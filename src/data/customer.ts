@@ -1,11 +1,16 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {_Id, TCustomer, WithoutId} from './types';
-import fn, {type Db, toId} from './db-conn';
+import {emailRegex, nameRegex, phoneRegex, sanitizePhone} from '@/lib/common';
+import type {_Id, TCart, TCartItem, TCustomer, TSession, WithoutId} from './types';
+import fn, {type Db, paging, toId} from './db-conn';
 
 export const getCustomer = fn(async (db: Db, id: _Id) => {
-    return await db.collection<TCustomer>('customers').findOne({_id: toId(id)});
+    const customer = await db.collection<TCustomer>('customers').findOne({_id: toId(id)});
+    if (customer?.phone && !customer.phone.startsWith('0')) {
+        customer.phone = '+' + customer.phone;
+    }
+    return customer;
 });
 
 export const getCustomerByEmail = fn(async (db: Db, email: string) => {
@@ -28,7 +33,42 @@ export const getCustomersByName = fn(async (db: Db, name: string, limit: number 
     return await rs.toArray();
 });
 
+export const getCustomers = fn(async (db: Db, {
+    search,
+    page,
+    limit,
+    sort = {orderDate: -1},
+} : {
+    search?: string,
+    page?: number,
+    limit?: number,
+    sort?: {[f: string]: 1|-1}
+}) => {
+    const query: {[f: string]: any} = {};
+    search = search?.trim();
+    if (search) {
+        const words = search.trim().split(/\s+/);
+        const emails: Array<string> = [], names: Array<string> = [], phones: Array<string> = [];
+        for (let word of words) {
+            if (emailRegex.test(word)) emails.push(word);
+            else if (nameRegex.test(word)) names.push(word);
+            else if (phoneRegex.test(word)) phones.push(sanitizePhone(word));
+        }
+        
+        if (emails.length == 1) query.email = emails[0]
+        else if (emails.length > 1) query.email = {$in: emails};
+        
+        if (names.length > 0) query.$text = {$search: names.join(' ')};
+
+        if (phones.length == 1) query.phone = phones[0]
+        else if (phones.length > 1) query.phone = {$in: phones};
+    }
+    const rs = db.find<TCustomer>('customers', query);
+    return paging(rs, limit, page, sort);
+});
+
 export const createCustomer = fn(async (db: Db, customer: WithoutId<TCustomer>) => {
+    customer.phone = sanitizePhone(customer.phone);
     const w = await db.collection('customers').insertOne(customer);
     return w.insertedId;
 });
@@ -49,6 +89,7 @@ export const updateCustomer = fn(async (
             (obj, field) => (obj[field] = '', obj),
             {} as {[F in OptionalCustomerFields]?: ''}
         );
+        if (customer.phone) customer.phone = sanitizePhone(customer.phone);
         const updates: {$set?: typeof customer, $unset?: typeof $unset} = {};
         if (Object.keys(customer).length > 0) updates.$set = customer;
         if (Object.keys($unset).length > 0) updates.$unset = $unset;
@@ -58,4 +99,18 @@ export const updateCustomer = fn(async (
             updates
         );
     }
+});
+
+export const deleteCustomer = fn(async (db: Db, customerId: _Id) => {
+    const id = toId(customerId);
+    if (!id) return false;
+
+    const sessionIds = await db.collection<TSession>('sessions').distinct('_id', {customerId: id});
+    await db.collection<TCartItem>('cartItems').deleteMany({'_id.cartId': {$in: sessionIds}});
+    await db.collection<TCart>('cart').deleteMany({_id: {$in: sessionIds}});
+    await db.collection<TSession>('sessions').deleteMany({_id: {$in: sessionIds}});
+
+    await db.collection('reviews').deleteMany({customer: id});
+    const w = await db.collection('customers').deleteOne({_id: id});
+    return w.deletedCount;
 });

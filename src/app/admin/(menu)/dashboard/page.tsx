@@ -8,6 +8,7 @@ import {getActiveProductCount} from '@/data/product';
 import lang from '@/data/lang';
 import {currencySymbol, fnMeta, formatAmount} from '@/lib/common';
 import FlexImage from '@/subview/components/FlexImage';
+import Template from '@/subview/partials/Template';
 
 export const generateMetadata = fnMeta(async () => {
     return {
@@ -19,7 +20,7 @@ export default async function AdminDashboard() {
     const productCount = await getActiveProductCount();
     const summary = await getOrderSummary();
     let pId: string = '';
-    return <>
+    return <Template>
         <h2 className='px-3.5'>{lang('Dashboard')}</h2>
         <div className='flex flex-wrap'>
             <div className='basis-1/2 shrink-0 px-3.5 pb-7'>
@@ -85,5 +86,5 @@ export default async function AdminDashboard() {
                 </div>
             </div>
         </div>
-    </>;
+    </Template>;
 }

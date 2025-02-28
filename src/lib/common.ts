@@ -141,11 +141,15 @@ export function safeUrl(
 }
 
 export function isIndexNumber(param: any) {
-    return /^\d+$/.test(param);
+    return indexRegex.test(param);
 }
 
 export function isPlainObject(o: any) {
     return typeof(o) == 'object' && o && Object.getPrototypeOf(o).constructor === Object
+}
+
+export function isRedirectError(err: any) {
+    return (err instanceof Error) && err.message == 'NEXT_REDIRECT';
 }
 
 export function currencySymbol(symbol: string = config.currencySymbol) {
@@ -162,6 +166,10 @@ export function fixTags(html: string) {
 
 export function snip(text: string | null | undefined) {
     return text && text.length > 155 ? `${text.substring(0, 155)}...` : '';
+}
+
+export function sanitizePhone(phone: string) {
+    return phone.replaceAll(/[^\d]/g, '');
 }
 
 const reVarNameHolders = /\$\{([_a-zA-Z][_a-zA-Z0-9]*)\}/g;
@@ -192,6 +200,8 @@ export function getOrderStatuses() {
 }
 
 export const emailRegex = /\S+@\S+\.\S+/;
+export const indexRegex = /^\d+$/;
 export const nameRegex = /^[a-zA-Z']+$/;
 export const numericRegex = /^\d*\.?\d+$/;
+export const phoneRegex = /^(?:\+([1-9]{1,2})|\(\+([1-9]{1,2})\)|0)(\d{1,3})(?:-\d+)*-?\d+$/;
 export const postalCodeRegex = /^[a-zA-Z]{0,3}\d{3,}[a-zA-Z]{0,3}$/;

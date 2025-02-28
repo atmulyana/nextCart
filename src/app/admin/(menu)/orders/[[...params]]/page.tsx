@@ -16,6 +16,7 @@ import Icon from '@/subview/components/Icon';
 import {getStatusOptions, getStatusText} from '../common';
 import {Paging, SearchBox} from '../components';
 import {remove} from '../actions';
+import Template from '@/subview/partials/Template';
 
 export const generateMetadata = fnMeta(async () => {
     return {
@@ -58,7 +59,7 @@ export default async function AdminOrders(props: {params: Promise<{
     });
     let _id: string = '';
 
-    return <>
+    return <Template>
         <h2>{lang('Orders')}</h2>
         <SearchBox
             byStatusText={lang('By status')}
@@ -79,7 +80,7 @@ export default async function AdminOrders(props: {params: Promise<{
                 {search && <small className='text-blue-500 mr-4'>({lang('Filtered term')}: {search})</small>}
                 {status && <small className='text-blue-500 mr-4'>({lang('Status')}: {lang(status)})</small>}
             </li>}
-            {!orders.data || orders.data.length < 1 ? (
+            {await orders.count() < 1 ? (
                 <li className='bg-[--bg-color] text-center'>{lang('No orders found')}</li>
             ) : orders.data.map(o => (_id = o._id.toString(),
                 <li key={_id} className='!flex bg-[--bg-color]'>
@@ -114,5 +115,5 @@ export default async function AdminOrders(props: {params: Promise<{
                 selectedPage={pageNum}
             />
         </div>
-    </>;
+    </Template>;
 }

@@ -1,6 +1,6 @@
 {
   "name": "next-cart",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "private": true,
   "scripts": {
     "predev": "node ./src/data/lang/createData.js",
@@ -14,18 +14,18 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@react-email/render": "^1.0.1",
-    "@stripe/stripe-js": "^5.4.0",
+    "@react-email/render": "^1.0.5",
+    "@stripe/stripe-js": "^5.7.0",
     "badwords-list": "^2.0.1-4",
     "bcryptjs": "^2.4.3",
     "countries-list": "^3.1.0",
     "cross-env": "^7.0.3",
-    "flowbite": "^3.1.1",
+    "flowbite": "^3.1.2",
     "flowbite-react": "^0.10.1",
-    "jssimpledateformat": "^3.0.0",
-    "mongodb": "^6.3.0",
-    "nanoid": "^5.0.5",
-    "next": "^15.0.0",
+    "jssimpledateformat": "^3.0.2",
+    "mongodb": "^6.13.1",
+    "nanoid": "^5.1.2",
+    "next": "^15.1.7",
     "next-auth": "^5.0.0-beta.18",
     "nodemailer": "^6.9.14",
     "numeral": "^2.0.6",
@@ -35,21 +35,21 @@
     "reactjs-common": "^0.0.3",
     "sqlite3": "^5.1.6",
     "string-strip-html": "^13.4.6",
-    "stripe": "^17.0.0",
-    "zod": "^3.22.4"
+    "stripe": "^17.7.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/node": "^22.1.0",
+    "@types/node": "^22.13.5",
     "@types/nodemailer": "^6.4.15",
     "@types/numeral": "^2.0.5",
     "@types/paypal-rest-sdk": "^1.7.9",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "autoprefixer": "^10.4.17",
-    "eslint": "^9.13.0",
-    "eslint-config-next": "^15.0.0",
+    "eslint": "^9.21.0",
+    "eslint-config-next": "^15.1.7",
     "file-loader": "^6.2.0",
-    "postcss": "^8.4.35",
+    "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }

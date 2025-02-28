@@ -2,6 +2,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
+import {headers} from 'next/headers';
 import lang from '@/data/lang';
 import {deleteOrder, updateOrderStatus} from "@/data/order";
 import {createFormAction} from "@/lib/routeHandler";
@@ -16,11 +17,20 @@ export const updateStatus = createFormAction(async (formData: FormData) => {
     };
 });
 
-export const remove = createFormAction(async (formData: FormData) => {
+export const remove = createFormAction(async (formData: FormData, redirect) => {
     const id = formData.getString('id');
+    const redirectUrl = formData.getString('redirectUrl');
     await deleteOrder(id);
-    return {
+
+    const responseMessage = {
         message: lang('Order successfully deleted'),
-        messageType: 'success',
+        messageType: 'success' as any,
     };
+
+    if (redirectUrl) {
+        await redirect(redirectUrl, responseMessage);
+    }
+    else {
+        return responseMessage;
+    }
 });

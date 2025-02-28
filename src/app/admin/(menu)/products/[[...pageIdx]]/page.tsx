@@ -8,9 +8,11 @@ import config from '@/config';
 import lang from '@/data/lang';
 import {getProducts} from '@/data/product';
 import {awaitProps, fnMeta, isIndexNumber} from '@/lib/common';
+import Icon from '@/subview/components/Icon';
 import Form from '@/subview/components/Form';
 import Paging from '@/subview/components/Paging';
 import SearchBox from '@/subview/components/SearchBox';
+import Template from '@/subview/partials/Template';
 import {remove, updatePublished} from '../actions';
 import {DeleteButton, PublishedCheckBox} from './components';
 
@@ -28,10 +30,10 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
 
     const query: any = {$sort: {productAddedDate: -1}};
     if (search?.trim()) query.$text = {$search: decodeURIComponent(search).trim()};
-    const products = await getProducts(pageNum, query, 10);
+    const products = await getProducts(pageNum, query, config.itemsPerPage);
     let _id: string = '';
 
-    return <>
+    return <Template>
         <h2>{lang('Products')}</h2>
         <SearchBox url='/admin/products' filterText={lang('Filter')}
             description={lang('Products can be filtered by: product title or product description keywords')} />
@@ -40,16 +42,17 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
                 <strong className='flex-1'>
                     {lang('Product title')}
                     {search && <small className='text-blue-500'>&nbsp;({lang('Filtered term')}: {decodeURIComponent(search)})</small>}
-                </strong>&nbsp;&nbsp;
-                <strong>{lang('Published')}</strong>&nbsp;&nbsp;
-                <strong>{lang('Delete')}</strong>
+                </strong>
+                <strong className='ml-4'>{lang('Published')}</strong>
+                <strong className='ml-4'>{lang('Edit')}</strong>
+                <strong className='ml-4'>{lang('Delete')}</strong>
             </li>
-            {!products.data || products.data.length < 1 ? (
+            {products.totalItems < 1 ? (
                 <li className='bg-[--bg-color] text-center'>{lang('No products found')}</li>
             ) : products.data.map(p => (_id = p._id.toString(),
                 <li key={_id} className='!flex bg-[--bg-color]'>
-                    <Link href={`/admin/products/edit/${_id}`} className='flex-1'>{p.productTitle}</Link>&nbsp;&nbsp;
-                    <span className='relative'>
+                    <span className='flex-1'>{p.productTitle}</span>
+                    <span className='relative ml-4'>
                         <strong className='opacity-0'>{lang('Published')}</strong>
                         <Form
                             action={updatePublished}
@@ -60,8 +63,14 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
                             <input type='hidden' name='id' value={_id} />
                             <PublishedCheckBox checked={p.productPublished !== false} />
                         </Form>
-                    </span>&nbsp;&nbsp;
-                    <span className='relative'>
+                    </span>
+                    <div className='relative ml-4'>
+                        <strong className='opacity-0'>{lang('Edit')}</strong>
+                        <span className='absolute left-0 top-0 right-0 bottom-0 text-center'>
+                            <Link href={`/admin/products/edit//${_id}`}><Icon name='edit' /></Link>
+                        </span>
+                    </div>
+                    <span className='relative ml-4'>
                         <strong className='opacity-0'>{lang('Delete')}</strong>
                         <Form 
                             action={remove}
@@ -83,5 +92,5 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
                 href={search ? `/admin/products/filter/${search}` : '/admin/products'}
             />
         </div>
-    </>;
+    </Template>;
 }

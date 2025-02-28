@@ -55,7 +55,7 @@ export const getOrders = fn(async (db: Db, {
         for (let word of words) {
             if (emailRegex.test(word)) emails.push(word);
             else if (nameRegex.test(word)) names.push(word);
-            else if (postalCodeRegex) zips.push(word);
+            else if (postalCodeRegex.test(word)) zips.push(word);
         }
         
         if (emails.length == 1) query.orderEmail = emails[0]

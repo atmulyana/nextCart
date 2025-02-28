@@ -5,6 +5,7 @@ import type {Session} from 'next-auth';
 import {TSession} from '@/data/types';
 import type {TSessionBasic, TSessionCustomer, TSessionUser, WithoutId} from '@/data/types';
 import {getSessionToken} from '@/lib/auth';
+import {sanitizePhone} from '@/lib/common';
 import fn, {type Db, ObjectId} from './db-conn';
 
 export async function getSessionId() {
@@ -108,6 +109,7 @@ export const getSession = fn(async (db: Db) => {
     
     if (session) {
         Object.setPrototypeOf(session, new TSession());
+        if (session.customerPhone && !session.customerPhone.startsWith('0')) session.customerPhone = '+' + session.customerPhone;
         return session;
     }
     return new TSession();
@@ -135,7 +137,10 @@ export const setCustomerSession = fn(async (db: Db, data: ObjectId | WithoutId<T
                 ]
             });
         }
-        else $set = data;
+        else {
+            if (data.customerPhone) data.customerPhone = sanitizePhone(data.customerPhone);
+            $set = data;
+        }
         updates.unshift({$set});
         const w = await db.collection<TSessionCustomer>('sessions').updateOne(
             {_id: sessionId},

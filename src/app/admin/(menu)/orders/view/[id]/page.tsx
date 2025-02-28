@@ -2,6 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
+import {headers} from 'next/headers';
 import {notFound} from 'next/navigation';
 import config from '@/config';
 import lang from '@/data/lang';
@@ -9,10 +10,12 @@ import {getOrder} from '@/data/order';
 import {awaitProps, currencySymbol, fnMeta, formatAmount, getStatusColor} from '@/lib/common';
 import {formatDate} from '@/lib/datetime/server';
 import Form from '@/subview/components/Form';
+import DeleteButton from '@/subview/components/DeleteButton';
 import GoBackButton from '@/subview/components/GoBackButton';
 import SubmitButton from '@/subview/components/SubmitButton';
 import Select from '@/subview/components/SubmittedSelect';
-import {updateStatus} from '../../actions';
+import Template from '@/subview/partials/Template';
+import {remove, updateStatus} from '../../actions';
 import {getStatusOptions, getStatusText} from '../../common';
 
 export const generateMetadata = fnMeta(async () => {
@@ -25,8 +28,7 @@ export default async function ViewOrder(props: {params: Promise<{id: string}>}) 
     const {params: {id}} = await awaitProps(props);
     const order = await getOrder(id);
     if (!order) return notFound();
-    
-    return <>
+    return <Template>
         <div className='flex items-baseline pb-5'>
             <h2 className='flex-auto'>{lang('View order')}</h2>
             <Form action={updateStatus} className='flex' refreshThreshold='success'>
@@ -35,8 +37,16 @@ export default async function ViewOrder(props: {params: Promise<{id: string}>}) 
                     {getStatusOptions().map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                 </Select>
                 <SubmitButton className='btn-outline-success ml-4'>{lang('Update status')}</SubmitButton>
-                <GoBackButton className='ml-4' label={lang('Go Back')} />
             </Form>
+            <Form action={remove}>
+                <input type='hidden' name='id' value={id} />
+                <input type='hidden' name='redirectUrl' value={(await headers()).get('next-url') || '/admin/orders'} />
+                <DeleteButton
+                    className='btn-outline-danger ml-4'
+                    question={lang('Are you sure you want to delete this order?')}
+                >{lang('Delete')}</DeleteButton>
+            </Form>
+            <GoBackButton className='ml-4' label={lang('Go Back')} />
         </div>
         <ul className='bordered'>
             <li className='bg-[--bg-color]'>
@@ -152,5 +162,5 @@ export default async function ViewOrder(props: {params: Promise<{id: string}>}) 
                 {p.productComment && <h4 className='text-[--color-danger]'>{p.productComment}</h4>}
             </li>)}
         </ul>
-    </>;
+    </Template>;
 }

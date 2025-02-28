@@ -3,7 +3,9 @@
  **/
 import React from 'react';
 import Link from 'next/link';
+import {notFound} from 'next/navigation';
 import lang from '@/data/lang';
+import {getCustomer} from '@/data/customer';
 import {getOrdersByCustomerId} from '@/data/order';
 import {getSession} from '@/data/session';
 import Breadcrumb from '@/subview/components/Breadcrumb';
@@ -22,6 +24,8 @@ export function generateMetadata() {
 
 export default async function CustomerAccount() {
     const session = await getSession();
+    const customer = await getCustomer(session.customerId ?? '');
+    if (!customer) return notFound();
     const orders = await getOrdersByCustomerId(session.customerId);
     for (let order of orders.list) {
         order._id = order._id.toString();
@@ -59,7 +63,7 @@ export default async function CustomerAccount() {
                             schemaName='checkoutInfo'
                         >
                             <input type='hidden' name='customerId' value={session.customerId?.toHexString() || ''} />
-                            <CustomerDataForm data={session} />
+                            <CustomerDataForm data={customer} />
                             <Button className='btn-primary'>{lang('Save details')}</Button>
                         </FormWithSchema>
                     </div>

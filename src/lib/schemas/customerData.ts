@@ -1,6 +1,8 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
+import lang from '@/data/lang';
+import {phoneRegex} from '../common';
 import z from '.';
 
 export default z.form({
@@ -13,5 +15,5 @@ export default z.form({
     country: z.string(),
     state: z.string(),
     postcode: z.string(),
-    phone: z.string(),
+    phone: z.string().chain(str => str.regex(phoneRegex, lang('Invalid phone number'))),
 });
