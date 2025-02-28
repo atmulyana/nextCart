@@ -31,7 +31,9 @@ export const deleteOrder = fn(async (db: Db, id: _Id) => {
 });
 
 export const getOrder = fn(async (db: Db, id: _Id) => {
-    return await db.collection<TOrder>('orders').findOne({_id: toId(id)});
+    const order = await db.collection<TOrder>('orders').findOne({_id: toId(id)});
+    if (order?.orderPhoneNumber && !order.orderPhoneNumber.startsWith('0')) order.orderPhoneNumber = '+' + order.orderPhoneNumber; 
+    return order;
 });
 
 export const getOrders = fn(async (db: Db, {

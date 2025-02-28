@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {adminLogout} from '@/app/actions';
 import config from '@/config';
 import lang from '@/data/lang';
-import {getSessionToken} from '@/lib/auth';
+import {getSession} from '@/data/session';
 import Icon from '@/subview/components/Icon';
 import DarkModeMenu from '@/subview/partials/DarkModeMenu';
 import LanguangeMenu from '@/subview/partials/LanguageMenu';
@@ -18,7 +18,7 @@ export default async function ShopLayout({
 }: {
     children: React.ReactNode
 }) {
-    const session = await getSessionToken();
+    const session = await getSession();
     return <>
         <div id="container" className="relative flex flex-wrap h-full w-full mx-auto mb-0">
             <nav className='hidden md:!block w-full md:w-1/4 lg:w-1/6 shrink-0 fixed left-0 top-0 bottom-0 z-50
@@ -46,13 +46,13 @@ export default async function ShopLayout({
                         <h6 className='flex items-center justify-between text-xs/tight uppercase text-gray-500 px-4 mt-6 mb-1'>
                             <span>{lang('Data Management')}</span>
                         </h6>
-                        <li className={session?.user?.isAdmin ? 'h-10' : ''}>
+                        <li className={session.isAdmin ? 'h-10' : ''}>
                             <Link href='/admin/products' className={`inline-block py-2 px-4 text-slate-700 dark:text-slate-700 noline${
-                                session?.user?.isAdmin ? ' w-4/5' : ''
+                                session.isAdmin ? ' w-4/5' : ''
                             }`}>
                                 <Icon name='tag' /> &nbsp; {lang('Products')}
                             </Link>
-                            {session?.user?.isAdmin && <Link href='/admin/product/new' className='inline-block w-1/12 text-gray-500 noline'>
+                            {session.isAdmin && <Link href='/admin/product/new' className='inline-block w-1/12 text-gray-500 noline'>
                                 <Icon name='plus' />
                             </Link>}
                         </li>
@@ -116,14 +116,20 @@ export default async function ShopLayout({
                                 <Icon name='file-text' /> &nbsp; {lang('Static pages')}
                             </Link>
                         </li>
-                        {session?.user?.isAdmin && <li>
+                        {session.isAdmin && <li>
                             <Link href='/admin/settings/discounts' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 noline'>
                                 <Icon name='code' /> &nbsp; {lang('Discount codes')}
                             </Link>
                         </li>}
                     </ul>
-                    <ul className='flex flex-col flex-wrap mt-12 mb-0 pl-0 list-none'>
+                    <h6 className="flex items-center justify-between text-xs/tight uppercase text-gray-500 px-4 mt-6 mb-1">
+                        <span>{lang('User')}</span>
+                    </h6>
+                    <ul className='flex flex-col flex-wrap mb-0 pl-0 list-none'>
                         <li>
+                            <small className='inline-block px-4 text-slate-700 dark:text-slate-700'>
+                                {session.usersName} ({session.user})
+                            </small>
                             <form action={adminLogout} className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700'>
                                 <button type='submit' className='bg-transparent border-none p-0 m-0 h-6 text-left cursor-pointer'>
                                     <Icon name='log-out' /> &nbsp; {lang('Logout')}

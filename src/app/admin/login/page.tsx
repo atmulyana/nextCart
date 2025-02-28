@@ -4,6 +4,7 @@
 import React from 'react';
 import type {Metadata} from 'next';
 import {redirect} from 'next/navigation';
+import config from '@/config';
 import lang from '@/data/lang';
 import {userCount} from '@/data/user';
 import DarkModeMenu from '@/subview/partials/DarkModeMenu';
@@ -29,7 +30,7 @@ export default async function UserLoginPage() {
     return <> 
         <div className='fixed top-0 right-0 flex gap-4 py-2 px-4'>
             <DarkModeMenu />
-            <LanguangeMenu />
+            {config.enableLanguages && <LanguangeMenu />}
         </div>
         <LoginForm submitHandler={submit} />
     </>;

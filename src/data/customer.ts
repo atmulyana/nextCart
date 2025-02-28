@@ -5,16 +5,19 @@ import {emailRegex, nameRegex, phoneRegex, sanitizePhone} from '@/lib/common';
 import type {_Id, TCart, TCartItem, TCustomer, TSession, WithoutId} from './types';
 import fn, {type Db, paging, toId} from './db-conn';
 
-export const getCustomer = fn(async (db: Db, id: _Id) => {
-    const customer = await db.collection<TCustomer>('customers').findOne({_id: toId(id)});
+function phone(customer: TCustomer | null) {
     if (customer?.phone && !customer.phone.startsWith('0')) {
         customer.phone = '+' + customer.phone;
     }
     return customer;
+}
+
+export const getCustomer = fn(async (db: Db, id: _Id) => {
+    return phone( await db.collection<TCustomer>('customers').findOne({_id: toId(id)}) );
 });
 
 export const getCustomerByEmail = fn(async (db: Db, email: string) => {
-    return await db.collection<TCustomer>('customers').findOne({email});
+    return phone( await db.collection<TCustomer>('customers').findOne({email}) );
 });
 
 export const getCustomerByResetToken = fn(async (db: Db, token: string) => {
@@ -64,7 +67,9 @@ export const getCustomers = fn(async (db: Db, {
         else if (phones.length > 1) query.phone = {$in: phones};
     }
     const rs = db.find<TCustomer>('customers', query);
-    return paging(rs, limit, page, sort);
+    const list = await paging(rs, limit, page, sort);
+    list.data.forEach(c => phone(c));
+    return list;
 });
 
 export const createCustomer = fn(async (db: Db, customer: WithoutId<TCustomer>) => {

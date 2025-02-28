@@ -13,7 +13,17 @@ import type {NotificationParam} from '@/subview/components/Notification';
 import {title} from '@/app/(shop)/layout';
 import {getSessionMessage, redirectWithMessage} from './auth';
 import {isFromMobile as fromMobile} from './auth/common';
-import {isPlainObject, isRedirectError, normalizeParamValue, safeUrl, type GetParam, type RouteParam} from './common';
+import {
+    //isFallbackError,
+    isForbiddenError,
+    isNotFoundError,
+    isPlainObject,
+    isRedirectError,
+    normalizeParamValue,
+    safeUrl,
+    type GetParam,
+    type RouteParam,
+} from './common';
 import {validateForm} from './schemas';
 
 type RedirectOption = Exclude<NonNullable<Parameters<typeof safeUrl>[1]>, string> & {
@@ -188,16 +198,16 @@ export function createGetHandler<P extends GetParam, S extends GetParam, R = any
 export function createPostHandler<P extends GetParam = {}, R = any>(handler: PostHandler): PostRouteHandler<P, R> {
     async function submit(formData: FormData, _redirect: Redirect = redirect, isFromMobile: boolean = false): Promise<Response> {
         let response: any;
-        try {
+        // try {
             response = await handler(formData, _redirect, isFromMobile);
-        }
-        catch (ex) {
-            if (isFromMobile || isRedirectError(ex)) throw ex;
-            response = {
-                message: lang("Server can't process your request"),
-                messageType: 'danger',
-            };
-        }
+        // }
+        // catch (ex) {
+        //     if (isFromMobile || isFallbackError(ex) || isRedirectError(ex)) throw ex;
+        //     response = {
+        //         message: lang("Server can't process your request"),
+        //         messageType: 'danger',
+        //     };
+        // }
         if (isFromMobile) await applyCommonMobileData(response);
         return response instanceof Response ? response :
                isPlainObject(response)      ? Response.json(response) :       
@@ -281,8 +291,11 @@ export function createFormAction(handler: (formData: FormData, redirect: Redirec
         catch (err: any) {
             if (isRedirectError(err)) throw err;
             response = {
-                message: lang("Server can't process your request"),
-                messageType: 'danger',
+                message: (
+                    isForbiddenError(err) ? lang('Access denied') :
+                    isNotFoundError(err)  ? lang('Data not found') :
+                                            lang("Server can't process your request")
+                ),
             };
         }
         return response;

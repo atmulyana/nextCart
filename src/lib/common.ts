@@ -148,6 +148,18 @@ export function isPlainObject(o: any) {
     return typeof(o) == 'object' && o && Object.getPrototypeOf(o).constructor === Object
 }
 
+export function isFallbackError(err: any) { //Forbidden (403), Not Found (404)
+    return (err instanceof Error) && err.message.startsWith('NEXT_HTTP_ERROR_FALLBACK');
+}
+
+export function isForbiddenError(err: any) {
+    return (err instanceof Error) && err.message == 'NEXT_HTTP_ERROR_FALLBACK;403';
+}
+
+export function isNotFoundError(err: any) {
+    return (err instanceof Error) && err.message == 'NEXT_HTTP_ERROR_FALLBACK;404';
+}
+
 export function isRedirectError(err: any) {
     return (err instanceof Error) && err.message == 'NEXT_REDIRECT';
 }
@@ -203,5 +215,5 @@ export const emailRegex = /\S+@\S+\.\S+/;
 export const indexRegex = /^\d+$/;
 export const nameRegex = /^[a-zA-Z']+$/;
 export const numericRegex = /^\d*\.?\d+$/;
-export const phoneRegex = /^(?:\+([1-9]{1,2})|\(\+([1-9]{1,2})\)|0)(\d{1,3})(?:-\d+)*-?\d+$/;
+export const phoneRegex = /^(?:\+([1-9]\d{0,2})|\(\+([1-9]\d{0,2})\)|0)(\d{1,3})(?:-\d+)*-?\d+$/;
 export const postalCodeRegex = /^[a-zA-Z]{0,3}\d{3,}[a-zA-Z]{0,3}$/;

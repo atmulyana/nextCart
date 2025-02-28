@@ -44,6 +44,7 @@ const nextConfig = {
 
     experimental: {
         //ppr: false,
+        authInterrupts: true,
         staleTimes: {
             dynamic: 0,
         },

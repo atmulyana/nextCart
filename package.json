@@ -1,6 +1,6 @@
 {
   "name": "next-cart",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "private": true,
   "scripts": {
     "predev": "node ./src/data/lang/createData.js",
