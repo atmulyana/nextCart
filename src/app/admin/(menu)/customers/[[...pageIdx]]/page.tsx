@@ -49,7 +49,7 @@ export default async function AdminCustomers(props: {params: Promise<{pageIdx?: 
             </li>}
             {await customers.count() < 1 ? (
                 <li className='bg-[--bg-color] text-center'>{lang('No customers found')}</li>
-            ) : customers.data.map(c => (_id = c._id.toString(),
+            ) : customers.list.map(c => (_id = c._id.toString(),
                 <li key={_id} className='!flex bg-[--bg-color]'>
                     <span className='basis-3/12 shrink-0'>{c.email}</span>
                     <span className='flex-1 ml-4'>{c.firstName} {c.lastName}</span>

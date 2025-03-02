@@ -517,7 +517,7 @@ export async function paging<T = any>(rs: AggregationCursor<T>, limit: number = 
     }
 
     return {
-        data: await rs.toArray(),
+        list: await rs.toArray(),
         count: async () => {
             if (count < 0) {
                 /** `rs` and `r2` shares `pipeline` instance (unfortunately) */
@@ -529,6 +529,7 @@ export async function paging<T = any>(rs: AggregationCursor<T>, limit: number = 
             }
             return count;
         },
+        page,
         itemsPerPage: limit,
         pageCount: async function() {
             if (limit < 1) return 1;
@@ -541,20 +542,21 @@ export async function paging<T = any>(rs: AggregationCursor<T>, limit: number = 
 export async function getPagedList<T>(
     query: AggregationCursor<T> | FindCursor<T>,
     page: number = 1,
-    numberOfItems: number = appCfg.itemsPerPage
+    itemsPerPage: number = appCfg.itemsPerPage
 ) {
     let skip = 0;
     if (page > 1) {
-        skip = (page - 1) * numberOfItems;
+        skip = (page - 1) * itemsPerPage;
     }
 
-    const list = await query.skip(skip).limit(numberOfItems + 1).toArray();
-    const isNext = list.length > numberOfItems;
-    if (isNext) list.length = numberOfItems;
+    const list = await query.skip(skip).limit(itemsPerPage + 1).toArray();
+    const isNext = list.length > itemsPerPage;
+    if (isNext) list.length = itemsPerPage;
 
     return {
         list,
         isNext,
         page,
+        itemsPerPage,
     };
 }

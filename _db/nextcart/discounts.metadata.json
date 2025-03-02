@@ -1,1 +1,1 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"code":{"$numberInt":"1"}},"name":"_code_","unique":true}],"uuid":"c32016123b0c4f21ba0e5baeac321e29","collectionName":"discounts","type":"collection"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"code":{"$numberInt":"1"}},"name":"_code_","unique":true}],"uuid":"db77b31e9eb54506ac9d8c28b96a5421","collectionName":"discounts","type":"collection"}

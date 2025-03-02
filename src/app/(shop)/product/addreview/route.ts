@@ -7,8 +7,8 @@ import {createPostHandler} from '@/lib/routeHandler';
 
 export const POST = createPostHandler(async (formData) => {
     if (modules.reviews) {
-        const {getReviews, getReviewSummary, postHandler} = modules.reviews;
-        const response = await postHandler(formData);
+        const {getReviews, getReviewSummary, addReview} = modules.reviews;
+        const response = await addReview(formData);
         if (response.ok) {
             const data = await response.json();
             const productId = toId(formData.getString('product')) as ObjectId;

@@ -36,6 +36,7 @@ const Paging = React.memo(function Paging({
     selectedClass = 'text-[--bg-color] font-black',
     disabledClass = 'text-neutral-600 dark:text-neutral-400',
 }: Props) {
+    if (pageCount < selectedPage) pageCount = selectedPage;
     if (pageCount < 2) return null;
     const getHref = typeof(href) == 'function' ? href : ((page: number) => `${href}/${page}`);
     

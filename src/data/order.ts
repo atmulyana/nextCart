@@ -52,7 +52,7 @@ export const getOrders = fn(async (db: Db, {
     const query: {[f: string]: any} = {};
     search = search?.trim();
     if (search) {
-        const words = search.trim().split(/\s+/);
+        const words = search.split(/\s+/);
         const emails: Array<string> = [], names: Array<string> = [], zips: Array<string> = [];
         for (let word of words) {
             if (emailRegex.test(word)) emails.push(word);

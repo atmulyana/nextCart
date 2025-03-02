@@ -1,8 +1,8 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {TCustomer} from '@/data/types';
-import fn, {type Db, getPagedList, type ObjectId, toId} from '@/data/db-conn';
+import fn, {type Db, getPagedList, ObjectId, paging, toId} from '@/data/db-conn';
+import type {_Id, TCustomer, WithId} from '@/data/types';
 import currentLocale from '@/lib/currentLocale/server';
 import {timeAgo} from '@/lib/datetime/server';
 
@@ -40,73 +40,112 @@ export type TReviewSummary = {
 
 export const getReviews = fn(async (
     db: Db,
-    productId: ObjectId,
-    pageIdx: number = 1
+    search?: ObjectId | string,
+    pageIdx: number = 1,
+    limit?: number
 ) => {
-    const pList = await getPagedList(
-        db.collection("reviews").aggregate<TReviewList['reviews'][0]>([
-            {
-                $match: {product: productId}
-            },
-            {
-                $sort: {
-                    date: -1,
+    if (search instanceof ObjectId) {
+        const pList = await getPagedList(
+            db.collection("reviews").aggregate<TReviewList['reviews'][0]>([
+                {
+                    $match: {product: search}
                 },
-            },
-            {
-                $lookup: {
-                    from: 'customers',
-                    localField: 'customer',
-                    foreignField: '_id',
-                    as: 'customer'
-                }
-            },
-            {
-                $set: {
-                    _id: {$toString: '$_id'},
-                    customer: {
-                        $cond: {
-                            if: { $isArray: "$customer" },
-                            then: {
-                                $concat: [
-                                    {$arrayElemAt: ["$customer.firstName", 0]},
-                                    ' ',
-                                    {$arrayElemAt: ["$customer.lastName", 0]}
-                                ]
-                            },
-                            else: {
-                                $cond: {
-                                    if: {$eq: [{$type: '$customer'}, "string"]},
-                                    then: "$customer",
-                                    else: "$$REMOVE"
+                {
+                    $sort: {
+                        date: -1,
+                    },
+                },
+                {
+                    $lookup: {
+                        from: 'customers',
+                        localField: 'customer',
+                        foreignField: '_id',
+                        as: 'customer'
+                    }
+                },
+                {
+                    $set: {
+                        _id: {$toString: '$_id'},
+                        customer: {
+                            $cond: {
+                                if: { $isArray: "$customer" },
+                                then: {
+                                    $concat: [
+                                        {$arrayElemAt: ["$customer.firstName", 0]},
+                                        ' ',
+                                        {$arrayElemAt: ["$customer.lastName", 0]}
+                                    ]
+                                },
+                                else: {
+                                    $cond: {
+                                        if: {$eq: [{$type: '$customer'}, "string"]},
+                                        then: "$customer",
+                                        else: "$$REMOVE"
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            },
-            {
-                $project: {
-                    product: 0,
                 },
-            }
-        ]),
-        pageIdx
-    );
+                {
+                    $project: {
+                        product: 0,
+                    },
+                }
+            ]),
+            pageIdx,
+            limit
+        );
 
-    const {list: reviews, isNext, page} = pList;
-    
-    const locale = currentLocale();
-    for (let i = 0; i < reviews.length; i++) {
-        reviews[i].timeAgo = timeAgo(reviews[i].date, locale);
+        const {list: reviews, isNext, page} = pList;
+        
+        const locale = currentLocale();
+        for (let i = 0; i < reviews.length; i++) {
+            reviews[i].timeAgo = timeAgo(reviews[i].date, locale);
+        }
+
+        return {
+            reviews,
+            isNext,
+            page,
+        };
     }
-
-    return {
-        reviews,
-        isNext,
-        page,
-    } as TReviewList;
-});
+    else if (['string', 'undefined'].includes(typeof(search))) {
+        const ratingRegex = /^[1-5]$/;
+        const query: {[f: string]: any} = {};
+        const s = search?.trim();
+        if (s) {
+            const words = s.split(/\s+/);
+            const ratings: Array<number> = [];
+            for (let word of words) {
+                if (ratingRegex.test(word)) ratings.push(parseInt(word));
+                
+            }
+            const $text = {$search: words.join(' ')};
+            const rating = (ratings.length == 1) ? ratings[0] :
+                           (ratings.length > 1)  ? {$in: ratings} :
+                           null;
+            if (rating) {
+                query.$or = [
+                    {rating},
+                    {$text}
+                ];
+            }
+            else {
+                query.$text = $text;
+            }
+        }
+        const rs = db.find<TReview>('reviews', query);
+        return (await paging(rs, limit, pageIdx, {date: -1}));
+    }
+    else {
+        return null as never;
+    }
+}) as <T extends ObjectId | string>(search?: T, pageIdx?: number, limit?: number) => Promise<
+    T extends ObjectId             ? TReviewList :
+    T extends (string | undefined) ? Awaited< ReturnType< typeof paging<WithId<TReview>> > > :
+                                     never 
+>;
 
 export const getReviewSummary = fn(async (
     db: Db,
@@ -200,4 +239,11 @@ export const createReview = fn(async (
 
     await reviews.insertOne(review);
     return true;
+});
+
+export const deleteReview = fn(async (
+    db: Db,
+    id: _Id
+) => {
+    return (await db.collection('reviews').deleteOne({_id: toId(id)})).deletedCount > 0;
 });

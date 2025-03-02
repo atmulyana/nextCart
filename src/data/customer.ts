@@ -50,7 +50,7 @@ export const getCustomers = fn(async (db: Db, {
     const query: {[f: string]: any} = {};
     search = search?.trim();
     if (search) {
-        const words = search.trim().split(/\s+/);
+        const words = search.split(/\s+/);
         const emails: Array<string> = [], names: Array<string> = [], phones: Array<string> = [];
         for (let word of words) {
             if (emailRegex.test(word)) emails.push(word);
@@ -68,7 +68,7 @@ export const getCustomers = fn(async (db: Db, {
     }
     const rs = db.find<TCustomer>('customers', query);
     const list = await paging(rs, limit, page, sort);
-    list.data.forEach(c => phone(c));
+    list.list.forEach(c => phone(c));
     return list;
 });
 

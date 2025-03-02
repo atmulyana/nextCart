@@ -1,3 +1,4 @@
+'use server';
 /** 
  * https://github.com/atmulyana/nextCart
  **/
@@ -7,9 +8,9 @@ import {toId, type ObjectId} from '@/data/db-conn';
 import lang from '@/data/lang';
 import {getSession} from '@/data/session';
 import {ResponseMessage} from '@/lib/common';
-import {createReview} from './data';
+import {createReview, deleteReview} from './data';
 
-export default async function postHandler(formData: FormData) {
+export async function addReview(formData: FormData) {
     const session = await getSession();
     if (!session.customerPresent) {
         return ResponseMessage(lang('You need to be logged in to create a review'), 401);
@@ -47,5 +48,13 @@ export default async function postHandler(formData: FormData) {
     }
     else {
         return ResponseMessage(lang('Unable to submit review'));
+    }
+}
+
+export async function removeReview(formData: FormData) {
+    await deleteReview( formData.getString('id') );
+    return {
+        message: lang('Review successfully deleted'),
+        messageType: 'success',
     }
 }

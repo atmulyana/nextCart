@@ -1,14 +1,16 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
+import AdminReviews from './AdminReviews';
 import {getReviews, getReviewSummary} from './data';
-import postHandler from './postHandler';
+import {addReview} from './postHandler';
 
-const serverMethods = {
+const serverStuff = {
+    AdminReviews,
+    addReview,
     getReviews,
     getReviewSummary,
-    postHandler,
 };
 
-export type TServerMethods = typeof serverMethods;
-export default serverMethods;
+export type TServerStuff = typeof serverStuff;
+export default serverStuff;

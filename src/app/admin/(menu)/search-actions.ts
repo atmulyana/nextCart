@@ -43,16 +43,16 @@ export async function globalSearch(formData: FormData) {
     else if (emailRegex.test(keywords)) {
         const custumer  = await getCustomerByEmail(keywords);
         if (custumer) ret.customers = [custumer];
-        ret.orders = (await getOrdersByEmail(keywords, 1, searchLimit)).data;
+        ret.orders = (await getOrdersByEmail(keywords, 1, searchLimit)).list;
     }
     else if (numericRegex.test(keywords)) {
         const value = parseFloat(keywords);
-        ret.orders = (await getOrdersByValue(value, 1, searchLimit)).data;
+        ret.orders = (await getOrdersByValue(value, 1, searchLimit)).list;
         ret.products = await getProductsByValue(value, searchLimit);
     }
     else {
         ret.customers = await getCustomersByName(keywords, searchLimit);
-        ret.orders = (await getOrdersByName(keywords, 1, searchLimit)).data;
+        ret.orders = (await getOrdersByName(keywords, 1, searchLimit)).list;
         ret.products = (await getProducts(1, {$text: {$search: keywords}}, searchLimit, false)).data;
     }
 
