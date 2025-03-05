@@ -9,12 +9,13 @@ import {createGetHandler, type HandlerParams} from '@/lib/routeHandler';
 import modules from '@/lib/modules/server';
 
 type TReviewModule = NonNullable<typeof modules.reviews>;
+type TReviewList = Extract<Awaited<ReturnType<TReviewModule['getReviews']>>, {isNext: boolean}>;
 export type Return = {
     title?: string,
     result: TProduct,
     variants?: TVariant[],
     reviews?: TReviewModule extends never ? undefined
-        : Awaited<ReturnType<TReviewModule['getReviews']>> & Awaited<ReturnType<TReviewModule['getReviewSummary']>>,
+        : TReviewList & Awaited<ReturnType<TReviewModule['getReviewSummary']>>,
     relatedProducts: TProductItem[],
     images: TProductImagePath[],
 };

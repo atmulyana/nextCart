@@ -75,11 +75,11 @@ const Timer = React.memo(function Timer({isRunning = true, timeout, onTimeout = 
         }, 1000);
 
         () => stopTimer();
-    }, [onTimeout]);
+    }, [onTimeout, endTime, stopTimer]);
 
     React.useEffect(() => {
         if (!isRunning) stopTimer();
-    }, [isRunning]);
+    }, [isRunning, stopTimer]);
 
     let distance = endTime - time;
     if (distance < 0) distance = 0;
@@ -133,7 +133,7 @@ export default function Waiting({
         closeBlSocket();
         notify(text.expired, 'danger');
         setStatus(2); 
-    }, []);
+    }, [closeBlSocket, notify, text.expired]);
     
     React.useEffect(() => {
         if (data.value > 0) {
@@ -161,7 +161,7 @@ export default function Waiting({
         };
 
         return () => closeBlSocket();
-    }, []);
+    }, [blUrl, params.address, params.timestamp, closeBlSocket, notify, text.detected]);
 
     return <Form ref={formRef} action={formAction} className='flex flex-col items-center w-full'>
         {status == 1 ? <>

@@ -32,7 +32,7 @@ export const POST = createPostHandler(async (formData) => {
         let oriCartItem: TCartItem | undefined;
         
         const response = (message: string, status = 400) => {
-            if (status != 200 && oriCartItem && cartItemId) {
+            if ((status < 200 || 299 < status) && oriCartItem && cartItemId) {
                 cart.items[cartItemId] = oriCartItem;
             } 
             return ResponseMessage(
@@ -76,12 +76,17 @@ export const POST = createPostHandler(async (formData) => {
         cartItem.productComment = productComment;
         
         const check = checkStock(cartItem);
-        if (check) return response(lang(check.message));
+        if (check) {
+            if (check.constraint < 1) return response(lang(check.message));
+            cartItem.quantity = check.constraint;
+        }
 
         await updateTotalCart(cart, session);
         await upsertCart(cartId, cart);
         await upsertCartItem(cartId, cartItemId, cartItem);
-        return response('', 200);
+        return check
+            ? response(lang(check.message), 201)
+            : response('', 200);
     },
     formData.has('homeAfterClear'));
 });

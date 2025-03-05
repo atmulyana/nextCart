@@ -13,7 +13,7 @@ export default function BlockonomicsPayment({order}: {order: TOrder}) {
             <p><h5>{`${lang('The order will be be processed upon confirmation by the bitcoin network')}.
                 ${lang('Please keep below order details for reference')}.`}</h5></p>
             <p><strong>{lang("Order ID")}:</strong> {order._id.toString()}</p>
-            <p><strong>{lang("Payment ID")}:</strong> {order.orderPaymentId}</p>
+            <p><strong>{lang("Payment ID")}:</strong> {order.orderPaymentId.toString()}</p>
         </div>
         <Link href='/' className='btn btn-outline-warning'>{lang('Home')}</Link>
     </div>;

@@ -39,7 +39,7 @@ export default async function Payment({params}: {params: Promise<{orderId: strin
             }
             <div>
                 <p><strong>{lang("Order ID")}:</strong> {order._id.toString()}</p>
-                <p><strong>{lang("Payment ID")}:</strong> {order.orderPaymentId}</p>
+                <p><strong>{lang("Payment ID")}:</strong> {order.orderPaymentId.toString()}</p>
             </div>
             {(order.orderStatus === 'Paid' || order.orderStatus === 'Pending') &&
                <h5 className="text-[--color-warning]">{lang('Please retain the details above as a reference of payment')}</h5>

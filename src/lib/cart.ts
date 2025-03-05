@@ -33,12 +33,6 @@ export async function updateTotalCart(cart: TCart, custmerOrigin: TCustomerAddre
 }
 
 export function checkStock(cartItem: TCartItem): {message: string, constraint: number} | undefined {
-    if(config.maxQuantity > 0 && cartItem.quantity > config.maxQuantity) {
-        return {
-            message: 'The quantity exceeds the max amount. Please contact us for larger orders.',
-            constraint: config.maxQuantity,
-        };
-    }
     // If stock management on check there is sufficient stock for this product
     if(config.trackStock) {
         // Only if not disabled
@@ -46,10 +40,16 @@ export function checkStock(cartItem: TCartItem): {message: string, constraint: n
             // If there is less stock than total
             if (cartItem.quantity > (cartItem.variantStock ?? cartItem.productStock)) {
                 return {
-                    message: 'There is insufficient stock of this product.',
+                    message: 'There is insufficient stock of this product',
                     constraint: cartItem.variantStock ?? cartItem.productStock,
                 };
             }
         }
+    }
+    if(config.maxQuantity > 0 && cartItem.quantity > config.maxQuantity) {
+        return {
+            message: 'The quantity exceeds the max allowed amount. Please contact us for larger orders.',
+            constraint: config.maxQuantity,
+        };
     }
 }

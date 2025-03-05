@@ -34,7 +34,7 @@ export const POST = createPostHandler(async (formData) => {
         let oriCartItem: TCartItem | undefined;
 
         const response = (message: string, status = 400, props?: {[p: string]: any}) => {
-            if (status != 200) {
+            if (status < 200 || 299 < status) {
                 if (oriCartItem) cart.items[cartItemId] = oriCartItem;
                 else delete cart.items[cartItemId];
             }
@@ -99,7 +99,10 @@ export const POST = createPostHandler(async (formData) => {
         cartItem.productComment = productComment;
 
         const check = checkStock(cartItem);
-        if (check) return response(lang(check.message));
+        if (check) {
+            if (check.constraint < 1) return response(lang(check.message));
+            cartItem.quantity = check.constraint;
+        }
 
         await updateTotalCart(cart, session);
 
@@ -107,8 +110,8 @@ export const POST = createPostHandler(async (formData) => {
         await upsertCart(cartId, cart);
         await upsertCartItem(cartId, cartItemId, cartItem);
         return response(
-            lang('Cart successfully updated'),
-            200, 
+            check ? lang(check.message) : lang('Cart successfully updated'),
+            check ? 201 : 200, 
             {
                 cartId,
                 totalCartItems: cart.totalCartItems,

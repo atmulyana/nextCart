@@ -18,6 +18,7 @@ export default function Error({
 
     React.useEffect(() => {
         getErrorPageTexts().then(texts => setTexts(texts));
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, texts);
     React.useEffect(() => {
         console.log(error)
@@ -25,6 +26,7 @@ export default function Error({
 
     return  <>
         <nav id="headerBar" className="flex items-center py-2 px-4 leading-normal">
+            {/*eslint-disable-next-line @next/next/no-img-element*/}
             <Link href="/"><img src={`${cfg.baseUrl.path}/images/logo.svg`} alt='logo' style={{height: '80px'}} /></Link>
         </nav>
         <div id="container" className="text-center h-full py-8">

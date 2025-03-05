@@ -37,6 +37,7 @@ export function SessionUpdater({value}: {value: Partial<Session> | null}) {
     React.useEffect(() => {
         setContextValue && setContextValue(value ?? defaultContextValue);
         if (value?.message) notify(value.message, value.messageType ?? 'danger', true);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);
     return null;
 }

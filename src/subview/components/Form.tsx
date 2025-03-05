@@ -104,7 +104,7 @@ const FormWithFunctionAction = React.forwardRef<
             _ref.addEventListener('invalid', invalidHandler, true);
             return () => _ref.removeEventListener('invalid', invalidHandler);
         }
-    }, [formRef.current]);
+    }, [ref]);
     
     React.useEffect(() => {
         if (response === initFormState) return;
@@ -167,6 +167,7 @@ const FormWithFunctionAction = React.forwardRef<
                 formRef.current.reportValidity(); //Show error messages
             }
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [response]);
 
     return <form role='form'{...props} ref={formRef} action={formAction}>

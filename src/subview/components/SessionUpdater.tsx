@@ -22,6 +22,7 @@ function Updater() {
                 setRefreshed(true);
             });
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [status, refreshed]);
 
     return null;

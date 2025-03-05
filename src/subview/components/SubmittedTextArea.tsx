@@ -34,7 +34,7 @@ const StatedTextArea = React.forwardRef<HTMLTextAreaElement, StatedProps>(functi
     return <textarea ref={ref} {...props} value={val} onChange={changeHandler} />;
 });
 
-const _SubmittedTextArea = React.memo(function _SubmittedTextArea({
+const InternalTextArea = React.memo(function InternalTextArea({
     $ref,
     name,
     defaultValue,
@@ -61,6 +61,6 @@ const _SubmittedTextArea = React.memo(function _SubmittedTextArea({
 });
 
 const SubmittedTextArea = React.forwardRef<HTMLTextAreaElement, Props>(function SubmittedTextArea(props, ref) {
-    return <_SubmittedTextArea {...props} $ref={ref} />;
+    return <InternalTextArea {...props} $ref={ref} />;
 });
 export default SubmittedTextArea;

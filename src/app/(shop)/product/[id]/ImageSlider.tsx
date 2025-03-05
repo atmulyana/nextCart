@@ -42,6 +42,7 @@ const ImageSlider = React.memo(function ImageSlider(
         <div className='relative rounded w-full pt-full overflow-hidden'>
             <div ref={slider} className='absolute top-0 right-0 bottom-0 left-0'>
             <Carousel slide={false} theme={theme} onSlideChange={slideChange}>
+                {/*eslint-disable-next-line @next/next/no-img-element*/}
                 {images.map(img => <img key={img.id} src={`${cfg.baseUrl.path}${img.path}`} alt='...' />)}
             </Carousel>
             </div>

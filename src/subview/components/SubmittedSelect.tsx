@@ -69,7 +69,7 @@ const StatedSelect = React.forwardRef<HTMLSelectElement, StatedProps>(function S
     >{children}</select>;
 });
 
-const _SubmittedSelect = React.memo(function _SubmittedSelect({
+const InternalSelect = React.memo(function InternalSelect({
     $ref,
     children,
     name,
@@ -99,6 +99,6 @@ const _SubmittedSelect = React.memo(function _SubmittedSelect({
 });
 
 const SubmittedSelect = React.forwardRef<HTMLSelectElement, Props>(function SubmittedSelect({children, ...props}, ref) {
-    return <_SubmittedSelect {...props} $ref={ref}>{children}</_SubmittedSelect>;
+    return <InternalSelect {...props} $ref={ref}>{children}</InternalSelect>;
 });
 export default SubmittedSelect;

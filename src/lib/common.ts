@@ -97,7 +97,9 @@ export function ResponseMessage(message: string, params?: (number | {status?: nu
     else if (typeof(params) == 'object') {
         ({status = 500, ...props} = params);
     }
-    if (message && status == 200 && !props.messageType) props.messageType = 'success';
+    if (message && (status == 200 || status == 201) && !props.messageType) {
+        props.messageType = status == 200 ? 'success' : 'warning';
+    }
     return Response.json({message, ...props}, {status});
 }
 

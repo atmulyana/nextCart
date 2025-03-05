@@ -56,7 +56,7 @@ const SearchForm = React.memo(function SearchForm({
     const [data, setData] = React.useState<TData>(null);
     const onSubmitted = React.useCallback(({data = null, type}: {data?: TData, type: string}) => {
         if (type == 'success') setData(data);
-    }, [data]);
+    }, []);
 
     let id: string;
     let count = 0;

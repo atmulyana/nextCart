@@ -65,7 +65,7 @@ const ReviewControls = React.memo(function ReviewControls({
 
     React.useEffect(() => {
         const _reviewsCont = document.createElement('div');
-        _reviewsCont.classList.add('flex-none', 'basis-full', openReview ? 'block' : 'hidden');
+        _reviewsCont.classList.add('flex-none', 'basis-full', 'hidden');
         (ctlCont.current?.parentNode as Element)?.after(_reviewsCont);
         setReviewsCont(_reviewsCont);
         return () => _reviewsCont.remove();

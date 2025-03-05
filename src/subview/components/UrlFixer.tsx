@@ -17,6 +17,7 @@ export default function UrlFixer({path, search}: {path: string, search: string})
         if (path != location.pathname || search != location.search) {
             router.replace(path + search);
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [path, search]);
     return null;
 }

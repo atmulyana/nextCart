@@ -75,6 +75,7 @@ function PagedList<T extends List>({
                 setLoading(0);
             });
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading]);
     
     return <div className='relative w-full'>

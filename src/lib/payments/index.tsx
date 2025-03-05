@@ -179,11 +179,11 @@ export async function createOrder(data: OrderData, approved?: boolean, emailMess
         if (approved) {
             await updateOrderedStock(ord.orderProducts);
             await deleteCart();
-            emailNotif(ord.orderEmail, orderId, data.orderPaymentId, emailMessage);
+            emailNotif(ord.orderEmail, orderId, data.orderPaymentId.toString(), emailMessage);
             return Response.json({}); //sets `chartItemCount` in session token to 0 
         }
         else if (typeof(emailMessage) == 'string') {
-            emailNotif(ord.orderEmail, orderId, data.orderPaymentId, emailMessage, false);
+            emailNotif(ord.orderEmail, orderId, data.orderPaymentId.toString(), emailMessage, false);
         }
     });
     return orderId;
@@ -206,7 +206,7 @@ export async function updateOrder(id: _Id, data: Partial<OrderData>, status?: Ap
             await deleteCart();
             if (status == ApprovalStatus.Approved) {
                 if (!ord.productStockUpdated) await updateOrderedStock(ord.orderProducts);
-                emailNotif(ord.orderEmail, id, data.orderPaymentId ?? ord.orderPaymentId);
+                emailNotif(ord.orderEmail, id, (data.orderPaymentId ?? ord.orderPaymentId).toString());
             }
             return Response.json({}); //sets `chartItemCount` in session token to 0 
         }

@@ -88,6 +88,7 @@ const ConfirmModal = React.memo(function ConfirmModal({
                 doResolve(returnValue);
             };
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ctx]);
     
     return <Modal show={open} position={ctx.position} size={ctx.size || size} dismissible popup

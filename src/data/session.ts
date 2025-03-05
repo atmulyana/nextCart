@@ -2,11 +2,11 @@
  * https://github.com/atmulyana/nextCart
  **/
 import type {Session} from 'next-auth';
-import {TSession} from '@/data/types';
-import type {TSessionBasic, TSessionCustomer, TSessionUser, WithoutId} from '@/data/types';
 import {getSessionToken} from '@/lib/auth';
 import {sanitizePhone} from '@/lib/common';
-import fn, {type Db, ObjectId} from './db-conn';
+import fn, {type Db, ObjectId, toId} from './db-conn';
+import {TSession} from './types';
+import type {_Id, TSessionBasic, TSessionCustomer, TSessionUser, WithoutId} from './types';
 
 export async function getSessionId() {
     const session = await getSessionToken();
@@ -115,13 +115,13 @@ export const getSession = fn(async (db: Db) => {
     return new TSession();
 });
 
-export const setCustomerSession = fn(async (db: Db, data: ObjectId | WithoutId<TSessionCustomer>) => {
+export const setCustomerSession = fn(async (db: Db, data: _Id | WithoutId<TSessionCustomer>) => {
     const {sessionId} = await refreshSessionExpires(); //creates session if not exists
     if (sessionId) {
         let $set: WithoutId<TSessionCustomer> = {};
         const updates: any[] = [];
-        if (data instanceof ObjectId) {
-            $set.customerId = data;
+        if (data instanceof ObjectId || typeof(data) == 'string') {
+            $set.customerId = toId(data);
             updates.push({
                 $unset: [
                     "customerEmail",

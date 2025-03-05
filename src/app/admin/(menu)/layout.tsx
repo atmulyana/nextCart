@@ -29,6 +29,7 @@ export default async function ShopLayout({
                     <ul className='flex flex-col flex-wrap my-0 pl-0 list-none'>
                         <li className='flex items-center'>
                             <Link href='/admin' className='inline-block py-2 px-4 w-4/5'>
+                                {/*eslint-disable-next-line @next/next/no-img-element*/}
                                 <img src='/images/logo.svg' alt='Logo' className='h-12' />
                             </Link>
                             <SearchIcon

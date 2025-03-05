@@ -79,7 +79,7 @@ export default function StripeFormClient({
         };
         darkMode.addChangeListener(updateCardOption);
         return () => darkMode.removeChangeListener(updateCardOption);
-    }, [stripe, cardRef.current]);
+    }, [stripe]);
 
     React.useEffect(() => {
         if (card == null) return;

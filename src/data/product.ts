@@ -378,8 +378,27 @@ export const deleteProduct = fn(async (db: Db, productId: _Id) => {
         return 0;
     }
 
-    db.collection<TCartItem>('cartItems').deleteMany({productId: id});
-    db.collection('reviews').deleteMany({product: id});
-    db.collection<TVariant>('variants').deleteMany({product: id});
+    const updatedCarts =  await db.find('cartItems', {productId: id})
+        .group({_id: '$_id.cartId', deletedQty: {$sum: '$quantity'}})
+        .toArray();
+    const carts = db.collection<TCartItem>('cart');
+    for (let cart of updatedCarts) {
+        await carts.updateOne(
+            {
+                _id: cart._id,
+            },
+            [
+                {
+                    $set: {
+                        totalCartItems: {$subtract: ['$totalCartItems', cart.deletedQty]}
+                    }
+                }
+            ]
+        );
+    }
+    await db.collection<TCartItem>('cartItems').deleteMany({productId: id});
+    
+    await db.collection('reviews').deleteMany({product: id});
+    await db.collection<TVariant>('variants').deleteMany({product: id});
     return (await db.collection<TProduct>('products').deleteOne({_id: id})).deletedCount > 0;
 });

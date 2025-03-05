@@ -49,6 +49,12 @@ export function CartContext({cart, children}: {cart?: TCart, children: React.Rea
 
     React.useEffect(() => {
         value.update(cart, updateCallback.current);
+    /**
+     * Typically, the function executed by `React.useEffect` is just created when the 'rendered' event happens.
+     * Therefore, it will use the last contex. In this case, the last value of `value` variable will be used.
+     * Here, we want this function is executed when only `cart` value changes.
+     */
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cart]);
 
     React.useEffect(() => {
@@ -112,20 +118,11 @@ export const CartOpenButton = React.memo(function CartOpenButton({cartText}: {ca
     </Link>;
 });
 
-export const CloseCartButton = React.memo(function CloseCartButton() {
+export function CloseCartButton() {
     return <button type="button" className='btn-primary' onClick={closeCart}><Icon name='x' /></button>
-});
+};
 
-export const Cart = React.memo(function Cart({
-    title,
-    optionText,
-    discountText,
-    totalText,
-    emptyText,
-    qtyText,
-    readonly = false,
-    homeAfterClear = false,
-}: {
+type CartProps = {
     title: string,
     optionText: string,
     discountText: string,
@@ -134,14 +131,50 @@ export const Cart = React.memo(function Cart({
     qtyText: string,
     readonly?: boolean,
     homeAfterClear?: boolean,
-}) {
+};
+
+export const Cart = (props: CartProps) => {
+    /**
+     * It seems a `React.memo` component that is inserted directly into a server component, will be unmounted and
+     * re-mounted on every call of the server action. This causes `useRef` and `useState` inside the `React.memo` component
+     * will be resetted (or create a new value). This `Cart` component (as a simple container that seems like unneeded)
+     * is to avoid `useRef` creates a new ref on every update of the cart content.
+     */
+    return <CartContent {...props} />;
+};
+
+const CartContent = React.memo(function CartContent({
+    title,
+    optionText,
+    discountText,
+    totalText,
+    emptyText,
+    qtyText,
+    readonly = false,
+    homeAfterClear = false,
+}: CartProps) {
     const cart = useCart(),
-          itemIds = Object.keys(cart.items);
+          itemIds = Object.keys(cart.items),
+          scroller = React.useRef<HTMLDivElement>(null),
+          scrollerTop = React.useRef(0);
     let item: TCartItem;
+
+    React.useEffect(() => {
+        const div = scroller.current;
+        if (div) {
+            let maxScrollTop = div.scrollHeight - div.offsetHeight;
+            if (maxScrollTop < 0) maxScrollTop = 0;
+            div.scrollTop = scrollerTop.current < maxScrollTop ? scrollerTop.current : maxScrollTop;
+        }
+    }, [cart]);
 
     return <div className="flex-initial flex flex-col items-stretch min-h-0 bg-[--bg-color] bordered">
         <h5 className="flex-none mb-3">{title}</h5>
-        <div className="flex-initial min-h-0 overflow-auto cartBodyWrapper">
+        <div ref={scroller} className="flex-initial min-h-0 overflow-auto"
+            onScroll={() => {
+                scrollerTop.current = scroller.current?.scrollTop ?? 0;
+            }}
+        >
             {itemIds.map(cartItemId => (item = cart.items[cartItemId],
             <div key={cartItemId} className="flex flex-row items-center pb-4">
                 <div className="flex-none basis-1/4 pl-0">

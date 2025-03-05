@@ -29,6 +29,7 @@ export default function SchemaContext({
     React.useEffect(() => {
         if (typeof(inputsProps) == 'function') inputsProps(schemaName).then(props => { setProps(props); });
         else setProps(inputsProps);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inputsProps]);
     
     return <ContextLoading.Provider value={props == null}>

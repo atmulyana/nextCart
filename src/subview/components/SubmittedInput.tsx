@@ -78,6 +78,7 @@ const NonCheckableInput = React.forwardRef<HTMLInputElement, StatedProps>(functi
     
     React.useEffect(() => {
         setVal(value ?? getDefaultValue(props));
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);
 
     const changeHandler = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,7 +95,7 @@ const NonCheckableInput = React.forwardRef<HTMLInputElement, StatedProps>(functi
     />;
 });
 
-const _SubmittedInput = React.memo(function _SubmittedInput({
+const InternalInput = React.memo(function InternalInput({
     $inputRef,
     name,
     type = 'text',
@@ -154,6 +155,6 @@ const _SubmittedInput = React.memo(function _SubmittedInput({
 });
 
 const SubmittedInput = React.forwardRef<HTMLInputElement, Props>(function SubmittedInput(props, ref) {
-    return <_SubmittedInput {...props} $inputRef={ref} />;
+    return <InternalInput {...props} $inputRef={ref} />;
 });
 export default SubmittedInput;

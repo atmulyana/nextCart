@@ -10,6 +10,7 @@ export default function ForgottenPasswordEmail({token}: {token: string}) {
         <div className="container">
             <div className="panel panel-default">
                 <div className="panel-heading">
+                    {/*eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text*/}
                     <img id="logo" src={`${config.baseUrl}/images/logo.svg`} />
                     <h1>{config.cartTitle}</h1>
                 </div>

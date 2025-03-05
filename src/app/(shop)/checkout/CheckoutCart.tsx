@@ -6,7 +6,7 @@ import React from 'react';
 import {usePathname} from 'next/navigation';
 import {Cart, CartButtons} from '@/subview/components/Cart';
 
-export default React.memo(function CheckoutCart({
+export default function CheckoutCart({
     checkoutText,
     clearCartText,
     ...props
@@ -27,4 +27,4 @@ export default React.memo(function CheckoutCart({
         <Cart {...props} readonly={isReadOnly} homeAfterClear />
         {!isReadOnly && <CartButtons {...{checkoutText, clearCartText}} homeAfterClear />}
     </>;
-});
+}
