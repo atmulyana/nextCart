@@ -140,6 +140,9 @@ export const getProducts = fn(async (
         skip = (page - 1) * numberOfItems;
     }
     let {$sort = getSort(), ...$match} = query;
+    if (!('_id' in $sort)) {
+        $sort._id = 1; //makes sure to use the same order in every page (no repetitive item in different page)
+    }
 
     const products = db.collection<TProductItem>('products');
     const data = await products.aggregate<TProductItem>([

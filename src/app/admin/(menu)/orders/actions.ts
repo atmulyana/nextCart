@@ -2,8 +2,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import {headers} from 'next/headers';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {deleteOrder, updateOrderStatus} from "@/data/order";
 import {createFormAction} from "@/lib/routeHandler";
 

@@ -10,8 +10,8 @@ import {getProduct} from '@/data/product';
 import FlexImage from '@/subview/components/FlexImage';
 import {CartForm} from '@/subview/components/Cart';
 import FrontMenu from '@/subview/partials/FrontMenu';
-import SubmitButton from '@/subview/components/SubmitButton';
-import SubmittedTextArea from '@/subview/components/SubmittedTextArea';
+import Button from '@/subview/components/SubmitButton';
+import TextArea from '@/subview/components/SubmittedTextArea';
 import Template from '@/subview/partials/Template';
 import {awaitProps, currencySymbol, fixTags, fnMeta, formatAmount, snip, type PromiseProps} from '@/lib/common';
 import modules from '@/lib/modules';
@@ -165,9 +165,9 @@ export default async function Product(props: Props) {
                         <Quantity />
                         {product.productComment && <>
                             <div className='mt-2.5'>{lang('Leave a comment?')}</div>
-                            <SubmittedTextArea name='productComment'></SubmittedTextArea>
+                            <TextArea name='productComment' noValidation />
                         </>}
-                        <SubmitButton className='btn-primary w-full mt-2.5 mb-4'>{lang('Add to cart')}</SubmitButton>
+                        <Button className='btn-primary w-full mt-2.5 mb-4'>{lang('Add to cart')}</Button>
                     </CartForm>
                     <div className='flex-none mb-4'
                         dangerouslySetInnerHTML={{__html: fixTags(product.productDescription)}}

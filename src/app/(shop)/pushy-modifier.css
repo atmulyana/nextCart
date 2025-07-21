@@ -1,12 +1,14 @@
 .pushy {
     background: var(--bg-color);
     visibility: visible;
+    z-index: 49;
 }
 
 .pushy-open-left .site-overlay,
 .pushy-open-right .site-overlay {
     background-color: var(--fg-color);
     opacity: 0.5;
+    z-index: 48;
 }
 
 @media only screen and (min-width: 768px) {

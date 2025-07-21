@@ -2,7 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import type {TCartItem, TVariant} from '@/data/types';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {cartTrans, getCart, upsertCart, upsertCartItem} from '@/data/cart';
 import {getProduct} from '@/data/product';
 import {getSession} from '@/data/session';
@@ -51,16 +51,16 @@ export const POST = createPostHandler(async (formData) => {
 
         const product = await getProduct(productId);
         if (!product) {
-            return response(lang('Error updating cart. Product not found.'), 404);
+            return response(`${lang('Error updating cart')}. ${lang('Product is not found')}.`, 404);
         }
         if (product.productPublished === false) {
-            return response(lang('Error updating cart. Product not published.'));
+            return response(`${lang('Error updating cart')}. ${lang('Product not published')}.`);
         }
         let variant: TVariant | undefined;
         if (productVariant) {
             variant = product.variants?.find(variant => variant._id.toString() == productVariant);
             if (!variant) {
-                return response(lang('Error updating cart. Variant not found.'), 404);
+                return response(`${lang('Error updating cart')}. ${lang('Variant not found')}.`, 404);
             }
         }
         
@@ -72,10 +72,10 @@ export const POST = createPostHandler(async (formData) => {
         else { //new product/variant added into cart
             const itemCount = Object.keys(cart.items).length;
             if (itemCount == 1 && Object.values(cart.items)[0].productSubscription) { //a subscription product has been in the cart (must be the only one)
-                return response(lang('Subscription already existing in cart. You cannot add more.'));
+                return response(lang('Subscription already exists in cart. You cannot add more.'));
             }
             else if (itemCount > 0 && product.productSubscription) {
-                return response(lang('You cannot combine subscription products with existing in your cart. Empty your cart and try again.'));
+                return response(lang('You cannot combine subscription product with non subscription one in your cart. Empty your cart and try again.'));
             }
             
             cartItem = {

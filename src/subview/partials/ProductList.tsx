@@ -13,8 +13,8 @@ import {awaitProps, currencySymbol, formatAmount, type PromiseProps} from '@/lib
 import {CartForm} from '@/subview/components/Cart';
 import FlexImage from '@/subview/components/FlexImage';
 import Paging from '@/subview/components/Paging';
-import SubmitButton from '@/subview/components/SubmitButton';
-import SubmittedSelect from '@/subview/components/SubmittedSelect';
+import Button from '@/subview/components/SubmitButton';
+import Select from '@/subview/components/SubmittedSelect';
 import Template from '@/subview/partials/Template';
 import FrontMenu from './FrontMenu';
 
@@ -90,7 +90,7 @@ function Item({
 }) {
     const productId = data._id.toString();
     return <div className={className + (data.productPermalink ? ' product-wrapper' : '')}>
-        <Link className='block flex-none bg-[--bg-color] text-[--fg-color]'
+        <Link className='block flex-none bg-[var(--bg-color)] text-[var(--fg-color)]'
             href={`/product/${data.productPermalink ? data.productPermalink : productId}`}
             prefetch={false}
         >
@@ -101,11 +101,11 @@ function Item({
             <input type='hidden' name='productId' value={productId} />
             {data.variants && data.variants.length > 0 ? (
                 config.showHomepageVariants ? (
-                    <SubmittedSelect name='productVariant' className='mb-2'>
+                    <Select name='productVariant' noValidation className='mb-2'>
                         {data.variants.map((variant, idx) => <option key={idx} value={variant._id.toString()}>
                             {variant.title} - {currencySymbol()}{formatAmount(variant.price)}
                         </option>)}
-                    </SubmittedSelect>
+                    </Select>
                 ) : (
                     <>
                         <h6 className='text-center text-lg py-[calc(0.25rem+1px)] mb-2 text-neutral-500'>
@@ -120,7 +120,7 @@ function Item({
                 </h6>
             )}
             <p className='text-center mb-4'>
-                <SubmitButton className='btn-primary'>{lang('Add to cart')}</SubmitButton>
+                <Button className='btn-primary'>{lang('Add to cart')}</Button>
             </p>
         </CartForm>
     </div>;

@@ -35,16 +35,16 @@ const Reviews = React.memo(function Reviews({
     
     return <PagedList url={`/product/${productId}/reviews`} list={list} setList={setList}>
         {list === data && (!data || data.reviews.length < 1) ? (
-            <p className='text-center border border-[rgba(0,0,0,.25)] dark:border-[rgba(255,255,255,.25)] rounded py-3 px-5'>
+            <p className='text-center border border-[rgba(0,0,0,.25)] dark:border-[rgba(255,255,255,.25)] rounded-sm py-3 px-5'>
                 {empty}
             </p>
         ) : (
             <ul className='list-none flex flex-col w-full'>
                 {list?.reviews.map((r, idx) =>
                 <li key={idx} className={`block border border-[rgba(0,0,0,.25)] dark:border-[rgba(255,255,255,.25)] py-3 px-5 ${
-                    idx == 0 ? 'rounded-t' : 'border-t-0'
+                    idx == 0 ? 'rounded-t-sm' : 'border-t-0'
                 } ${
-                    idx == list?.reviews.length-1 ? 'rounded-b' : ''
+                    idx == list?.reviews.length-1 ? 'rounded-b-sm' : ''
                 }`}>
                     <p className='text-right text-neutral-500 text-sm'>{r.timeAgo}</p>
                     <p className='flex flex-wrap w-full'>

@@ -5,7 +5,7 @@ import numeral from 'numeral';
 import Stripe from 'stripe';
 import type {NotificationParam} from '@/subview/components/Notification';
 import {getCart} from '@/data/cart';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {getSession} from '@/data/session';
 import {ResponseMessage} from '@/lib/common';
 import {createPostHandler} from '@/lib/routeHandler';

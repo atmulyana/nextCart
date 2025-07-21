@@ -81,15 +81,7 @@ export async function redirectWithMessage(
     if (typeof(url) == 'object') url = url.pathname + url.search;
     else if (!url.startsWith('/')) throw "Invalid URL: only absolute path accepted without protocol and hostname.";
     const isServerAction = (await headers()).get('Next-Action');
-    setRedirectMessage(
-        session.id,
-        message,
-
-        /** When invoked in a server (submit) action, the detination page will be rendered at least twice.
-         *  The first one will not be rendered at the client at all which causes the notification will not be shown.
-        */
-        isServerAction ? 2 : 1
-    );
+    setRedirectMessage(session.id, message);
     if (!isServerAction) revalidatePath(url);
     (await cookies()).set('x-revalidated-at', new Date().toISOString());
     if (await isFromMobile()) throw getRedirectError(url, RedirectType.replace, 303);

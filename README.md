@@ -33,6 +33,11 @@ It's assumed your database server at IP and port `127.0.0.1:27017`. If not, you 
 find the documentation for using it.
 
 #### **How to run the application**
+Before trying to run the application, please make sure you have installed the dependencies:
+
+    npm install
+    npx flowbite-react init
+
 For development, you can run the application by the console command:
 
     npm run dev

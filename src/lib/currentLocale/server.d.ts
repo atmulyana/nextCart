@@ -1,4 +1,5 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-export {default} from '.';
+declare var currentLocale: () => string;
+export default currentLocale;

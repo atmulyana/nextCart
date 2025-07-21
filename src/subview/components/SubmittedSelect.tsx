@@ -2,103 +2,72 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import * as React from 'react';
+import React, { CSSProperties } from 'react';
+import {Select, type Rules, type SelectProps} from '@react-input-validator/web';
 import {useFormStatus} from "react-dom";
-import {setRef} from 'reactjs-common';
 import {useSchemaProps} from './SchemaContext';
 
-type InputProps = React.ComponentProps<'select'>;
-type Props = Omit<InputProps, 'disabled'> & {useState?: boolean};
-type StatedProps = Omit<InputProps, 'defaultValue' | 'onChange'> & {
-    onChange: NonNullable<Props['onChange']>,
-};
+type Props<NoValidation extends (boolean | undefined), Multiple extends (boolean | undefined)> = Omit<
+    {
+        noValidation?: NoValidation,
+        multiple?: Multiple,
+        value?: SelectProps<Multiple>['value'],
+    } & (
+        NoValidation extends true
+            ? Omit<React.ComponentProps<'select'>, 'multiple' | 'value'>
+            : Omit<SelectProps<Multiple>, 'rules' | 'style'> & {className?: string, rules?: Rules, style?: CSSProperties}
+    ),
+    'disabled' | 'ref'
+>;
+type SelectRef<Multiple extends (boolean | undefined)> = NonNullable<React.ComponentProps<typeof Select<Multiple>>['ref']>;
+type Ref<NoValidation extends (boolean | undefined), Multiple extends (boolean | undefined)> = NoValidation extends true
+    ? React.Ref<HTMLSelectElement> : SelectRef<Multiple>;
 
-const StatedSelect = React.forwardRef<HTMLSelectElement, StatedProps>(function StatedSelect(
+const SubmittedSelect = React.forwardRef(function SubmittedSelect<
+    NoValidation extends boolean | undefined = false,
+    Multiple extends boolean | undefined = false,
+>(
     {
         children,
-        value,
-        onChange,
+        name,
+        noValidation,
         ...props
-    },
-    ref
+    }: Props<NoValidation, Multiple>,
+    ref: Ref<NoValidation, Multiple>
 ) {
-    const inputRef = React.useRef<HTMLSelectElement | null>(null);
-    const [val, setVal] = React.useState(value);
-
-    React.useEffect(() => {
-        setVal(value);
-    }, [value]);
-    
-    React.useEffect(() => {
-        /* When re-rendering after form validation the combobox's value is reverted to the initial value
-           even if `val` doesn't change. (Should be a React's bug) */
-        if (inputRef.current) {
-            const inp = inputRef.current,
-                  opts = inp.options;
-            if (typeof(val) == 'number') {
-                inp.value = opts[val].value;
-            }
-            else if (typeof(val) == 'string') {
-                inp.value = val;
-                if (inp.selectedIndex < 0) inp.selectedIndex = 0;
-            }
-            else if (Array.isArray(val)) {
-                for (let opt of opts) {
-                    opt.selected = val.includes(opt.value);
-                }
-            }
-            else {
-                inp.selectedIndex = 0;
-            }
-        }
-    });
-    
-    const changeHandler = (ev: React.ChangeEvent<HTMLSelectElement>) => {
-        setVal(ev.target.value);
-        onChange(ev);
-    };
-
-    return <select
-        ref={(inp: HTMLSelectElement | null) => {
-            if (ref) setRef(ref, inp);
-            inputRef.current = inp;
-        }}
-        {...props}
-        value={val}
-        onChange={changeHandler}
-    >{children}</select>;
-});
-
-const InternalSelect = React.memo(function InternalSelect({
-    $ref,
-    children,
-    name,
-    defaultValue,
-    onChange,
-    useState,
-    ...props
-}: Props & {
-    $ref: React.Ref<HTMLSelectElement>
-}) {
     const {pending} = useFormStatus();
     const getProps = useSchemaProps();
+    const Select2 = Select as typeof Select<Multiple>;
 
-    const changeHandler = React.useCallback<React.ChangeEventHandler<HTMLSelectElement>>(ev => {
-        if (ev.target.validity.customError) ev.target.setCustomValidity('');
-        if (typeof(onChange) == 'function') onChange(ev);
-    }, [onChange]);
-
-    if (defaultValue === undefined && (onChange === undefined || useState)) {
-        return <StatedSelect ref={$ref} {...props} {...getProps(name)} disabled={pending} onChange={changeHandler}>{children}</StatedSelect>;
+    if (noValidation) {
+        return <select
+            {...(props as React.ComponentProps<'select'>)}
+            disabled={pending}
+            name={name}
+            ref={ref as React.Ref<HTMLSelectElement>}
+        >{children}</select>;
     }
     else {
-        return <select ref={$ref} {...props} {...getProps(name)} defaultValue={defaultValue} disabled={pending} onChange={changeHandler}>
-            {children}
-        </select>;
+        const {className, style, ...props2} = props as Props<false, Multiple>,
+              props3 = getProps(name);
+        return <Select2
+            {...props2}
+            {...props3}
+            disabled={pending}
+            rules={props2.rules ?? props3.rules}
+            style={{
+                $class: className,
+                $style: style,
+            }}
+            ref={ref as SelectRef<Multiple>}
+        >{children}</Select2>;
     }
-});
-
-const SubmittedSelect = React.forwardRef<HTMLSelectElement, Props>(function SubmittedSelect({children, ...props}, ref) {
-    return <InternalSelect {...props} $ref={ref}>{children}</InternalSelect>;
-});
+}) as (
+    <
+        NoValidation extends (boolean | undefined) = false,
+        Multiple extends boolean | undefined = false,
+    >(
+        props: Props<NoValidation, Multiple> & {ref?: Ref<NoValidation, Multiple>, key?: React.Key}
+    ) => React.ReactNode
+);
 export default SubmittedSelect;

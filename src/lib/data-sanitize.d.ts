@@ -5,7 +5,8 @@ declare global {
     type SanitizedString<T extends string = string> = T | {$literal: T};
     
     interface FormData {
-        getBoolean(paramName: string): boolean;
+        get<T = FormDataEntryValue>(paramName: string): T;
+        getBoolean(paramName: string, isToString?: boolean): boolean;
         getDate(paramName: string): Date | null;
         getFile(paramName: string): File | null;
         getNumber(paramName: string): number;

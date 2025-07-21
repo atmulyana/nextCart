@@ -2,7 +2,9 @@
  * https://github.com/atmulyana/nextCart
  **/
 import type {Metadata, ResolvedMetadata, ResolvingMetadata} from "next";
+import {emptyString} from 'javascript-common';
 import numeral from 'numeral';
+import {Email, Numeric} from '@react-input-validator/rules';
 import config from '@/config/usable-on-client';
 
 export type GetParam = Record<string, string | string[] | undefined>;
@@ -103,6 +105,10 @@ export function ResponseMessage(message: string, params?: (number | {status?: nu
     return Response.json({message, ...props}, {status});
 }
 
+export function isOnBrowser() {
+    return typeof(window) == 'object';
+}
+
 export function safeUrl(
     url: string | URL,
     option: {
@@ -179,21 +185,24 @@ export function fixTags(html: string) {
 }
 
 export function snip(text: string | null | undefined) {
-    return text && text.length > 155 ? `${text.substring(0, 155)}...` : '';
+    return text && text.length > 155 ? `${text.substring(0, 155)}...` : emptyString;
 }
 
 export function sanitizePhone(phone: string) {
-    return phone.replaceAll(/[^\d]/g, '');
+    return phone.replaceAll(/[^\d]/g, emptyString);
 }
 
 const reVarNameHolders = /\$\{([_a-zA-Z][_a-zA-Z0-9]*)\}/g;
-export const str = (template: string | null | undefined, params: {[name: string]: any}): string | null | undefined => template &&
+export const str = <T extends string | null | undefined>(
+    template: T,
+    params: {[name: string]: any}
+) => template &&
     template.replace(reVarNameHolders, function(_, p1: string): string {
         let value = params[p1];
-        if (typeof(value) == 'function') return value() + '';
-        if (value !== null && value !== undefined) return value + '';
-        return '';
-    });
+        if (typeof(value) == 'function') return value() + emptyString;
+        if (value !== null && value !== undefined) return value + emptyString;
+        return emptyString;
+    }) as (T extends string ? string : (undefined | null));
 
 const statusColors: {[status: string]: string} = {
     Paid: 'success',
@@ -213,9 +222,9 @@ export function getOrderStatuses() {
     return Object.keys(statusColors);
 }
 
-export const emailRegex = /\S+@\S+\.\S+/;
+export const emailRegex = Email.regex;
 export const indexRegex = /^\d+$/;
 export const nameRegex = /^[a-zA-Z']+$/;
-export const numericRegex = /^\d*\.?\d+$/;
+export const numericRegex = Numeric.regex;
 export const phoneRegex = /^(?:\+([1-9]\d{0,2})|\(\+([1-9]\d{0,2})\)|0)(\d{1,3})(?:-\d+)*-?\d+$/;
 export const postalCodeRegex = /^[a-zA-Z]{0,3}\d{3,}[a-zA-Z]{0,3}$/;

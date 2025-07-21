@@ -1,9 +1,9 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import {notFound} from 'next/navigation';
+//import {notFound} from 'next/navigation';
 import {countries} from 'countries-list';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {getOrdersByCustomerId} from '@/data/order';
 import {getSession} from '@/data/session';
 import {createGetHandler} from '@/lib/routeHandler';

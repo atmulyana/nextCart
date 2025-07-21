@@ -3,6 +3,7 @@
  **/
 import React from 'react';
 import Link from 'next/link';
+import {CheckBox} from '@react-input-validator/web';
 import {loginCustomer, logoutCustomer, saveCheckoutInfo} from '@/app/actions';
 import lang from '@/data/lang';
 import {getCartHeader} from '@/data/cart';
@@ -14,7 +15,7 @@ import TextArea from '@/subview/components/SubmittedTextArea';
 import Input from '@/subview/components/SubmittedInput';
 import CustomerDataForm from '@/subview/partials/CustomerDataForm';
 import Template from '@/subview/partials/Template';
-import {createAccountCheckboxChange, formSubmitted, nextToShippingClick} from './formEvents';
+import {formSubmitted, nextToShippingClick} from './formEvents';
 
 export function generateMetadata() {
     return {
@@ -77,14 +78,7 @@ export default async function CheckoutInformation() {
                         <Input type='password' name='password' placeholder={lang('Password')} />
                     </div>
                     <div className='basis-full md:basis-1/2 grow-0 shrink-0 mb-4 px-4 flex items-center'>
-                        <Input
-                            name='createAccount'
-                            id="createAccountCheckbox"
-                            type='checkbox'
-                            value='1'
-                            onChange={createAccountCheckboxChange}
-                            useState
-                        />
+                        <CheckBox name='createAccount' id="createAccountCheckbox" noIndeterminate />
                         <label htmlFor='createAccountCheckbox' className='ml-1'>{lang('Create account')}</label>
                     </div>
                 </div>}

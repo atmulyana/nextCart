@@ -48,13 +48,13 @@ type TimerProps = {
 };
 
 const Timer = React.memo(function Timer({isRunning = true, timeout, onTimeout = () => {}}: TimerProps) {
-    const timerId = React.useRef<NodeJS.Timeout>();
+    const timerId = React.useRef<NodeJS.Timeout>(null);
     const [time, setTime] = React.useState(new Date().getTime());
     const [endTime, setEndTime] = React.useState(getEndTime(timeout));
 
     const stopTimer = React.useCallback(() => {
         if (timerId.current) clearInterval(timerId.current);
-        timerId.current = void(0);
+        timerId.current = null;
     }, []);
 
     React.useEffect(() => {
@@ -67,14 +67,14 @@ const Timer = React.memo(function Timer({isRunning = true, timeout, onTimeout = 
             const currentTime = new Date().getTime();
             if (currentTime >= endTime) {
                 stopTimer();
-                typeof(onTimeout) == 'function' && onTimeout();
+                if (typeof(onTimeout) == 'function') onTimeout();
             }
             else {
                 setTime(currentTime);
             }
         }, 1000);
 
-        () => stopTimer();
+        return () => stopTimer();
     }, [onTimeout, endTime, stopTimer]);
 
     React.useEffect(() => {
@@ -121,10 +121,10 @@ export default function Waiting({
 }) {
     const formRef = React.useRef<HTMLFormElement>(null);
     const notify = useNotification();
-    const blSocket = React.useRef<WebSocket>();
+    const blSocket = React.useRef<WebSocket>(null);
     const closeBlSocket = React.useCallback(() => {
         if (blSocket.current) blSocket.current.close();
-        blSocket.current = void(0);
+        blSocket.current = null;
     }, []);
     const [status, setStatus] = React.useState<0|1|2>(0);
     const [data, setData] = React.useState({value: 0, txid: '', status: 0|1|2});
@@ -152,7 +152,7 @@ export default function Waiting({
         (
             blSocket.current = new WebSocket(blUrl + params.address + '?timestamp=' + params.timestamp)
         ).onmessage = function(msg) {
-            var data = JSON.parse(msg.data);
+            let data = JSON.parse(msg.data);
             if (data.status === 0 || data.status === 1 || data.status === 2) {
                 closeBlSocket();
                 notify(text.detected, 'success');

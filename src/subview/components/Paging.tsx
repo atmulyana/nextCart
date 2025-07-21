@@ -30,10 +30,10 @@ const Paging = React.memo(function Paging({
     href,
     selectedPage,
     maxVisibleCount = 5,
-    containerClass = 'rounded overflow-hidden mb-4 z-10',
-    commonClass = 'block bg-[--fg-color] py-2 px-3 leading-5',
-    notSelectedClass = 'text-[--bg-color]',
-    selectedClass = 'text-[--bg-color] font-black',
+    containerClass = 'rounded-sm overflow-hidden mb-4 z-10',
+    commonClass = 'block bg-[var(--fg-color)] py-2 px-3 leading-5',
+    notSelectedClass = 'text-[var(--bg-color)]',
+    selectedClass = 'text-[var(--bg-color)] font-black',
     disabledClass = 'text-neutral-600 dark:text-neutral-400',
 }: Props) {
     if (pageCount < selectedPage) pageCount = selectedPage;

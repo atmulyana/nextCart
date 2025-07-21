@@ -4,7 +4,7 @@
 import {nanoid} from 'nanoid';
 import {ResponseMessage} from '@/lib/common';
 import {createPostHandler} from '@/lib/routeHandler';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {getCustomerByEmail, updateCustomer} from '@/data/customer';
 import {sendEmail} from '@/lib/email';
 import EmailTemplate from '@/lib/email/templates/ForgottenPassword';

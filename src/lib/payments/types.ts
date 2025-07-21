@@ -7,6 +7,7 @@ import type {TCart, TOrder, TSession} from '@/data/types';
 export type Config = {
     description: string,
     buttonText: string,
+    //eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
     [name: string]: string | String,
 };
 

@@ -2,6 +2,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
+import './styles.css';
 import React from 'react';
 import FormWithSchema from '@/subview/components/FormWithSchema';
 import Input from '@/subview/components/SubmittedInput';
@@ -37,9 +38,13 @@ const ReviewForm = React.forwardRef<
     ref
 ) {
     const [rating, setRating] = React.useState(0);
+    React.useEffect(() => {
+        window.__lang__.title = title.toLowerCase();
+        window.__lang__.description = desc.toLowerCase();
+    }, [title, desc]);
 
     return <FormWithSchema ref={ref} action={addReview} className='block p-4' onSubmitted={onSubmitted} schemaName='review'>
-        <input type='hidden' name='product' value={productId} />
+        <Input type='hidden' name='product' value={productId} />
         <div className='mb-4'>
             <label htmlFor='title'>{title}:&nbsp;</label>
             <Input name='title' placeholder={titlePlaceholder} />
@@ -51,7 +56,13 @@ const ReviewForm = React.forwardRef<
         <div className='flex flex-wrap items-center mb-4'>
             <label className='flex-none'>{ratingText}:&nbsp;</label>
             <div className='relative flex-auto'>
-                <Input className='flex-none !inline !border-transparent !w-14 opacity-0' name='rating' value={rating} />
+                <Input 
+                    className='flex-none !inline !border-transparent !w-14 opacity-0'
+                    name='rating'
+                    type='number'
+                    readOnly
+                    value={rating}
+                />
                 <div className='absolute bottom-0 top-0 left-0 right-0 flex items-center z-10'>
                     <RatingStars className='flex-none' rating={rating} onClick={rating => setRating(rating)} />
                 </div>

@@ -3,7 +3,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import {useRouter} from 'next/navigation';
+//import {useRouter} from 'next/navigation';
 import {FiAlertCircle, FiCheckCircle, FiInfo, FiXCircle} from 'react-icons/fi';
 import {Alert} from 'flowbite-react';
 
@@ -65,7 +65,7 @@ const NotificationIcon = {
 }
 
 const NotificationBar = React.memo(function NotificationBar() {
-    const router = useRouter();
+    //const router = useRouter();
     const timerId = React.useRef<NodeJS.Timeout | null>(null);
     const ctxVal = React.useContext(ContextValue);
     const notify = useNotification();
@@ -73,7 +73,7 @@ const NotificationBar = React.memo(function NotificationBar() {
 
     const clearMessage = () => {
         timerId.current = null;
-        const isRefresh = ctxVal.isRefresh;
+        //const isRefresh = ctxVal.isRefresh;
         if (message != '') notify('', ctxVal.type);
         //if (isRefresh) router.refresh();
     };

@@ -12,11 +12,11 @@ import FlexImage from './FlexImage';
 import Form from './Form';
 import Icon from './Icon';
 import {useModal} from './Modal';
-import SubmitButton from './SubmitButton';
-import SubmittedInput from './SubmittedInput';
+import Button from './SubmitButton';
+import Input from './SubmittedInput';
 
 interface ContextValue extends TCart {
-    update(cart: TCart | null | undefined, callback?: (cart: TCart) => any): void;
+    update(cart: TCart | null | undefined, callback?: ((cart: TCart) => any) | null): void;
 }
 
 const defaultCart: TCart = {
@@ -35,10 +35,11 @@ const Context = React.createContext<ContextValue>({
 });
 
 export function CartContext({cart, children}: {cart?: TCart, children: React.ReactNode}) {
-    const updateCallback = React.useRef<(cart: TCart) => any>();
+    const updateCallback = React.useRef<(cart: TCart) => any>(null);
     const [value, setValue] = React.useState<ContextValue>({
        ...(cart ?? defaultCart),
-       update: (cart: TCart | null | undefined, callback?: (cart: TCart) => any) => {
+       update: (
+            cart: TCart | null | undefined, callback?: ((cart: TCart) => any) | null) => {
             if (callback) updateCallback.current = callback;    
             setValue(val => ({
                 ...(cart ?? defaultCart),
@@ -60,7 +61,7 @@ export function CartContext({cart, children}: {cart?: TCart, children: React.Rea
     React.useEffect(() => {
         const callback = updateCallback.current;
         if (callback) {
-            updateCallback.current = undefined;
+            updateCallback.current = null;
             callback(value);
         }
     }, [value]);
@@ -111,9 +112,9 @@ export const CartOpenButton = React.memo(function CartOpenButton({cartText}: {ca
         {` ${cartText} `}
         <span
             id="cart-count"
-            className="relative -top-1.5 -left-1 rounded px-1 py-0.5 align-baseline
+            className="relative -top-1.5 -left-1 rounded-sm px-1 py-0.5 align-baseline
                 text-xs font-bold
-                text-[--bg-color] bg-[#dc3545] dark:bg-[#23caba]"
+                text-[var(--bg-color)] bg-[#dc3545] dark:bg-[#23caba]"
         >{cart.totalCartItems}</span>
     </Link>;
 });
@@ -168,7 +169,7 @@ const CartContent = React.memo(function CartContent({
         }
     }, [cart]);
 
-    return <div className="flex-initial flex flex-col items-stretch min-h-0 bg-[--bg-color] bordered">
+    return <div className="flex-initial flex flex-col items-stretch min-h-0 bg-[var(--bg-color)] bordered">
         <h5 className="flex-none mb-3">{title}</h5>
         <div ref={scroller} className="flex-initial min-h-0 overflow-auto"
             onScroll={() => {
@@ -242,15 +243,16 @@ function CartItemForm({id, quantity, homeAfterClear}: {id: string, quantity: num
         {homeAfterClear && <input type='hidden' name='homeAfterClear' value='1' />}
         <input type="hidden" name="cartId" value={id} />
         <div className="relative flex-none basis-3/4 flex items-stretch input-group pr-4">
-            <SubmitButton
+            <Button
                 name="__action__"
                 value="decrease"
                 className="btn-primary flex-none z-[1] -mr-px rounded-r-none"
-            >-</SubmitButton>
-            <SubmittedInput
+            >-</Button>
+            <Input
                 ref={qtyRef}
                 type="number" 
                 name="quantity"
+                noValidation
                 defaultValue={quantity}
                 className="flex-1 text-center z-0 !rounded-none" 
                 maxLength={2} 
@@ -268,14 +270,14 @@ function CartItemForm({id, quantity, homeAfterClear}: {id: string, quantity: num
                     }
                 }}
             />
-            <SubmitButton
+            <Button
                 name="__action__"
                 value="increase"
                 className="btn-primary flex-none z-[1] -ml-px rounded-l-none"
-            >+</SubmitButton>
+            >+</Button>
         </div>
         <div className="flex-none basis-1/4">
-            <SubmitButton name="__action__" value="delete" className="btn-danger"><Icon name="trash-2" /></SubmitButton>
+            <Button name="__action__" value="delete" className="btn-danger"><Icon name="trash-2" /></Button>
         </div>
     </CartForm>;
 }
@@ -299,7 +301,7 @@ export const CartButtons = React.memo(function CartButtons({
     return <div className={`flex-none checkout-buttons ${Object.keys(cart.items).length > 0 ? '' : 'hidden'}`}>
         <CartForm action={clearCart} className='flex-none'>
             {homeAfterClear && <input type='hidden' name='homeAfterClear' value='1' />}
-            <SubmitButton type="button" className='btn-danger'
+            <Button type="button" className='btn-danger'
                 onClick={async e => {
                     if (await openConfirm()) {
                         (e.target as HTMLButtonElement).form?.requestSubmit();
@@ -308,7 +310,7 @@ export const CartButtons = React.memo(function CartButtons({
                         e.preventDefault();
                     }
                 }}
-            >{clearCartText}</SubmitButton>
+            >{clearCartText}</Button>
         </CartForm>
         {path != '/checkout/information'
             && <Link href='/checkout/information' onClick={closeCart} className='btn btn-primary flex-none'>{checkoutText}</Link>}

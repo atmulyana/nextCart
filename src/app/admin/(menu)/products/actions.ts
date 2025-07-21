@@ -2,7 +2,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {dbTrans} from '@/data/db-conn';
 import {deleteProduct, setProductPublished} from '@/data/product';
 import {createFormAction} from "@/lib/routeHandler";

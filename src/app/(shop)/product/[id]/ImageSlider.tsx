@@ -3,30 +3,39 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import {Carousel, type CustomFlowbiteTheme} from 'flowbite-react';
+import {Carousel, createTheme} from 'flowbite-react';
 import cfg from '@/config/usable-on-client';
 import type {TProductImagePath} from '@/data/types';
 import FlexImage from '@/subview/components/FlexImage';
 
-const theme: CustomFlowbiteTheme['carousel'] = {
-    root: {
-        leftControl: "absolute top-0 left-0 flex h-full items-center justify-center pl-1 pr-5 focus:outline-none",
-        rightControl: "absolute top-0 right-0 flex h-full items-center justify-center pr-1 pl-5 focus:outline-none",
-    },
-    indicators: {
-        active: {
-            off: "bg-black/50 hover:bg-black dark:bg-gray-800/50 dark:hover:bg-gray-800",
-            on: "bg-black dark:bg-gray-800",
+const theme = createTheme({
+    carousel: {
+        root: {
+            leftControl: "absolute top-0 left-0 flex h-full items-center justify-center pl-1 pr-5 focus:outline-hidden",
+            rightControl: "absolute top-0 right-0 flex h-full items-center justify-center pr-1 pl-5 focus:outline-hidden",
         },
-        wrapper: "absolute bottom-2 left-1/2 flex -translate-x-1/2 space-x-3",
-    },
-    control: {
-        base: `inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/30
-               group-hover:bg-black/50 group-focus:outline-none group-focus:ring-4 group-focus:ring-black
-               dark:bg-gray-800/30 dark:group-hover:bg-gray-800/60 dark:group-focus:ring-gray-800/70 sm:h-10 sm:w-10`,
-        icon: "h-5 w-5 text-black dark:text-gray-200 sm:h-6 sm:w-6",
-    },
-};
+        item: {
+            base: "absolute left-1/2 top-1/2 block w-full -translate-x-1/2 -translate-y-1/2",
+            wrapper: {
+                off: "relative w-full shrink-0 transform cursor-default snap-center",
+                on: "relative w-full shrink-0 transform cursor-grab snap-center"
+            }
+        },
+        indicators: {
+            active: {
+                off: "bg-black/50 hover:bg-black dark:bg-gray-800/50 dark:hover:bg-gray-800",
+                on: "bg-black dark:bg-gray-800",
+            },
+            wrapper: "absolute bottom-2 left-1/2 flex -translate-x-1/2 space-x-3",
+        },
+        control: {
+            base: `inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/30
+                group-hover:bg-black/50 group-focus:outline-hidden group-focus:ring-4 group-focus:ring-black
+                dark:bg-gray-800/30 dark:group-hover:bg-gray-800/60 dark:group-focus:ring-gray-800/70 sm:h-10 sm:w-10`,
+            icon: "h-5 w-5 text-black dark:text-gray-200 sm:h-6 sm:w-6",
+        },
+    }
+});
 
 const ImageSlider = React.memo(function ImageSlider(
     {images}: {images: TProductImagePath[]}
@@ -39,9 +48,9 @@ const ImageSlider = React.memo(function ImageSlider(
     const slider = React.useRef<HTMLDivElement>(null);
     
     return <>
-        <div className='relative rounded w-full pt-full overflow-hidden'>
+        <div className='relative rounded-sm w-full pt-full overflow-hidden'>
             <div ref={slider} className='absolute top-0 right-0 bottom-0 left-0'>
-            <Carousel slide={false} theme={theme} onSlideChange={slideChange}>
+            <Carousel slide={false} theme={theme.carousel} onSlideChange={slideChange}>
                 {/*eslint-disable-next-line @next/next/no-img-element*/}
                 {images.map(img => <img key={img.id} src={`${cfg.baseUrl.path}${img.path}`} alt='...' />)}
             </Carousel>
@@ -50,12 +59,12 @@ const ImageSlider = React.memo(function ImageSlider(
         <div className='flex flex-wrap -mx-1 mt-4'>
             {images.map((img, idx) => <div key={idx} className='flex-none basis-1/6 px-1'>
                 <div
-                    className={`w-full border-2 rounded ${
+                    className={`w-full border-2 rounded-sm ${
                         selectedIndex==idx ? 'border-green-500 dark:border-pink-400' : 'border-transparent cursor-pointer'
                     }`}
                     onClick={() => {
                         const btns = slider.current?.querySelectorAll<HTMLButtonElement>('button[data-testid="carousel-indicator"]');
-                        btns && btns[idx]?.click()
+                        if (btns) btns[idx]?.click();
                     }}
                 >
                     <FlexImage src={img.path} alt='...' />

@@ -4,13 +4,6 @@
  **/
 import React from 'react';
 
-export function createAccountCheckboxChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const pwdInput = e.target.form?.elements.namedItem('password');
-    if (pwdInput) {
-        (pwdInput as HTMLInputElement).required = e.target.checked;
-    }
-}
-
 export function nextToShippingClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     const form = document.getElementById('customerInfoForm');
     if (form) {

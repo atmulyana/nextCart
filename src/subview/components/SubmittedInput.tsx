@@ -2,159 +2,85 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import * as React from 'react';
-import {useFormStatus} from "react-dom";
+import React, { CSSProperties } from 'react';
 import {setRef} from 'reactjs-common';
+import {Input, type InpProps, type InpRef, type Rules} from '@react-input-validator/web';
+import {useFormStatus} from "react-dom";
 import {useSchemaProps} from './SchemaContext';
 
-type InputProps = React.ComponentProps<'input'>;
-type Props = Omit<InputProps, 'disabled'> & {useState?: boolean};
-type StatedProps = Omit<InputProps, 'defaultValue' | 'defaultChecked' | 'onChange'> & {
-    onChange: NonNullable<Props['onChange']>,
-};
-
-const nonEditableTypes = ['button', 'image', 'reset', 'submit'].reduce(
-    (obj, type) => (obj[type] = true, obj),
-    {} as {[type: string]: boolean}
-);
-const checkableTypes: {[type: string]: boolean} = {
-    checkbox: true,
-    radio: true,
-};
-
-function getDefaultValue(props: Props) {
-    // if (props.type == 'number') return 0;
-    // if (props.type == 'range') return props.min ?? 0;
-    // if (props.multiple && ['email', 'file'].includes(props.type ?? '')) return [] as string[];
-    return '';
-}
-
-const CheckableInput = React.forwardRef<HTMLInputElement, StatedProps>(function CheckableInput(
+type Props<NoValidation extends (boolean | undefined), Type extends string> = Omit<
     {
-        checked,
+        noValidation?: NoValidation,
+        type?: Type,
+        value?: InpProps<Type>['value'],
+    } & (
+        NoValidation extends true
+            ? Omit<React.ComponentProps<'input'>, 'type' | 'value'>
+            : Omit<InpProps<Type>, 'rules' | 'style'> & {className?: string, rules?: Rules, style?: CSSProperties}
+    ),
+    'disabled' | 'ref'
+>;
+type Ref<NoValidation extends (boolean | undefined), Type extends string> = NoValidation extends true
+    ? React.Ref<HTMLInputElement> : React.Ref<InpRef<Type>>;
+
+const SubmittedInput = React.forwardRef(function SubmittedInput<
+    Type extends string,
+    NoValidation extends boolean | undefined = false,
+>(
+    {
+        name,
+        noValidation,
         onChange,
-        ...props
-    },
-    ref
-) {
-    const inputRef = React.useRef<HTMLInputElement | null>(null);
-    const [check, setCheck] = React.useState(checked ?? false);
-    
-    React.useEffect(() => {
-        setCheck(checked ?? false);
-    }, [checked]);
-
-    React.useEffect(() => {
-        /* Sometimes, the checkbox is not checked when `check` is `true` (Should be a React's bug) */
-        if (inputRef.current) inputRef.current.checked = check;
-    });
-
-    const changeHandler = (ev: React.ChangeEvent<HTMLInputElement>) => {
-        setCheck(ev.target.checked);
-        onChange(ev);
-    };
-
-    return <input
-        ref={(inp: HTMLInputElement | null) => {
-            if (ref) setRef(ref, inp);
-            inputRef.current = inp;
-        }}
-        {...props}
-        checked={check}
-        onChange={changeHandler}
-    />;
-});
-
-
-const NonCheckableInput = React.forwardRef<HTMLInputElement, StatedProps>(function NonCheckableInput(
-    {
         value,
-        onChange,
         ...props
-    },
-    ref
+    }: Props<NoValidation, Type>,
+    ref: Ref<NoValidation, Type>
 ) {
-    const [val, setVal] = React.useState(value ?? getDefaultValue(props));
-    
-    React.useEffect(() => {
-        setVal(value ?? getDefaultValue(props));
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value]);
-
-    const changeHandler = (ev: React.ChangeEvent<HTMLInputElement>) => {
-        setVal(ev.target.value);
-        onChange(ev);
-    };
-
-    return <input
-        ref={ref}
-        {...props}
-        value={val}
-        autoComplete={props.type == 'password' ? 'off' : props.autoComplete}
-        onChange={changeHandler}
-    />;
-});
-
-const InternalInput = React.memo(function InternalInput({
-    $inputRef,
-    name,
-    type = 'text',
-    value,
-    defaultValue,
-    checked,
-    defaultChecked,
-    onChange,
-    useState,
-    ...props
-}: Props & {
-    $inputRef: React.Ref<HTMLInputElement>
-}) {
-    type = type.toLowerCase();
+    const inpRef = React.useRef<InpRef<Type>>(null);
     const {pending} = useFormStatus();
     const getProps = useSchemaProps();
+    const Input2 = Input as typeof Input<Type>;
 
-    const changeHandler = React.useCallback<React.ChangeEventHandler<HTMLInputElement>>(ev => {
-        const input = ev.target;
-        if (input.validity.customError) input.setCustomValidity('');
-        if (typeof(onChange) == 'function') onChange(ev);
-    }, [onChange]);
+    React.useEffect(() => {
+        if (!inpRef.current || onChange) return;
+        if (!inpRef.current.isValid) inpRef.current.clearValidation();
+    }, [onChange, value]);
 
-    if (checkableTypes[type]) {
-        if (defaultChecked === undefined && (onChange === undefined || useState)) {
-            return <CheckableInput
-                ref={$inputRef}
-                {...props}
-                {...{type, value, checked}}
-                {...getProps(name)}
-                disabled={pending}
-                onChange={changeHandler}
-            />;
-        }
+    if (noValidation) {
+        return <input
+            {...(props as React.ComponentProps<'input'>)}
+            disabled={pending}
+            name={name}
+            //@ts-ignore
+            onChange={onChange}
+            value={value}
+            ref={ref as React.Ref<HTMLInputElement>}
+        />;
     }
-    else if (!nonEditableTypes[type]) {
-        if (defaultValue === undefined && (onChange === undefined || useState)) {
-            return <NonCheckableInput
-                ref={$inputRef}
-                {...props}
-                {...{type, value}}
-                {...getProps(name)}
-                disabled={pending}
-                onChange={changeHandler}
-            />;
-        }
+    else {
+        const {className, style, ...props2} = props as Props<false, Type>,
+              props3 = getProps(name);
+        return <Input2
+            {...props2}
+            {...props3}
+            disabled={pending}
+            //@ts-ignore
+            onChange={onChange}
+            rules={props2.rules ?? props3.rules}
+            style={{
+                $class: className,
+                $style: style,
+            }}
+            value={value}
+            ref={($ref: InpRef<Type> | null) => {
+                setRef(ref as React.Ref<InpRef<Type>>, $ref);
+                inpRef.current = $ref;
+            }}
+        />;
     }
-
-    return <input
-        ref={$inputRef}
-        {...props}
-        {...{type, value, defaultValue, checked, defaultChecked}}
-        {...getProps(name)}
-        disabled={pending}
-        onChange={changeHandler}
-    />;
-});
-
-const SubmittedInput = React.forwardRef<HTMLInputElement, Props>(function SubmittedInput(props, ref) {
-    return <InternalInput {...props} $inputRef={ref} />;
-});
+}) as (
+    <Type extends string, NoValidation extends (boolean | undefined) = false>(
+        props: Props<NoValidation, Type> & {ref?: Ref<NoValidation, Type>, key?: React.Key}
+    ) => React.ReactNode
+);
 export default SubmittedInput;

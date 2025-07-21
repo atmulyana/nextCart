@@ -44,13 +44,13 @@ export default async function AdminCustomers(props: {params: Promise<{pageIdx?: 
                 <strong className='ml-4'>{lang('Edit')}</strong>
                 <strong className='ml-4'>{lang('Delete')}</strong>
             </li>
-            {search && <li className='bg-[--bg-color] !py-0'>
+            {search && <li className='bg-[var(--bg-color)] !py-0'>
                 <small className='text-blue-500 mr-4'>({lang('Filtered term')}: {search})</small>
             </li>}
             {await customers.count() < 1 ? (
-                <li className='bg-[--bg-color] text-center'>{lang('No customers found')}</li>
+                <li className='bg-[var(--bg-color)] text-center'>{lang('No customers found')}</li>
             ) : customers.list.map(c => (_id = c._id.toString(),
-                <li key={_id} className='!flex bg-[--bg-color]'>
+                <li key={_id} className='!flex bg-[var(--bg-color)]'>
                     <span className='basis-3/12 shrink-0'>{c.email}</span>
                     <span className='flex-1 ml-4'>{c.firstName} {c.lastName}</span>
                     <span className='basis-2/12 shrink-0 ml-4'>{c.phone}</span>
@@ -64,7 +64,7 @@ export default async function AdminCustomers(props: {params: Promise<{pageIdx?: 
                         <strong className='opacity-0'>{lang('Delete')}</strong>
                         <Form 
                             action={remove}
-                            className='!absolute left-0 top-0 right-0 bottom-0 text-center text-[--color-danger]'
+                            className='!absolute left-0 top-0 right-0 bottom-0 text-center text-[var(--color-danger)]'
                             loading={null}
                             refreshThreshold='success'
                         >

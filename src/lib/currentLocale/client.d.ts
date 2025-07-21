@@ -6,4 +6,5 @@ declare global {
         __currenLocale__: string;
     }
 }
-export {default} from './';
+declare const currentLocale: () => string;
+export default currentLocale;

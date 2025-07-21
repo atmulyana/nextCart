@@ -2,9 +2,16 @@
  * https://github.com/atmulyana/nextCart
  **/
 import type {TCustomer, TSessionCustomer} from '@/data/types';
-import {dbTrans, ObjectId, toId} from '@/data/db-conn';
-import {getCustomerByEmail, updateCustomer} from '@/data/customer';
-import lang from '@/data/lang';
+import {
+    dbTrans,
+    // ObjectId,
+    // toId
+} from '@/data/db-conn';
+import {
+    // getCustomerByEmail,
+    updateCustomer
+} from '@/data/customer';
+import lang from '@/data/lang/server';
 import {getSession, setCustomerSession} from '@/data/session';
 import {updateSessionToken} from '@/lib/auth'; 
 import {ResponseMessage} from '@/lib/common';

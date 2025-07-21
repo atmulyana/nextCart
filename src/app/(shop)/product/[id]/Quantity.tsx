@@ -3,13 +3,13 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import SubmitButton from "@/subview/components/SubmitButton";
-import SubmittedInput from "@/subview/components/SubmittedInput";
+import Button from "@/subview/components/SubmitButton";
+import Input from "@/subview/components/SubmittedInput";
 
 const Quantity = React.memo(function Quantity() {
     const qtyRef = React.useRef<HTMLInputElement>(null);
     return <div className="w-full flex items-stretch">
-        <SubmitButton
+        <Button
             type="button"
             className="btn-primary flex-none z-[1] -mr-px rounded-r-none"
             onClick={() => {
@@ -20,8 +20,8 @@ const Quantity = React.memo(function Quantity() {
                     qtyRef.current.value = qty.toString();
                 }
             }}
-        >-</SubmitButton>
-        <SubmittedInput
+        >-</Button>
+        <Input noValidation
             ref={qtyRef}
             type="number" 
             name="productQuantity"
@@ -34,7 +34,7 @@ const Quantity = React.memo(function Quantity() {
                 e.target.value = qty.toString();
             }}
         />
-        <SubmitButton
+        <Button
             type="button"
             className="btn-primary flex-none z-[1] -ml-px rounded-l-none"
             onClick={() => {
@@ -45,7 +45,7 @@ const Quantity = React.memo(function Quantity() {
                     qtyRef.current.value = qty.toString();
                 }
             }}
-        >+</SubmitButton>
+        >+</Button>
     </div>;
 });
 export default Quantity;

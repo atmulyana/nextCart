@@ -5,6 +5,27 @@ const sqlite = require('sqlite3');
 const fs = require('node:fs');
 let {defaultLocale} = require('../../config/config.json');
 
+let isStaleData = true, ts1;
+try {
+    ts1 = fs.statSync(`${__dirname}/data.sqlite`)?.mtime;
+    fs.accessSync(`${__dirname}/meta.json`);
+    const ts2 = new Date(require('./meta.json')?.timestamp);
+    isStaleData = isNaN(ts2.getDate()) || ts2 < ts1;
+}
+catch {}
+
+if (isStaleData) {
+    fs.writeFileSync(
+        `${__dirname}/meta.json`,
+        JSON.stringify({
+            timestamp: ts1?.toISOString()
+        })
+    );
+}
+else {
+    process.exit(0);
+}
+
 const db = new sqlite.Database(
     `${__dirname}/data.sqlite`,
     sqlite.OPEN_READONLY,

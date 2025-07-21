@@ -1,0 +1,7 @@
+/** 
+ * https://github.com/atmulyana/nextCart
+ **/
+[role="validated-input-container"]:has(>input.error)+div svg.feather-star,
+[role="validated-input-container"]:has(>input.error)+div strong {
+    @apply !text-[var(--color-danger)];
+}

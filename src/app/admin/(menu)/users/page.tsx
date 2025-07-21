@@ -3,7 +3,6 @@
  **/
 import React from 'react';
 import Link from 'next/link';
-import {forbidden, notFound} from 'next/navigation';
 import config from '@/config';
 import lang from '@/data/lang';
 import {getUsers} from '@/data/user';
@@ -35,7 +34,7 @@ export default async function AdminUsers() {
                 <strong className='ml-4'>{lang('Delete')}</strong>
             </li>
             {users.map(u => (_id = u._id.toString(),
-                <li key={_id} className='!flex bg-[--bg-color]'>
+                <li key={_id} className='!flex bg-[var(--bg-color)]'>
                     <div className='flex-1'>{u.usersName}</div>
                     <div className='w-1/4 shrink-0 ml-4'>{u.userEmail}</div>
                     <div className='w-1/4 shrink-0 ml-4'>{
@@ -52,7 +51,7 @@ export default async function AdminUsers() {
                         <strong className='opacity-0'>{lang('Delete')}</strong>
                         <Form 
                             action={remove}
-                            className='!absolute left-0 top-0 right-0 bottom-0 text-center text-[--color-danger]'
+                            className='!absolute left-0 top-0 right-0 bottom-0 text-center text-[var(--color-danger)]'
                             loading={null}
                             refreshThreshold='success'
                         >

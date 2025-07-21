@@ -2,7 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import {notFound} from 'next/navigation';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {getOrder} from '@/data/order';
 import {createGetHandler} from '@/lib/routeHandler';
 

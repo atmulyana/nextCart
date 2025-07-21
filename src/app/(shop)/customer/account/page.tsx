@@ -29,7 +29,7 @@ export default async function CustomerAccount() {
     const orders = await getOrdersByCustomerId(session.customerId);
     for (let order of orders.list) {
         order._id = order._id.toString();
-        if (typeof(order.orderPaymentId) == 'object') order.orderPaymentId = (order.orderPaymentId as Object).toString();
+        if (typeof(order.orderPaymentId) == 'object') order.orderPaymentId = (order.orderPaymentId as object).toString();
         delete order.orderCustomer;
         for (let id in order.orderProducts) {
             const p = order.orderProducts[id];
@@ -74,7 +74,7 @@ export default async function CustomerAccount() {
                         {orders.list.length < 1 ? (
                             <div className='bordered'>
                                 {lang('There are no orders for this account')}.&nbsp;
-                                <Link href='/' className='text-[--color-success]'>{lang('Order here')}</Link>
+                                <Link href='/' className='text-[var(--color-success)]'>{lang('Order here')}</Link>
                             </div>
                         ) : (
                             <Orders

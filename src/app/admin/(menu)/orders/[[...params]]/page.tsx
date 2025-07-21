@@ -76,14 +76,14 @@ export default async function AdminOrders(props: {params: Promise<{
                 <strong className='mr-4'>{lang('View')}</strong>
                 <strong>{lang('Delete')}</strong>
             </li>
-            {(search || status) && <li className='bg-[--bg-color] !py-0'>
+            {(search || status) && <li className='bg-[var(--bg-color)] !py-0'>
                 {search && <small className='text-blue-500 mr-4'>({lang('Filtered term')}: {search})</small>}
                 {status && <small className='text-blue-500 mr-4'>({lang('Status')}: {lang(status)})</small>}
             </li>}
             {await orders.count() < 1 ? (
-                <li className='bg-[--bg-color] text-center'>{lang('No orders found')}</li>
+                <li className='bg-[var(--bg-color)] text-center'>{lang('No orders found')}</li>
             ) : orders.list.map(o => (_id = o._id.toString(),
-                <li key={_id} className='!flex bg-[--bg-color]'>
+                <li key={_id} className='!flex bg-[var(--bg-color)]'>
                     <div className='w-36 mr-4'>{o.orderDate && dtFormat.format(o.orderDate)}</div>
                     <div className='w-56 text-ellipsis mr-4'>{o.orderEmail}</div>
                     <div className='grow mr-4'>{o.orderFirstname} {o.orderLastname}</div>
@@ -98,7 +98,7 @@ export default async function AdminOrders(props: {params: Promise<{
                         <strong className='opacity-0'>{lang('Delete')}</strong>
                         <Form 
                             action={remove}
-                            className='!absolute left-0 top-0 right-0 bottom-0 text-center text-[--color-danger]'
+                            className='!absolute left-0 top-0 right-0 bottom-0 text-center text-[var(--color-danger)]'
                             loading={null}
                             refreshThreshold='success'
                         >

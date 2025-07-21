@@ -1,7 +1,9 @@
-'use client';
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-export default function currentLocale() {
+function currentLocale() {
     return global.__currenLocale__ || 'en';
 };
+exports = module.exports = currentLocale;
+exports.__esModule = true;
+exports.default = exports;

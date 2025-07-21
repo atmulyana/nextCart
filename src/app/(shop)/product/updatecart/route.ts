@@ -2,7 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import type {TCartItem} from '@/data/types';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {cartTrans, deleteCart, deleteCartItem, getCart, upsertCart, upsertCartItem} from '@/data/cart';
 import {getSession} from '@/data/session';
 import {checkStock, updateTotalCart} from '@/lib/cart';

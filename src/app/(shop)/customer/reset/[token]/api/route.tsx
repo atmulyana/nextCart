@@ -2,9 +2,9 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-const bcrypt = require('bcryptjs');
+import bcrypt from "bcryptjs"
 import {ResponseMessage} from '@/lib/common';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {getCustomerByResetToken, updateCustomer} from '@/data/customer';
 import {sendEmail} from '@/lib/email';
 import EmailTemplate from '@/lib/email/templates/PasswordResetEmail';

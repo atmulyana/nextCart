@@ -5,7 +5,7 @@
 import {notFound} from 'next/navigation';
 import type {OrderStatus} from '@/data/types';
 import {dbTrans} from '@/data/db-conn';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {getOrder} from '@/data/order';
 import {ResponseMessage} from '@/lib/common';
 import {createGetHandler, createPostHandler, type HandlerParams} from '@/lib/routeHandler';

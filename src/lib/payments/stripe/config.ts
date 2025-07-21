@@ -1,7 +1,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {str} from '@/lib/common';
 import {type Config, PublicString} from '../types';
 

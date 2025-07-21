@@ -4,7 +4,7 @@
 import paypal from 'paypal-rest-sdk';
 import type {OrderStatus} from '@/data/types';
 import {dbTrans} from '@/data/db-conn';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {ResponseMessage} from '@/lib/common';
 import {createGetHandler} from '@/lib/routeHandler';
 import type {NotificationParam} from '@/subview/components/Notification';

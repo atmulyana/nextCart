@@ -3,7 +3,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import {forbidden, notFound} from 'next/navigation';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {dbTrans} from '@/data/db-conn';
 import {deleteUser, getUserById} from '@/data/user';
 import {getSession} from '@/data/session';

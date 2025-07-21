@@ -11,7 +11,7 @@ function Star({fill, size, onClick}: {fill: number | boolean, size: number, onCl
     //scale = Math.round( (2 + scale * 20) * (size / 24) );
     // return <div className='relative flex-none bg-blend-lighten' style={{height: `${size}px`, width: `${size}px`}}>
     //     <div className='absolute top-0 left-0 bottom-0 bg-amber-500' style={{width: `${scale}px`}}></div>
-    //     <Icon name='star' className='absolute top-0 left-0 z-10 bg-[--bg-color] text-[--fg-color] fill-[--fg-color]' />
+    //     <Icon name='star' className='absolute top-0 left-0 z-10 bg-[var(--bg-color)] text-[var(--fg-color)] fill-[var(--fg-color)]' />
     // </div>;
     return <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +21,7 @@ function Star({fill, size, onClick}: {fill: number | boolean, size: number, onCl
         viewBox="0 0 24 24"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className={`feather feather-star flex-none text-[--fg-color] ${onClick ? 'cursor-pointer' : 'cursor-default'}`}
+        className={`feather feather-star flex-none text-[var(--fg-color)] ${onClick ? 'cursor-pointer' : 'cursor-default'}`}
         height={size}
         width={size}
         onClick={onClick}

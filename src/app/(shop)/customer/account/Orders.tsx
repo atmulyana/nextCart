@@ -188,13 +188,13 @@ const OrderItem = React.memo(function OrderItem({
                 {p.quantity} x {p.title}
                 {p.variantId && <>
                     &nbsp; &gt; &nbsp;
-                    <span className="text-[--color-warning]">{text.options}:</span>
+                    <span className="text-[var(--color-warning)]">{text.options}:</span>
                     {p.variantTitle}
                 </>}
                 <div className="float-right">{currencySymbol()}{formatAmount(p.totalItemPrice)}</div>
             </li>)}
             {order.orderComment && <li>
-                <h4><span className="text-[--color-danger]">{text.comment}:</span> {order.orderComment}</h4>
+                <h4><span className="text-[var(--color-danger)]">{text.comment}:</span> {order.orderComment}</h4>
             </li>}
         </ul>
     </div>;

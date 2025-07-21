@@ -167,7 +167,6 @@ const [getClient, getDb] = (function() {
 })();
 
 
-//eslint-disable-next-line import/no-anonymous-default-export
 export default <Func extends ((_db: Db, ...args: any[]) => Promise<any>)>(
     fn: Func
 ) => cache(async function(...args: any[]) {
@@ -500,7 +499,7 @@ if (/(\?|&)replicaSet=/i.test(dbUrl)) {
     };
 }
 else {
-    dbTrans = async <T>(fn: () => Promise<T>, options?: TransactionOptions): Promise<T> => {
+    dbTrans = async <T>(fn: () => Promise<T>): Promise<T> => {
         console.log('====== WITHOUT TRANSACTION =======')
         return await fn();
     };

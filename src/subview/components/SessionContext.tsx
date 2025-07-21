@@ -16,7 +16,7 @@ const defaultContextValue = {
 };
 const Context = React.createContext<Session>(defaultContextValue);
 
-var setContextValue!: (value: Partial<Session>) => void;
+let setContextValue!: (value: Partial<Session>) => void;
 
 export function SessionProvider({children}: {children: React.ReactNode}) {
     const [value, setValue] = React.useState<Session>(defaultContextValue);
@@ -35,7 +35,7 @@ export function SessionProvider({children}: {children: React.ReactNode}) {
 export function SessionUpdater({value}: {value: Partial<Session> | null}) {
     const notify = useNotification();
     React.useEffect(() => {
-        setContextValue && setContextValue(value ?? defaultContextValue);
+        if (setContextValue) setContextValue(value ?? defaultContextValue);
         if (value?.message) notify(value.message, value.messageType ?? 'danger', true);
     //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);

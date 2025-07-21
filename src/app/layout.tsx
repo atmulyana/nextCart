@@ -7,11 +7,26 @@ import type {Metadata, Viewport} from 'next'
 import config from '@/config'
 import lang from '@/data/lang'
 import currentLocale from '@/lib/currentLocale/server'
-import Html from '@/subview/components/Html';
+import Html from '@/subview/components/Html'
 import {ModalContext} from '@/subview/components/Modal'
 import {NotificationContext} from '@/subview/components/Notification'
 import {SessionProvider} from '@/subview/components/SessionContext'
 import {initActions} from './actions'
+
+import messages1 from '@react-input-validator/rules/messages'
+import messages2 from '@react-input-validator/rules-datetime/messages'
+import messages3 from '@react-input-validator/rules-file/messages'
+import messages4 from '@/lib/schemas/messages'
+
+type Messages = {[s: string]: string | Messages}
+function getTexts(messages: Messages, translates: React.ComponentProps<typeof Html>['lang'] = {}) {
+    for (let key in messages) {
+        const msg = messages[key]
+        if (typeof(msg) == 'object') translates = getTexts(msg, translates)
+        else translates[msg] = lang(msg)
+    }
+    return translates
+}
 
 const title = 'Shop'
 export const metadata: Metadata = {
@@ -37,8 +52,13 @@ export default async function RootLayout({
         children: React.ReactNode
 }) {
     await initActions()
+    const locale = currentLocale()
+    let texts = getTexts(messages1)
+    texts = getTexts(messages2, texts)
+    texts = getTexts(messages3, texts)
+    texts = getTexts(messages4, texts)
     return (
-        <Html locale={currentLocale()}>
+        <Html lang={texts} locale={locale}>
             <head>
                 <meta httpEquiv="X-UA-Compatible" content="IE=edge"></meta>
                 {config.facebookAppId && <meta property="fb:app_id" content={config.facebookAppId} />}

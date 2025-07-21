@@ -7,7 +7,7 @@ import {redirect as nextRedirect, RedirectType} from 'next/navigation';
 import {getRedirectError} from 'next/dist/client/components/redirect';
 import config from '@/config';
 import {getCart} from '@/data/cart';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {getSession, refreshSessionExpires} from '@/data/session';
 import type {NotificationParam} from '@/subview/components/Notification';
 import {title} from '@/app/(shop)/layout';

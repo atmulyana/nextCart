@@ -2,65 +2,61 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import * as React from 'react';
+import React, { CSSProperties } from 'react';
+import {TextArea, type Rules, type TextAreaProps} from '@react-input-validator/web';
 import {useFormStatus} from "react-dom";
 import {useSchemaProps} from './SchemaContext';
 
-type InputProps = React.ComponentProps<'textarea'>;
-type Props = Omit<InputProps, 'disabled'> & {useState?: boolean};
-type StatedProps = Omit<InputProps, 'defaultValue' | 'onChange'> & {
-    onChange: NonNullable<Props['onChange']>,
-};
-
-const StatedTextArea = React.forwardRef<HTMLTextAreaElement, StatedProps>(function StatedTextArea(
+type Props<NoValidation extends (boolean | undefined)> = Omit<
     {
-        value,
-        onChange,
+        noValidation?: NoValidation
+    } & (
+        NoValidation extends true
+            ? React.ComponentProps<'textarea'>
+            : Omit<TextAreaProps, 'rules' | 'style'> & {className?: string, rules?: Rules, style?: CSSProperties}
+    ),
+    'disabled' | 'ref'
+>;
+type TextAreaRef = NonNullable<React.ComponentProps<typeof TextArea>['ref']>;
+type Ref<NoValidation extends (boolean | undefined)> = NoValidation extends true ? React.Ref<HTMLTextAreaElement> : TextAreaRef;
+
+const SubmittedTextArea = React.forwardRef(function SubmittedTextArea<NoValidation extends boolean | undefined = false>(
+    {
+        name,
+        noValidation,
         ...props
-    },
-    ref
+    }: Props<NoValidation>,
+    ref: Ref<NoValidation>
 ) {
-    const [val, setVal] = React.useState(value);
-
-    React.useEffect(() => {
-        setVal(value);
-    }, [value]);
-    
-    const changeHandler = (ev: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setVal(ev.target.value);
-        onChange(ev);
-    };
-
-    return <textarea ref={ref} {...props} value={val} onChange={changeHandler} />;
-});
-
-const InternalTextArea = React.memo(function InternalTextArea({
-    $ref,
-    name,
-    defaultValue,
-    onChange,
-    useState,
-    ...props
-}: Props & {
-    $ref: React.Ref<HTMLTextAreaElement>
-}) {
     const {pending} = useFormStatus();
     const getProps = useSchemaProps();
 
-    const changeHandler = React.useCallback<React.ChangeEventHandler<HTMLTextAreaElement>>(ev => {
-        if (ev.target.validity.customError) ev.target.setCustomValidity('');
-        if (typeof(onChange) == 'function') onChange(ev);
-    }, [onChange]);
-
-    if (defaultValue === undefined && (onChange === undefined || useState)) {
-        return <StatedTextArea ref={$ref} {...props} {...getProps(name)} disabled={pending} onChange={changeHandler} />;
+    if (noValidation) {
+        return <textarea
+            {...(props as React.ComponentProps<'textarea'>)}
+            disabled={pending}
+            name={name}
+            ref={ref as React.Ref<HTMLTextAreaElement>}
+        />;
     }
     else {
-        return <textarea ref={$ref} {...props} {...getProps(name)} defaultValue={defaultValue} disabled={pending} onChange={changeHandler} />;
+        const {className, style, ...props2} = props as Props<false>,
+              props3 = getProps(name);
+        return <TextArea
+            {...props2}
+            {...props3}
+            disabled={pending}
+            rules={props2.rules ?? props3.rules}
+            style={{
+                $class: className,
+                $style: style,
+            }}
+            ref={ref as TextAreaRef}
+        />;
     }
-});
-
-const SubmittedTextArea = React.forwardRef<HTMLTextAreaElement, Props>(function SubmittedTextArea(props, ref) {
-    return <InternalTextArea {...props} $ref={ref} />;
-});
+}) as (
+    <NoValidation extends (boolean | undefined) = false>(
+        props: Props<NoValidation> & {ref?: Ref<NoValidation>, key?: React.Key}
+    ) => React.ReactNode
+);
 export default SubmittedTextArea;

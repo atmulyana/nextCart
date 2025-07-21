@@ -48,9 +48,9 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
                 <strong className='ml-4'>{lang('Delete')}</strong>
             </li>
             {products.totalItems < 1 ? (
-                <li className='bg-[--bg-color] text-center'>{lang('No products found')}</li>
+                <li className='bg-[var(--bg-color)] text-center'>{lang('No products found')}</li>
             ) : products.data.map(p => (_id = p._id.toString(),
-                <li key={_id} className='!flex bg-[--bg-color]'>
+                <li key={_id} className='!flex bg-[var(--bg-color)]'>
                     <span className='flex-1'>{p.productTitle}</span>
                     <span className='relative ml-4'>
                         <strong className='opacity-0'>{lang('Published')}</strong>
@@ -74,7 +74,7 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
                         <strong className='opacity-0'>{lang('Delete')}</strong>
                         <Form 
                             action={remove}
-                            className='!absolute left-0 top-0 right-0 bottom-0 text-center text-[--color-danger]'
+                            className='!absolute left-0 top-0 right-0 bottom-0 text-center text-[var(--color-danger)]'
                             loading={null}
                             refreshThreshold='warning'
                         >

@@ -2,8 +2,6 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import config from '@/config';
-import type {TMenu} from '@/data/types';
 import {fnMeta} from '@/lib/common';
 import {awaitProps, type PromiseProps} from '@/lib/common';
 import Template from '@/subview/partials/Template';

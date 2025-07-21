@@ -7,5 +7,5 @@ import Input from '@/subview/components/SubmittedInput';
 export {default as DeleteButton} from '@/subview/components/DeleteButton';
 
 export function PublishedCheckBox({checked}: {checked?: boolean}) {
-    return <Input type='checkbox' name='published' checked={checked} onChange={ev => ev.target.form?.requestSubmit()} useState />;
+    return <Input type='checkbox' name='published' noValidation checked={checked} onChange={ev => ev.target.form?.requestSubmit()} />;
 }

@@ -3,7 +3,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import {redirect} from 'next/navigation';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {initValidationActions} from '@/subview/components/FormWithSchema/validation';
 import {POST as adminLogoutAction} from './admin/logout/route';
 import {POST as createAccount} from './(shop)/customer/create/route';
@@ -29,7 +29,7 @@ export async function adminLogout(formData: FormData) {
 }
 
 export async function saveCheckoutInfo(formData: FormData) {
-    return await (formData.has('createAccount')
+    return await (formData.getBoolean('createAccount', true)
         ? createAccount.responseJson(formData)
         : saveAccount.responseJson(formData)
     );

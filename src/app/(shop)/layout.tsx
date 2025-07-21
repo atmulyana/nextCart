@@ -17,7 +17,7 @@ import type {TCart} from '@/data/types';
 import lang from '@/data/lang';
 import {fnMeta} from '@/lib/common';
 
-export var title = `${lang('Shop')}: ${config.cartTitle}`;
+export let title = `${lang('Shop')}: ${config.cartTitle}`;
 export const generateMetadata = fnMeta(async () => {
     title = `${lang('Shop')}: ${config.cartTitle}`;
     return {
@@ -44,6 +44,7 @@ export default async function ShopLayout({
 }) {
     let _id: any, cart: TCart | undefined;
     const cartWithId = await getCart();
+    //eslint-disable-next-line @typescript-eslint/no-unused-vars
     if (cartWithId) ({_id, ...cart} = cartWithId);
     
     return <CartContext cart={cart}>

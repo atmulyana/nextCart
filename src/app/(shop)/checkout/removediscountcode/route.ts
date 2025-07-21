@@ -1,7 +1,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {getCart, upsertCart} from '@/data/cart';
 import {getSession} from '@/data/session';
 import {updateTotalCart} from '@/lib/cart';

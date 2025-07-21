@@ -49,14 +49,14 @@ const $$darkMode: {
     },
 
     removeChangeListener(fn) {
-        var idx = changeListeners.indexOf(fn);
+        let idx = changeListeners.indexOf(fn);
         if (idx >= 0) changeListeners.splice(idx, 1);
     },
 
     setTheme(isDark = $$darkMode.isDark) {
-        var root = document.querySelector(':root') as HTMLElement;
+        let root = document.querySelector(':root') as HTMLElement;
         if (!root) return ;
-        var isCurrentDark = root.classList.contains('dark');
+        let isCurrentDark = root.classList.contains('dark');
         
         if (isDark) {
             root.classList.add('dark');
@@ -66,7 +66,7 @@ const $$darkMode: {
         }
 
         if (isCurrentDark != isDark) {
-            for (var listener of changeListeners) listener();
+            for (let listener of changeListeners) listener();
         }
     }
 };

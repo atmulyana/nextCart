@@ -2,9 +2,9 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {mergeData} from '@/lib/data-sanitize';
-import {getSchema, getSchemaProps as _getSchemaProps, type InputProps, Schema, validateForm} from '@/lib/schemas';
+import {validateForm} from '@/lib/schemas';
 
 export async function initValidationActions() {
     //For bundling
@@ -28,9 +28,4 @@ export async function validate(schemaName: string, formData: FormData, action: (
     const data = action(mergeData(validation.data, formData));
     if (data instanceof Promise) return await data;
     return data;
-}
-
-export async function getSchemaProps(schemaName: string) {
-    const schema = await getSchema(schemaName);
-    return _getSchemaProps(schema);
 }

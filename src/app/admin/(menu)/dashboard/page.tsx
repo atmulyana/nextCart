@@ -25,47 +25,47 @@ export default async function AdminDashboard() {
         <div className='flex flex-wrap'>
             <div className='basis-1/2 shrink-0 px-3.5 pb-7'>
                 <div className='flex flex-col break-words bg-white dark:bg-black bg-clip-border
-                                border-solid border rounded border-blurry'>
+                                border-solid border rounded-sm border-blurry'>
                     <div className='flex-auto p-5 min-h-px text-center'>
                         <h5 className='mb-3'>{lang('Orders placed')}</h5>
                         <h6 className='-mt-1.5 mb-2 text-gray-500'>{lang('Total number of orders placed')}</h6>
-                        <h4 className='mb-0 text-[--color-danger]'>{summary.orderCount}</h4>
+                        <h4 className='mb-0 text-[var(--color-danger)]'>{summary.orderCount}</h4>
                     </div>
                 </div>
             </div>
             <div className='basis-1/2 shrink-0 px-3.5 pb-7'>
                 <div className='flex flex-col break-words bg-white dark:bg-black bg-clip-border
-                                border-solid border rounded border-blurry'>
+                                border-solid border rounded-sm border-blurry'>
                     <div className='flex-auto p-5 min-h-px text-center'>
                         <h5 className='mb-3'>{lang('Order total value')}</h5>
                         <h6 className='-mt-1.5 mb-2 text-gray-500'>{lang('Total value of orders placed')}</h6>
-                        <h4 className='mb-0 text-[--color-danger]'>{currencySymbol()}{formatAmount(summary.orderAmount)}</h4>
+                        <h4 className='mb-0 text-[var(--color-danger)]'>{currencySymbol()}{formatAmount(summary.orderAmount)}</h4>
                     </div>
                 </div>
             </div>
             <div className='basis-1/2 shrink-0 px-3.5 pb-7'>
                 <div className='flex flex-col break-words bg-white dark:bg-black bg-clip-border
-                                border-solid border rounded border-blurry'>
+                                border-solid border rounded-sm border-blurry'>
                     <div className='flex-auto p-5 min-h-px text-center'>
                         <h5 className='mb-3'>{lang('Products for sale')}</h5>
                         <h6 className='-mt-1.5 mb-2 text-gray-500'>{lang('Number of products for sale')}</h6>
-                        <h4 className='mb-0 text-[--color-danger]'>{productCount}</h4>
+                        <h4 className='mb-0 text-[var(--color-danger)]'>{productCount}</h4>
                     </div>
                 </div>
             </div>
             <div className='basis-1/2 shrink-0 px-3.5 pb-7'>
                 <div className='flex flex-col break-words bg-white dark:bg-black bg-clip-border
-                                border-solid border rounded border-blurry'>
+                                border-solid border rounded-sm border-blurry'>
                     <div className='flex-auto p-5 min-h-px text-center'>
                         <h5 className='mb-3'>{lang('Total products sold')}</h5>
                         <h6 className='-mt-1.5 mb-2 text-gray-500'>{lang('Number of products sold')}</h6>
-                        <h4 className='mb-0 text-[--color-danger]'>{summary.productsSold}</h4>
+                        <h4 className='mb-0 text-[var(--color-danger)]'>{summary.productsSold}</h4>
                     </div>
                 </div>
             </div>
             <div className='basis-full shrink-0 px-3.5 pb-7'>
                 <div className='flex flex-col break-words bg-white dark:bg-black bg-clip-border
-                                border-solid border rounded border-blurry'>
+                                border-solid border rounded-sm border-blurry'>
                     <div className='flex-auto p-5 min-h-px text-center'>
                         <h5 className='mb-3'>{lang('Top products sold')}</h5>
                         <ul className='pl-0 list-none'>{summary.topProducts.length > 0
@@ -76,11 +76,11 @@ export default async function AdminDashboard() {
                                     </div>
                                     <div className='flex-1'>
                                         <h5 className='mt-4 mb-1'>{item.title}</h5>
-                                        <h4 className='mt-6'>{lang('Sold')}: <span className='text-[--color-danger]'>{item.count}</span></h4>
+                                        <h4 className='mt-6'>{lang('Sold')}: <span className='text-[var(--color-danger)]'>{item.count}</span></h4>
                                     </div>
                                 </li>
                             ))
-                            : <h5 className="mt-4 mb-1 text-[--color-danger]">{lang('Nothing to see yet. Do some orders.')}</h5>
+                            : <h5 className="mt-4 mb-1 text-[var(--color-danger)]">{lang('Nothing to see yet. Do some orders.')}</h5>
                         }</ul>
                     </div>
                 </div>

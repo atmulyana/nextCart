@@ -1,11 +1,11 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-const bcrypt = require('bcryptjs');
+import bcrypt from "bcryptjs"
 import {ResponseMessage} from '@/lib/common';
 import {signIn} from '@/lib/auth';
 import {createPostHandler} from '@/lib/routeHandler';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {getUserByEmail} from '@/data/user';
 import {setUserSession} from '@/data/session';
 

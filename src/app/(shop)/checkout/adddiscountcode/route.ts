@@ -1,9 +1,9 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {getCart, upsertCart} from '@/data/cart';
-import {getDiscountByCode} from '@/data/discount';
+import type {TDiscount} from '@/data/types';
 import {getSession} from '@/data/session';
 import {updateTotalCart} from '@/lib/cart';
 import {ResponseMessage} from '@/lib/common';
@@ -21,32 +21,15 @@ export const POST = createPostHandler(async (formData) => {
 
     if (!cart) return response(lang('There are no items in your cart'));
     
-    const code = formData.getString('discountCode');
-    
     // Check if the discount module is loaded
     if(!modules.discount){
         return response(lang('Access denied'), 403);
     }
 
-    if (typeof(code) != 'string' || !code) {
-        return response(lang('Discount code is required'));
-    }
-
-    const discount = await getDiscountByCode(code);
-    if(!discount){
-        return response(lang('Discount code is not found'), 404);
-    }
-
-    const now = Date.now();
-    if (now > discount.end.getTime()) {
-        return response(lang('Discount code is expired'), 410);
-    }
-    if (now < discount.start.getTime()) {
-        return response(lang('Discount code does not apply yet'), 451);
-    }
-
+    const discount = formData.get<TDiscount>('discountCode');
+    
     const session = await getSession();
-    cart.discount = code;
+    cart.discount = discount.code;
     await updateTotalCart(cart, session);
     await upsertCart(cart._id, cart);
 

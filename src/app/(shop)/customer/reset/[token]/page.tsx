@@ -3,8 +3,8 @@
  **/
 import React from 'react';
 import type {Metadata} from 'next';
-import {notFound} from 'next/navigation';
-import {getCustomerByResetToken} from '@/data/customer';
+// import {notFound} from 'next/navigation';
+// import {getCustomerByResetToken} from '@/data/customer';
 import lang from '@/data/lang';
 import FormWithSchema from '@/subview/components/FormWithSchema';
 import Input from '@/subview/components/SubmittedInput';

@@ -4,7 +4,7 @@
 import type {OrderStatus} from '@/data/types';
 import {ObjectId} from '@/data/db-conn';
 import {getCart} from '@/data/cart';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {createPostHandler} from '@/lib/routeHandler';
 import {createOrder, getPaymentConfig} from '../../';
 

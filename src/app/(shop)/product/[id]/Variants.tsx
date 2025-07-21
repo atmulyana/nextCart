@@ -5,7 +5,7 @@
 import React from 'react';
 import type {TVariant} from '@/data/types';
 import config from '@/config/usable-on-client';
-import SubmittedSelect from '@/subview/components/SubmittedSelect';
+import Select from '@/subview/components/SubmittedSelect';
 import {currencySymbol, formatAmount} from '@/lib/common';
 
 const Variants = React.memo(function Variants({labels: {option, outOfStock}, stockDisabled = false, items}: {
@@ -23,7 +23,7 @@ const Variants = React.memo(function Variants({labels: {option, outOfStock}, sto
             {currencySymbol()}{formatAmount(price)}
         </h5>
         <h5 className='w-full'>{option}</h5>
-        <SubmittedSelect id='productVariant' name='productVariant' className='mb-2.5'
+        <Select id='productVariant' name='productVariant' noValidation className='mb-2.5'
             onChange={e => {
                 const selectedOpt = e.target.querySelector('option:checked'),
                       price = parseFloat(selectedOpt?.getAttribute('data-price') ?? '0'),
@@ -33,7 +33,7 @@ const Variants = React.memo(function Variants({labels: {option, outOfStock}, sto
             }}
         >
             {items.map(v => <option key={v._id} value={v._id} data-price={v.price} data-stock={v.stock}>{v.title}</option>)}
-        </SubmittedSelect>
+        </Select>
         {config.trackStock && !stockDisabled && stock < 1 && <h5 className='w-full mb-2.5 text-center text-red-500'>{outOfStock}</h5>}
     </>;
 });

@@ -2,7 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-const icons = require('react-icons/fi');
+import * as icons from 'react-icons/fi';
 
 export default function Icon(
     {
@@ -15,7 +15,7 @@ export default function Icon(
     } & React.ComponentProps<'svg'>
 ) {
     const iconName = 'Fi' + name.split('-').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join('');
-    const Icon = icons[iconName];
+    const Icon = (icons as any)[iconName];
     if (!Icon) return null;
     
     const attrs = {

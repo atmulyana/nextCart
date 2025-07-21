@@ -19,9 +19,20 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts", 
+    "src/lib/currentLocale/client.js",
+    "src/lib/currentLocale/server.js",
+    "src/data/lang/server.js",
+    "src/data/lang/client.js" 
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -4,7 +4,7 @@
 import paypal, {type ConfigureOptions, type Payment} from 'paypal-rest-sdk';
 import config from '@/config';
 import {getCart} from '@/data/cart';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import {createPostHandler} from '@/lib/routeHandler';
 import {setPaymentId} from '../data';
 import {getPaymentConfig} from '../../';

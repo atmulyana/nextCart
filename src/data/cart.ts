@@ -298,6 +298,7 @@ export const deleteCartItems = fn(async (db: Db, cartId: ObjectId, itemIds: _Id[
             '_id.itemId': { $in: itemIds.map(id => toId(id)) },
         }
     );
+    return w.deletedCount;
 });
 
 export async function cartTrans(fn: () => Promise<Response | void>, homeAfterClear?: boolean) {

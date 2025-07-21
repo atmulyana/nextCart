@@ -15,7 +15,7 @@ export default function Breadcrumb({homeText, items}: {
 }) {
     const currentPath = usePathname();
     return <nav aria-label='breadcrumb'>
-        <ol className='flex flex-wrap bg-gray-100 dark:bg-gray-900 mt-3 mb-4 px-3 py-4 rounded list-none'>
+        <ol className='flex flex-wrap bg-gray-100 dark:bg-gray-900 mt-3 mb-4 px-3 py-4 rounded-sm list-none'>
             {homeText && <li key='Home'><Link href='/' prefetch={false}>{homeText}</Link></li>}
             {items.map((item, idx) => <li key={idx}>&nbsp;/ {
                 currentPath == item.path

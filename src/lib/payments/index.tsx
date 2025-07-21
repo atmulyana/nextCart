@@ -5,7 +5,7 @@ import React from 'react';
 import appCfg from '@/config';
 import type {_Id, TOrder, WithoutId} from '@/data/types';
 import {cartTrans, deleteCart, getCart} from '@/data/cart';
-import lang from '@/data/lang';
+import lang from '@/data/lang/server';
 import * as order from '@/data/order';
 import {getSession} from '@/data/session';
 import {getStock, updateStock} from '@/data/product';
@@ -199,6 +199,7 @@ export async function updateOrder(id: _Id, data: Partial<OrderData>, status?: Ap
     await cartTrans(async () => {
         const ord = await order.getOrder(id);
         if (!ord) return;
+        //eslint-disable-next-line @typescript-eslint/no-unused-vars
         const {orderProducts, ...data2} = data;
         if (status == ApprovalStatus.Approved && appCfg.trackStock) data2.productStockUpdated = true;
         await order.updateOrder(id, data2);

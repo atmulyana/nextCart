@@ -9,6 +9,7 @@ import {currencySymbol, formatAmount} from '@/lib/common';
 import Icon from "@/subview/components/Icon";
 import {useModal, useToCloseModal} from "@/subview/components/Modal";
 import Form from '@/subview/components/Form';
+import Button from '@/subview/components/SubmitButton';
 import Input from '@/subview/components/SubmittedInput';
 import {globalSearch} from './search-actions';
 
@@ -49,7 +50,6 @@ const SearchForm = React.memo(function SearchForm({
     productText = 'Product',
 }: Props) {
     const closeModal = useToCloseModal();
-    const inputRef = React.useRef<HTMLInputElement>(null);
     const [value, setValue] = React.useState('');
     
     type TData = Omit<Awaited<ReturnType<typeof globalSearch>>, 'messageType'> | null;
@@ -65,7 +65,7 @@ const SearchForm = React.memo(function SearchForm({
         <Form id='global-search-form' className='relative flex items-stretch h-12'
             loading={null} action={globalSearch} onSubmitted={onSubmitted}
         >
-            <button type='submit'
+            <Button
                 className='flex-none flex items-center justify-center w-11 !h-auto !p-0 -mr-px
                          bg-gray-200 dark:bg-gray-800 rounded-l-md rounded-r-none'
                 onClick={ev => {
@@ -76,8 +76,8 @@ const SearchForm = React.memo(function SearchForm({
                 }}
             >
                 <Icon name='search' />
-            </button>
-            <Input ref={inputRef} id='global-search-value'
+            </Button>
+            <Input noValidation id='global-search-value'
                 className='flex-1 !border-gray-200 dark:!border-gray-800 !rounded-l-none !rounded-r-md
                            !px-4 !py-2 !text-xl/normal !font-normal !h-auto z-10'
                 name='keywords'
@@ -107,7 +107,7 @@ const SearchForm = React.memo(function SearchForm({
                 }}
             />
         </Form>
-        {data != null && <div id='global-search-results' className='flex flex-col bg-[--bg-color] rounded-b-md overflow-hidden empty:hidden'>
+        {data != null && <div id='global-search-results' className='flex flex-col bg-[var(--bg-color)] rounded-b-md overflow-hidden empty:hidden'>
             {(data.customers ?? []).map(item => (
                 id = item._id.toString(),
                 count++,
@@ -115,7 +115,7 @@ const SearchForm = React.memo(function SearchForm({
                     key={id}
                     href={`/admin/customer/view/${id}`}
                     className='flex items-center border border-blurry last:rounded-b-md py-3 px-5 noline
-                               hover:text-[--bg-color] hover:bg-sky-600 dark:hover:bg-sky-300'
+                               hover:text-[var(--bg-color)] hover:bg-sky-600 dark:hover:bg-sky-300'
                     onClick={ev => {
                         ev.preventDefault();
                         closeModal();
@@ -135,7 +135,7 @@ const SearchForm = React.memo(function SearchForm({
                     key={id}
                     href={`/admin/order/view/${id}`}
                     className='flex items-center border border-blurry last:rounded-b-md py-3 px-5 noline
-                               hover:text-[--bg-color] hover:bg-sky-600 dark:hover:bg-sky-300'
+                               hover:text-[var(--bg-color)] hover:bg-sky-600 dark:hover:bg-sky-300'
                     onClick={ev => {
                         ev.preventDefault();
                         closeModal();
@@ -156,7 +156,7 @@ const SearchForm = React.memo(function SearchForm({
                     key={id}
                     href={`/admin/product/edit/${id}`}
                     className='flex items-center border border-blurry last:rounded-b-md py-3 px-5 noline
-                               hover:text-[--bg-color] hover:bg-sky-600 dark:hover:bg-sky-300'
+                               hover:text-[var(--bg-color)] hover:bg-sky-600 dark:hover:bg-sky-300'
                     onClick={ev => {
                         ev.preventDefault();
                         closeModal();

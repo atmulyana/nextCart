@@ -3,7 +3,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from "react";
-import {Dropdown, theme, type DropdownProps, DropdownItemProps} from 'flowbite-react';
+import {Dropdown, DropdownDivider, DropdownItem, theme, type DropdownProps, DropdownItemProps} from 'flowbite-react';
 import cfg from '@/config/usable-on-client';
 import {getIcon} from './Icon';
 const menuBoxStyle = theme.dropdown.floating.base.replace('z-10', 'z-50');
@@ -34,7 +34,7 @@ export default function DropDown({className, label, items}: DropDownProps): Reac
                 const jsxIcon = icon && getIcon(icon) || undefined;
                 if (typeof(location) != 'undefined' && href && useReferrer) {
                     const url = href == '#' ? '#' : new URL(cfg.baseUrl.path + href, location.href);
-                    return <Dropdown.Item
+                    return <DropdownItem
                             key={idx}
                             {...props}
                             icon={jsxIcon}
@@ -44,17 +44,17 @@ export default function DropDown({className, label, items}: DropDownProps): Reac
                                     location.href = url.toString();
                                 }
                             }}
-                        >{label}</Dropdown.Item>;
+                        >{label}</DropdownItem>;
                 }
-                return  <Dropdown.Item
+                return  <DropdownItem
                         key={idx}
                         {...props}
                         href={href}
                         icon={jsxIcon}
-                    >{label}</Dropdown.Item>;
+                    >{label}</DropdownItem>;
             }
             else {
-                return <Dropdown.Divider key={idx} />
+                return <DropdownDivider key={idx} />
             }
         })}
     </Dropdown>;

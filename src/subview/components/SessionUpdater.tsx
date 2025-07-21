@@ -18,7 +18,7 @@ function Updater() {
 
     React.useEffect(() => {
         if (status == 'authenticated' && !refreshed) {
-            update({refresh: 'EXPIRES'}).then(session => {
+            update({refresh: 'EXPIRES'}).then(() => {
                 setRefreshed(true);
             });
         }

@@ -58,6 +58,7 @@ export default {
                 }
             }
             else if (trigger == 'update') {
+                //eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const {message, messageType, ...oldToken} = token;
                 token = {
                     ...oldToken,

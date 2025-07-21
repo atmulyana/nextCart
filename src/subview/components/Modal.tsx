@@ -3,7 +3,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import {Modal, type ModalProps} from 'flowbite-react';
+import {Modal, ModalBody, ModalFooter, ModalHeader, type ModalProps} from 'flowbite-react';
 
 type ConfirmModalProps = {
     title?: string,
@@ -97,14 +97,14 @@ const ConfirmModal = React.memo(function ConfirmModal({
             if (!ctx.isResolved) doResolve(false);
         }}
     >
-        {ctx.title !== '' && <Modal.Header><div className={ctx.titleClass || titleClass}>{ctx.title || title}</div></Modal.Header>}
-        <Modal.Body className={`relative ${ctx.bodyClass ?? ''}`}>{
+        {ctx.title !== '' && <ModalHeader><div className={ctx.titleClass || titleClass}>{ctx.title || title}</div></ModalHeader>}
+        <ModalBody className={`relative ${ctx.bodyClass ?? ''}`}>{
             ctx.content ||
             <div className={ctx.contentClass || contentClass}>
                 {content}
             </div>
-        }</Modal.Body>
-        {(ctx.cancelLabel !== '' || ctx.okLabel !== '') && <Modal.Footer>
+        }</ModalBody>
+        {(ctx.cancelLabel !== '' || ctx.okLabel !== '') && <ModalFooter>
             {ctx.cancelLabel !== '' && <button type="button" className={`${ctx.cancelBtnStyle || cancelBtnStyle} mr-auto`}
                 onClick={() => {
                     setOpen(false);
@@ -125,6 +125,6 @@ const ConfirmModal = React.memo(function ConfirmModal({
                     }
                 }}
             >{ctx.okLabel || okLabel}</button>}
-         </Modal.Footer>}
+         </ModalFooter>}
     </Modal>;
 });
