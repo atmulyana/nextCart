@@ -4,8 +4,8 @@
 import React from 'react';
 import type {WithId} from '@/data/types';
 import lang from '@/data/lang';
-import DeleteButton from '@/subview/components/DeleteButton';
-import Form from '@/subview/components/Form';
+import DeleteButton from '@/components/DeleteButton';
+import Form from '@/components/Form';
 import {type TReview} from './data';
 import {removeReview} from './postHandler';
 

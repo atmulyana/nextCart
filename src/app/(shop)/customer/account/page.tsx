@@ -8,11 +8,11 @@ import lang from '@/data/lang';
 import {getCustomer} from '@/data/customer';
 import {getOrdersByCustomerId} from '@/data/order';
 import {getSession} from '@/data/session';
-import Breadcrumb from '@/subview/components/Breadcrumb';
-import FormWithSchema from '@/subview/components/FormWithSchema';
-import Button from '@/subview/components/SubmitButton';
-import CustomerDataForm from '@/subview/partials/CustomerDataForm';
-import Template from '@/subview/partials/Template';
+import Breadcrumb from '@/components/Breadcrumb';
+import FormWithSchema from '@/components/FormWithSchema';
+import Button from '@/components/SubmitButton';
+import CustomerDataForm from '@/components/partials/CustomerDataForm';
+import Template from '@/components/partials/Template';
 import {POST} from '../update/route';
 import Orders from './Orders';
 

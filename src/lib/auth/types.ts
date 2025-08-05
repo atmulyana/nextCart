@@ -1,7 +1,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {NotificationParam}  from '@/subview/components/Notification';
+import type {NotificationParam}  from '@/components/Notification';
 
 declare module "next-auth" {
     interface User {

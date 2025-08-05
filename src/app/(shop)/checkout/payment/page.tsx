@@ -9,7 +9,7 @@ import {getSession} from '@/data/session';
 import {currencySymbol, formatAmount} from '@/lib/common';
 import modules from '@/lib//modules';
 import {getForms} from '@/lib/payments';
-import Template from '@/subview/partials/Template';
+import Template from '@/components/partials/Template';
 import DiscountForm from './DiscountForm';
 
 export function generateMetadata() {

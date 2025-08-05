@@ -8,7 +8,7 @@ import {redirect, RedirectType} from 'next/navigation';
 import {getRedirectError} from 'next/dist/client/components/redirect';
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import type {NotificationParam} from '@/subview/components/Notification';
+import type {NotificationParam} from '@/components/Notification';
 //import {refreshSessionExpires} from "@/data/session";
 import config from './config';
 import {getRequestUrl, getSessionMessage as internalGetSessionMessage, isFromMobile, setRedirectMessage} from './common';

@@ -3,7 +3,7 @@
  **/
 import lang from '@/data/lang/server';
 import {createGetHandler} from '@/lib/routeHandler';
-import type {NotificationParam} from '@/subview/components/Notification';
+import type {NotificationParam} from '@/components/Notification';
 import {clearPaymentId} from '../data';
 
 export const GET = createGetHandler(async ({isFromMobile, redirect}) => {

@@ -6,10 +6,10 @@ import {headers} from "next/headers";
 import Link from 'next/link';
 import config from '@/config';
 import lang from '@/data/lang';
-import Footer from '@/subview/partials/Footer';
-import DarkModeMenu from '@/subview/partials/DarkModeMenu';
-import FrontMenu from '@/subview/partials/FrontMenu';
-import LanguangeMenu from '@/subview/partials/LanguageMenu';
+import Footer from '@/components/partials/Footer';
+import DarkModeMenu from '@/components/partials/DarkModeMenu';
+import FrontMenu from '@/components/partials/FrontMenu';
+import LanguangeMenu from '@/components/partials/LanguageMenu';
 
 export default async function NotFoundPage() {
     const pathname = (await headers()).get('x-request-path');

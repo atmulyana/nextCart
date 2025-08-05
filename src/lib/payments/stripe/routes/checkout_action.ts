@@ -3,7 +3,7 @@
  **/
 import numeral from 'numeral';
 import Stripe from 'stripe';
-import type {NotificationParam} from '@/subview/components/Notification';
+import type {NotificationParam} from '@/components/Notification';
 import {getCart} from '@/data/cart';
 import lang from '@/data/lang/server';
 import {getSession} from '@/data/session';

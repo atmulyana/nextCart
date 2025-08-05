@@ -5,7 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import lang from '@/data/lang';
 import {currencySymbol, formatAmount} from '@/lib/common';
-import Template from '@/subview/partials/Template';
+import Template from '@/components/partials/Template';
 import {updateShippingInCart} from './cart';
 
 export function generateMetadata() {

@@ -3,7 +3,7 @@
  **/
 import React from 'react';
 import type {Config} from '../types';
-import Form from '@/subview/components/Form';
+import Form from '@/components/Form';
 
 export default function PaypalForm({buttonText, description}: Config) {
     return <Form action='/paypal/checkout_action' method='post' className='block'>

@@ -6,10 +6,10 @@ import React from 'react';
 import {createPortal} from 'react-dom';
 import Link from 'next/link';
 import {usePathname, useRouter} from 'next/navigation';
-import {useSession} from '@/subview/components/SessionContext';
-import {useModal} from '@/subview/components/Modal';
-import type {NotificationParam} from '@/subview/components/Notification';
-import Icon from '@/subview/components/Icon';
+import {useSession} from '@/components/SessionContext';
+import {useModal} from '@/components/Modal';
+import type {NotificationParam} from '@/components/Notification';
+import Icon from '@/components/Icon';
 import type {TModules} from '@/lib/modules';
 import type {Return} from './data/route';
 

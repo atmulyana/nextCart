@@ -4,10 +4,10 @@
 import React from 'react';
 import type {Metadata} from 'next';
 import lang from '@/data/lang';
-import FormWithSchema from '@/subview/components/FormWithSchema';
-import Input from '@/subview/components/SubmittedInput';
-import SubmitButton from '@/subview/components/SubmitButton';
-import Template from '@/subview/partials/Template';
+import FormWithSchema from '@/components/FormWithSchema';
+import Input from '@/components/SubmittedInput';
+import SubmitButton from '@/components/SubmitButton';
+import Template from '@/components/partials/Template';
 import {POST} from '../forgotten_action/route';
 
 export function generateMetadata(): Metadata {

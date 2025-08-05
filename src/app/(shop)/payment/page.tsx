@@ -9,7 +9,7 @@ import lang from '@/data/lang';
 import {getRouteModule} from '@/lib/payments';
 import {getCart} from '@/data/cart';
 import {getSession} from '@/data/session';
-import Template from '@/subview/partials/Template';
+import Template from '@/components/partials/Template';
 
 export async function generateMetadata(props: any, parent: ResolvingMetadata) {
     let metadata: Metadata = {};

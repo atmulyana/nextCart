@@ -4,8 +4,8 @@
  **/
 import React from 'react';
 import {loadStripe, type Stripe, type StripeCardElement, type StripeCardElementOptions} from "@stripe/stripe-js";
-import Form, {FormLoading} from '@/subview/components/Form';
-import {useNotification} from '@/subview/components/Notification';
+import Form, {FormLoading} from '@/components/Form';
+import {useNotification} from '@/components/Notification';
 //import {inter} from '@/lib/font';
 import darkMode from '@/lib/darkMode';
 import './form.css';

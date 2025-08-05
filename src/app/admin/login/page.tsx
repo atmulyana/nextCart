@@ -7,9 +7,9 @@ import {redirect} from 'next/navigation';
 import config from '@/config';
 import lang from '@/data/lang';
 import {userCount} from '@/data/user';
-import DarkModeMenu from '@/subview/partials/DarkModeMenu';
-import LanguangeMenu from '@/subview/partials/LanguageMenu';
-import LoginForm from '@/subview/partials/LoginForm';
+import DarkModeMenu from '@/components/partials/DarkModeMenu';
+import LanguangeMenu from '@/components/partials/LanguageMenu';
+import LoginForm from '@/components/partials/LoginForm';
 import {POST} from '../login_action/route';
 
 export function generateMetadata(): Metadata {

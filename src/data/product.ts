@@ -3,8 +3,8 @@
  **/
 import type {SortDirection} from 'mongodb';
 import config from '@/config';
-import type {_Id, TCartItem, TOrder, TProduct, TProductImage, TProductItem, TVariant} from './types';
-import fn, {type Db, toId} from './db-conn';
+import type {_Id, TCartItem, TOrder, TProduct, TProductImage, TProductItem, TVariant, WithObjectId, WithoutId} from './types';
+import fn, {type Db, type Filter, toId} from './db-conn';
 
 export const getProduct = fn(async (db: Db, id: _Id): Promise<TProduct | undefined> => {
     return (await db.collection('products').aggregate<TProduct>([
@@ -269,6 +269,12 @@ export const getStock = fn(async (db: Db, productId: _Id, variantId?: _Id) => {
     return null;
 });
 
+export const addProduct = fn(async (db: Db, product: WithoutId<TProduct>) => {
+    product.productAddedDate = new Date();
+    const res = await db.collection('products').insertOne(product)
+    return res.insertedId;
+});
+
 export const updateStock = fn(async (db: Db, id: { productId: _Id, variantId?: _Id}, newStock: number, oldStock?: number) => {
     const variants = db.collection('variants'),
           products = db.collection('products');
@@ -349,6 +355,12 @@ export const productExists = fn(async (db: Db, productId: _Id) => {
     const id = toId(productId);
     if (!id) return false;
     return await db.collection('products').countDocuments({_id: id}) > 0;
+});
+
+export const permalinkExists = fn(async (db: Db, permalink: string, excludedProductId?: _Id) => {
+    const filter: Filter<WithObjectId<TProduct>> = {productPermalink: permalink};
+    if (excludedProductId) filter._id = {$ne: toId(excludedProductId)};
+    return await db.collection('products').countDocuments(filter) > 0;
 });
 
 export const getActiveProductCount = fn(async (db: Db) => {

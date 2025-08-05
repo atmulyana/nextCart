@@ -6,10 +6,10 @@ import type {Metadata} from 'next';
 // import {notFound} from 'next/navigation';
 // import {getCustomerByResetToken} from '@/data/customer';
 import lang from '@/data/lang';
-import FormWithSchema from '@/subview/components/FormWithSchema';
-import Input from '@/subview/components/SubmittedInput';
-import SubmitButton from '@/subview/components/SubmitButton';
-import Template from '@/subview/partials/Template';
+import FormWithSchema from '@/components/FormWithSchema';
+import Input from '@/components/SubmittedInput';
+import SubmitButton from '@/components/SubmitButton';
+import Template from '@/components/partials/Template';
 import {POST} from './api/route';
 
 export function generateMetadata(): Metadata {

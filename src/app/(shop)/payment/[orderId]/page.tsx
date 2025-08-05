@@ -8,7 +8,7 @@ import lang from '@/data/lang';
 import {getOrder} from '@/data/order';
 import {getSession} from '@/data/session';
 import {getPaymentModule} from '@/lib/payments';
-import Template from '@/subview/partials/Template';
+import Template from '@/components/partials/Template';
 
 export function generateMetadata() {
     return {

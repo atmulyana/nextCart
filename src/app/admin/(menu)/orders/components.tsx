@@ -4,9 +4,9 @@
  **/
 import React from 'react';
 import {usePathname, useRouter} from 'next/navigation';
-import Icon from '@/subview/components/Icon';
-import GlobalPaging from '@/subview/components/Paging';
-import GlobalSearchBox from '@/subview/components/SearchBox';
+import Icon from '@/components/Icon';
+import GlobalPaging from '@/components/Paging';
+import GlobalSearchBox from '@/components/SearchBox';
 
 export function SearchBox({
     byStatusText = 'By status',

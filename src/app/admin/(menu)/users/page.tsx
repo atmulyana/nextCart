@@ -7,10 +7,10 @@ import config from '@/config';
 import lang from '@/data/lang';
 import {getUsers} from '@/data/user';
 import {fnMeta} from '@/lib/common';
-import DeleteButton from '@/subview/components/DeleteButton';
-import Icon from '@/subview/components/Icon';
-import Form from '@/subview/components/Form';
-import Template from '@/subview/partials/Template';
+import DeleteButton from '@/components/DeleteButton';
+import Icon from '@/components/Icon';
+import Form from '@/components/Form';
+import Template from '@/components/partials/Template';
 import {remove} from './actions';
 
 export const generateMetadata = fnMeta(async () => {

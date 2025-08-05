@@ -95,7 +95,7 @@
     }
 
     input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=image]):not([type=radio]):not([type=range]):not([type=reset]):not([type=submit]),
-    select {
+    select, .form-input {
         @apply block w-full m-0 py-1.5 px-3 text-base
             border border-solid rounded-sm border-[var(--input-border-color)]
             bg-clip-border bg-[var(--bg-color)] text-[var(--input-text-color)];
@@ -105,6 +105,9 @@
         @apply block w-full m-0 py-1.5 px-3 text-base
             border border-solid rounded-sm border-[var(--input-border-color)]
             bg-clip-border bg-[var(--bg-color)] text-[var(--input-text-color)];
+    }
+    input, select, textarea {
+        @apply outline-0;
     }
 
     label {

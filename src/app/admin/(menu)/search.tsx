@@ -6,11 +6,11 @@ import React from 'react';
 import Link from 'next/link';
 import JsSimpleDateFormat from 'jssimpledateformat';
 import {currencySymbol, formatAmount} from '@/lib/common';
-import Icon from "@/subview/components/Icon";
-import {useModal, useToCloseModal} from "@/subview/components/Modal";
-import Form from '@/subview/components/Form';
-import Button from '@/subview/components/SubmitButton';
-import Input from '@/subview/components/SubmittedInput';
+import Icon from "@/components/Icon";
+import {useModal, useToCloseModal} from "@/components/Modal";
+import Form from '@/components/Form';
+import Button from '@/components/SubmitButton';
+import Input from '@/components/SubmittedInput';
 import {globalSearch} from './search-actions';
 
 type Props = {

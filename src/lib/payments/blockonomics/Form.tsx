@@ -3,7 +3,7 @@
  **/
 import React from 'react';
 import type {Config} from '../types';
-import Form from '@/subview/components/Form';
+import Form from '@/components/Form';
 import {POST} from './routes/checkout_action';
 
 export default function BlockonomicsForm({buttonText, description}: Config) {

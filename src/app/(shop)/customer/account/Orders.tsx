@@ -4,7 +4,7 @@
  **/
 import React from 'react';
 import type {TOrder} from '@/data/types';
-import PagedList from '@/subview/components/PagedList';
+import PagedList from '@/components/PagedList';
 import {currencySymbol, formatAmount, getStatusColor} from '@/lib/common';
 import {formatDate} from '@/lib/datetime/client';
 import './slide.css';

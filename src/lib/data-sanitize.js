@@ -14,7 +14,6 @@ FormData.prototype.getBoolean = function(paramName, isToString = false) {
         if (value == 'true') return true;
         if (value == 'false') return false;
         return null;
-
     }
     return this.has(paramName);
 }

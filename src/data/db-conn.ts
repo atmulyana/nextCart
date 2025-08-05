@@ -39,7 +39,7 @@ type Db = MongoDb & {
     find: <T extends Document = Document>(collectionName: string, $match: Document) => AggregationCursor<T>,
     session?: ClientSession,
 }
-export {type Db, ObjectId};
+export {type Db, type Filter, ObjectId};
 
 // function cache<F extends Function>(fn: F): F {
 //     return fn;

@@ -4,7 +4,7 @@
  **/
 import React from 'react';
 import {usePathname} from 'next/navigation';
-import {Cart, CartButtons} from '@/subview/components/Cart';
+import {Cart, CartButtons} from '@/components/Cart';
 
 export default function CheckoutCart({
     checkoutText,

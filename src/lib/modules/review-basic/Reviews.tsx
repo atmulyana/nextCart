@@ -3,7 +3,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import PagedList from '@/subview/components/PagedList';
+import PagedList from '@/components/PagedList';
 import type {TReviewList} from './data';
 import RatingStars from './RatingStars';
 

@@ -4,9 +4,9 @@
  **/
 import React from 'react';
 import Link from 'next/link';
-import Form from '@/subview/components/Form';
-import Loading from '@/subview/components/Loading';
-import {useNotification} from '@/subview/components/Notification';
+import Form from '@/components/Form';
+import Loading from '@/components/Loading';
+import {useNotification} from '@/components/Notification';
 import {formAction} from './checkout_return';
 import type {TSessionBlockonomics} from '../data';
 

@@ -8,13 +8,13 @@ import {loginCustomer, logoutCustomer, saveCheckoutInfo} from '@/app/actions';
 import lang from '@/data/lang';
 import {getCartHeader} from '@/data/cart';
 import {getSession} from '@/data/session';
-import Form from '@/subview/components/Form';
-import FormWithSchema from '@/subview/components/FormWithSchema';
-import Button from '@/subview/components/SubmitButton';
-import TextArea from '@/subview/components/SubmittedTextArea';
-import Input from '@/subview/components/SubmittedInput';
-import CustomerDataForm from '@/subview/partials/CustomerDataForm';
-import Template from '@/subview/partials/Template';
+import Form from '@/components/Form';
+import FormWithSchema from '@/components/FormWithSchema';
+import Button from '@/components/SubmitButton';
+import TextArea from '@/components/SubmittedTextArea';
+import Input from '@/components/SubmittedInput';
+import CustomerDataForm from '@/components/partials/CustomerDataForm';
+import Template from '@/components/partials/Template';
 import {formSubmitted, nextToShippingClick} from './formEvents';
 
 export function generateMetadata() {

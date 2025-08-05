@@ -4,8 +4,8 @@
 import React from 'react';
 import {fnMeta} from '@/lib/common';
 import {awaitProps, type PromiseProps} from '@/lib/common';
-import Template from '@/subview/partials/Template';
-import FrontMenu from '@/subview/partials/FrontMenu';
+import Template from '@/components/partials/Template';
+import FrontMenu from '@/components/partials/FrontMenu';
 import {GET} from './data/route';
 
 type Props = PromiseProps<Pick<Parameters<typeof GET.data>[0], 'params' | 'searchParams'>>;

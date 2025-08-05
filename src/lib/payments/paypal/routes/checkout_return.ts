@@ -7,7 +7,7 @@ import {dbTrans} from '@/data/db-conn';
 import lang from '@/data/lang/server';
 import {ResponseMessage} from '@/lib/common';
 import {createGetHandler} from '@/lib/routeHandler';
-import type {NotificationParam} from '@/subview/components/Notification';
+import type {NotificationParam} from '@/components/Notification';
 import {getPaymentId, clearPaymentId} from '../data';
 import {createOrder} from '../../';
 

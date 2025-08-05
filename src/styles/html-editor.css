@@ -1,0 +1,33 @@
+/** 
+ * https://github.com/atmulyana/nextCart
+ **/
+.simple-editor-wrapper {
+    background-clip: border-box;
+    background-color: var(--bg-color);
+    border-color: var(--input-border-color);
+    border-radius: var(--radius-sm);
+    border-style: solid;
+    border-width: 1px;
+    color: var(--input-text-color);
+    flex: 1;
+    max-height: 100%;
+}
+.html-editor:has( textarea.error) > .simple-editor-wrapper {
+    border-color: var(--color-danger) !important;
+    color: var(--color-danger) !important;
+}
+.simple-editor-content {
+    height: auto !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    overflow: auto;
+}
+.simple-editor-content > .simple-editor {
+    padding: calc(var(--spacing) * 4) !important;
+}
+.tiptap-toolbar {
+    background-color: #F3F4F6 !important;
+}
+.dark .tiptap-toolbar {
+    background-color: #111827 !important;
+}

@@ -3,8 +3,8 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import Button from "@/subview/components/SubmitButton";
-import Input from "@/subview/components/SubmittedInput";
+import Button from "@/components/SubmitButton";
+import Input from "@/components/SubmittedInput";
 
 const Quantity = React.memo(function Quantity() {
     const qtyRef = React.useRef<HTMLInputElement>(null);

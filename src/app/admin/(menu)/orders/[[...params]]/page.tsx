@@ -10,13 +10,13 @@ import lang from '@/data/lang';
 import {getOrders} from '@/data/order';
 import type {OrderStatus} from '@/data/types';
 import {awaitProps, fnMeta, getStatusColor, isIndexNumber} from '@/lib/common';
-import DeleteButton from '@/subview/components/DeleteButton';
-import Form from '@/subview/components/Form';
-import Icon from '@/subview/components/Icon';
+import DeleteButton from '@/components/DeleteButton';
+import Form from '@/components/Form';
+import Icon from '@/components/Icon';
 import {getStatusOptions, getStatusText} from '../common';
 import {Paging, SearchBox} from '../components';
 import {remove} from '../actions';
-import Template from '@/subview/partials/Template';
+import Template from '@/components/partials/Template';
 
 export const generateMetadata = fnMeta(async () => {
     return {

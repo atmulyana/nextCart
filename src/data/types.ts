@@ -1,9 +1,10 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {Binary, ObjectId, WithId, WithoutId} from 'mongodb';
+import type {Binary, Document, ObjectId, WithId, WithoutId} from 'mongodb';
 
 export type {WithId, WithoutId};
+export type WithObjectId<T> = Omit<T, '_id'> & {_id: ObjectId}; 
 export type _Id = string | ObjectId;
 
 export type TCart = {
@@ -111,7 +112,7 @@ export type TProductBase = {
     productPrice: number,
     productPublished?: boolean,
     variants?: TVariant[],
-}
+} & Document;
 
 export type TProduct = TProductBase & {
     productDescription: string,

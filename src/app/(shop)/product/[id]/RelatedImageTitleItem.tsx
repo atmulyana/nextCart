@@ -4,7 +4,7 @@
  **/
 import React from 'react';
 import Link from 'next/link';
-import FlexImage from '@/subview/components/FlexImage';
+import FlexImage from '@/components/FlexImage';
 
 export default function RelatedImageTitleItem({item}: {item: {title: string, link: string, imageUrl: string}}) {
     const ref = React.useRef<HTMLAnchorElement>(null);

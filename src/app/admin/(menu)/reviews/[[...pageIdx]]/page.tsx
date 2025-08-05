@@ -7,9 +7,9 @@ import config from '@/config';
 import lang from '@/data/lang';
 import {awaitProps, fnMeta, isIndexNumber} from '@/lib/common';
 import modules from '@/lib/modules/server';
-import Paging from '@/subview/components/Paging';
-import SearchBox from '@/subview/components/SearchBox';
-import Template from '@/subview/partials/Template';
+import Paging from '@/components/Paging';
+import SearchBox from '@/components/SearchBox';
+import Template from '@/components/partials/Template';
 
 export const generateMetadata = fnMeta(async () => {
     return {

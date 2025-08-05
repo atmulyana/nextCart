@@ -7,8 +7,8 @@ import {getOrderSummary} from '@/data/order';
 import {getActiveProductCount} from '@/data/product';
 import lang from '@/data/lang';
 import {currencySymbol, fnMeta, formatAmount} from '@/lib/common';
-import FlexImage from '@/subview/components/FlexImage';
-import Template from '@/subview/partials/Template';
+import FlexImage from '@/components/FlexImage';
+import Template from '@/components/partials/Template';
 
 export const generateMetadata = fnMeta(async () => {
     return {

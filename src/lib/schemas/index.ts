@@ -7,6 +7,8 @@ import type {Rule, Rules, ValidateParam} from '@react-input-validator/web';
 import lang from '@/data/lang';
 import {isOnBrowser} from '../common';
 
+export type RuleArray = Exclude<Rules, Rule>;
+
 export class Schema {
     #shape!: {[name: string]: Rules<any>};
     constructor(shape: Schema['shape']) {
@@ -60,7 +62,23 @@ function getInputValue(formData: FormData, name: string) {
     return value;
 }
 
-export async function validateForm(schemaName: string, formData: FormData) {
+type RMessage = {message: string};
+type RMessages = {messages: {[p: string]: string}};
+type ValidateRet<T extends (string | undefined)> = {
+    success: boolean,
+    data: {
+        [p: string]: any
+    },
+} & (
+    T extends string ? (
+        T extends '' ? (RMessage | RMessages) : RMessage
+    ) : (RMessage | RMessages)
+);
+export async function validateForm<T extends (string | undefined) = undefined>(
+    schemaName: string,
+    formData: FormData,
+    inputName?: T
+): Promise<ValidateRet<T>> {
     let schema!: Schema;
     try {
         schema = await getSchema(schemaName);
@@ -68,11 +86,9 @@ export async function validateForm(schemaName: string, formData: FormData) {
     catch {
         return {
             success: false,
+            data: {},
             message: 'Invalid schema name',
-        } as {
-            success: false,
-            message: string,
-        };
+        } as any;
     }
 
     const data: {[prop: string]: any} = {};
@@ -107,7 +123,8 @@ export async function validateForm(schemaName: string, formData: FormData) {
     });
 
     const messages: {[prop: string]: string} = {};
-    for (let name in schema.shape) {
+    
+    const validateInput = async (name: string) => {
         const value = getInputValue(formData, name);
         const resObj: ValidateParam = {
             name,
@@ -122,11 +139,21 @@ export async function validateForm(schemaName: string, formData: FormData) {
         }
     }
 
-    return {
+    if (inputName) {
+        await validateInput(inputName);
+    }
+    else {
+        for (let name in schema.shape) {
+            await validateInput(name);
+        }
+    }
+
+    const ret = {
         get success() {
             return Object.keys(messages).length < 1;
         },
-        data,
-        messages,
+        data
     };
+    if (inputName) return {...ret, message: messages[inputName]} as any;
+    return {...ret, messages} as any;
 }

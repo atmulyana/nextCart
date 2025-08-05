@@ -9,12 +9,12 @@ import lang from '@/data/lang';
 import {getOrder} from '@/data/order';
 import {awaitProps, currencySymbol, fnMeta, formatAmount, getStatusColor} from '@/lib/common';
 import {formatDate} from '@/lib/datetime/server';
-import Form from '@/subview/components/Form';
-import DeleteButton from '@/subview/components/DeleteButton';
-import GoBackButton from '@/subview/components/GoBackButton';
-import UpdateButton from '@/subview/components/SubmitButton';
-import Select from '@/subview/components/SubmittedSelect';
-import Template from '@/subview/partials/Template';
+import Form from '@/components/Form';
+import DeleteButton from '@/components/DeleteButton';
+import GoBackButton from '@/components/GoBackButton';
+import UpdateButton from '@/components/SubmitButton';
+import Select from '@/components/SubmittedSelect';
+import Template from '@/components/partials/Template';
 import {remove, updateStatus} from '../../actions';
 import {getStatusOptions, getStatusText} from '../../common';
 

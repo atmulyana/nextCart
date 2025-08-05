@@ -6,7 +6,7 @@ import React from 'react';
 import {Carousel, createTheme} from 'flowbite-react';
 import cfg from '@/config/usable-on-client';
 import type {TProductImagePath} from '@/data/types';
-import FlexImage from '@/subview/components/FlexImage';
+import FlexImage from '@/components/FlexImage';
 
 const theme = createTheme({
     carousel: {

@@ -3,8 +3,8 @@
  **/
 import {notFound} from 'next/navigation';
 import lang from '@/data/lang';
-import Breadcrumb from '@/subview/components/Breadcrumb';
-import {Cart} from '@/subview/components/Cart';
+import Breadcrumb from '@/components/Breadcrumb';
+import {Cart} from '@/components/Cart';
 import type {TCart, TSession} from '@/data/types';
 import {currencySymbol, formatAmount} from '@/lib/common';
 import {getPaymentConfig} from '../../';

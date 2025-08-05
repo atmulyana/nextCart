@@ -9,7 +9,7 @@ import config from '@/config';
 import {getCart} from '@/data/cart';
 import lang from '@/data/lang/server';
 import {getSession, refreshSessionExpires} from '@/data/session';
-import type {NotificationParam} from '@/subview/components/Notification';
+import type {NotificationParam} from '@/components/Notification';
 import {title} from '@/app/(shop)/layout';
 import {getSessionMessage, redirectWithMessage} from './auth';
 import {isFromMobile as fromMobile} from './auth/common';

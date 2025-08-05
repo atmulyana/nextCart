@@ -5,7 +5,11 @@ export default {
     badWords: 'bad word(s) found',
     confirmPassword: 'Password and Password Confirm must be the same',
     duplicateEmail: 'A customer already exists with that email address',
-    phone: 'invalid phone number',
     longReview: 'review ${name} is too long',
     missingProduct: 'Product is not found',
+    permalinkExists: 'This permalink already exists',
+    phone: 'invalid phone number',
+    price: 'must be a non-negative number value with two decimal digits at max',
+    productGtin: 'must be in format of alphanumeric',
+    sanitizeHtml: 'Not allowed HTML tags is found'
 };

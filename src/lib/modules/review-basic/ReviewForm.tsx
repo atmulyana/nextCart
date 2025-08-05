@@ -4,9 +4,9 @@
  **/
 import './styles.css';
 import React from 'react';
-import FormWithSchema from '@/subview/components/FormWithSchema';
-import Input from '@/subview/components/SubmittedInput';
-import TextArea from '@/subview/components/SubmittedTextArea';
+import FormWithSchema from '@/components/FormWithSchema';
+import Input from '@/components/SubmittedInput';
+import TextArea from '@/components/SubmittedTextArea';
 import {addReview} from '@/app/actions';
 import RatingStars from './RatingStars';
 

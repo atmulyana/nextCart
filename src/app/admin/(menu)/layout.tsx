@@ -7,10 +7,10 @@ import {adminLogout} from '@/app/actions';
 import config from '@/config';
 import lang from '@/data/lang';
 import {getSession} from '@/data/session';
-import Icon from '@/subview/components/Icon';
-import DarkModeMenu from '@/subview/partials/DarkModeMenu';
-import LanguangeMenu from '@/subview/partials/LanguageMenu';
-import Footer from '@/subview/partials/Footer';
+import Icon from '@/components/Icon';
+import DarkModeMenu from '@/components/partials/DarkModeMenu';
+import LanguangeMenu from '@/components/partials/LanguageMenu';
+import Footer from '@/components/partials/Footer';
 import {SearchIcon} from './search';
 
 export default async function ShopLayout({
@@ -53,7 +53,7 @@ export default async function ShopLayout({
                             }`}>
                                 <Icon name='tag' /> &nbsp; {lang('Products')}
                             </Link>
-                            {session.isAdmin && <Link href='/admin/product/new' className='inline-block w-1/12 text-gray-500 noline'>
+                            {session.isAdmin && <Link href='/admin/products/form' className='inline-block w-1/12 text-gray-500 noline'>
                                 <Icon name='plus' />
                             </Link>}
                         </li>
