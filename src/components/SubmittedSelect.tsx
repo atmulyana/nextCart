@@ -15,7 +15,13 @@ type Props<NoValidation extends (boolean | undefined), Multiple extends (boolean
     } & (
         NoValidation extends true
             ? Omit<React.ComponentProps<'select'>, 'multiple' | 'value'>
-            : Omit<SelectProps<Multiple>, 'rules' | 'style'> & {className?: string, rules?: Rules, style?: CSSProperties}
+            : Omit<SelectProps<Multiple>, 'rules' | 'style'> & {
+                containerClass?: string,
+                containerStyle?: CSSProperties,
+                className?: string,
+                rules?: Rules,
+                style?: CSSProperties
+            }
     ),
     'disabled' | 'ref'
 >;
@@ -48,7 +54,7 @@ const SubmittedSelect = React.forwardRef(function SubmittedSelect<
         >{children}</select>;
     }
     else {
-        const {className, style, ...props2} = props as Props<false, Multiple>,
+        const {containerClass, containerStyle, className, style, ...props2} = props as Props<false, Multiple>,
               props3 = getProps(name);
         return <Select2
             {...props2}
@@ -56,8 +62,14 @@ const SubmittedSelect = React.forwardRef(function SubmittedSelect<
             disabled={pending}
             rules={props2.rules ?? props3.rules}
             style={{
-                $class: className,
-                $style: style,
+                $cover: {
+                    $class: containerClass,
+                    $style: containerStyle,
+                },
+                $input: {
+                    $class: className,
+                    $style: style,
+                }
             }}
             ref={ref as SelectRef<Multiple>}
         >{children}</Select2>;

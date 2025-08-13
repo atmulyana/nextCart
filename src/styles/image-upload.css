@@ -1,0 +1,7 @@
+/** 
+ * https://github.com/atmulyana/nextCart
+ **/
+.image-upload:has( input.error) > .image-upload-input {
+    border-color: var(--color-danger) !important;
+    color: var(--color-danger) !important;
+}

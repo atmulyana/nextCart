@@ -24,7 +24,7 @@ export default async function AdminReviews({list, search}: {list: Array<WithId<T
         {list === null ? (
             <li className='bg-[var(--bg-color)] text-center'>{lang('No review yet')}</li>
         ) : list.map(r => (_id = r._id.toString(),
-            <li key={_id} className='!flex bg-[var(--bg-color)]'>
+            <li key={_id} className='!flex bg-[var(--bg-color)] hover:bg-gray-100 hover:dark:bg-gray-900'>
                 <div className='basis-1/4 shrink-0 text-ellipsis whitespace-nowrap overflow-hidden' title={r.title}>{r.title}</div>
                 <div className='flex-1 text-ellipsis whitespace-nowrap overflow-hidden ml-4' title={r.description}>{r.description}</div>
                 <div className='relative ml-4'>

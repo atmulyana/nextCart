@@ -77,7 +77,7 @@ export default async function Product(props: Props) {
         "offers": {
             "price": product.productPrice,
             "priceCurrency": config.currencyISO,
-            "availability": product.productStock > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+            "availability": product.productStock ?? 0 > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
             "url": pageUrl
         },
         "sku": productId,
@@ -147,18 +147,13 @@ export default async function Product(props: Props) {
                                     outOfStock: lang('Out of stock'),
                                 }}
                                 stockDisabled={product.productStockDisable}
-                                items={product.variants.map(v => ({
-                                    _id: v._id.toString(),
-                                    title: v.title,
-                                    price: v.price,
-                                    stock: v.stock,
-                                }))}
+                                items={product.variants}
                             />
                         ) : (<>
                             <h5 className='mb-2.5 text-neutral-500 text-[1.33rem]'>
                                 {currencySymbol()}{formatAmount(product.productPrice)}
                             </h5>
-                            {config.trackStock && !product.productStockDisable && product.productStock < 1 && 
+                            {config.trackStock && !product.productStockDisable && (product.productStock ?? 0) < 1 && 
                             <h5 className='mb-2.5 text-center text-red-500'>{lang('Out of stock')}</h5>}
                         </>)}
                         <h5>{lang('Quantity')}</h5>

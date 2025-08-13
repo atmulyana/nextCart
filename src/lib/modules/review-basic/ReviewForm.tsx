@@ -21,6 +21,7 @@ const ReviewForm = React.forwardRef<
             titlePlaceholder?: string,
             descPlaceholder?: string,
         },
+        loadingCallback?: (isLoading: boolean) => any,
         onSubmitted?: React.ComponentProps<typeof FormWithSchema>['onSubmitted']
     }
 >(function ReviewForm(
@@ -33,6 +34,7 @@ const ReviewForm = React.forwardRef<
             titlePlaceholder = 'Love it.',
             descPlaceholder = 'Product is great. Does everything it said it can do.',
         } = {},
+        loadingCallback,
         onSubmitted,
     },
     ref
@@ -43,7 +45,14 @@ const ReviewForm = React.forwardRef<
         window.__lang__.description = desc.toLowerCase();
     }, [title, desc]);
 
-    return <FormWithSchema ref={ref} action={addReview} className='block p-4' onSubmitted={onSubmitted} schemaName='review'>
+    return <FormWithSchema
+        ref={ref}
+        action={addReview}
+        className='block p-4'
+        loadingCallback={loadingCallback}
+        onSubmitted={onSubmitted}
+        schemaName='review'
+    >
         <Input type='hidden' name='product' value={productId} />
         <div className='mb-4'>
             <label htmlFor='title'>{title}:&nbsp;</label>

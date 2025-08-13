@@ -72,10 +72,6 @@ export async function globalSearch(formData: FormData) {
             item.productPrice = item.variants[0].price;
         }
         delete item.variants;
-        if (item.variant) {
-            item.variant._id = item.variant._id.toString();
-            item.variant.product = item.variant.product.toString();
-        }
     });
 
     return ret;

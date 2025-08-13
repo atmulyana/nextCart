@@ -8,7 +8,7 @@ import {Input, type InpProps, type InpRef, type Rules} from '@react-input-valida
 import {useFormStatus} from "react-dom";
 import {useSchemaProps} from './SchemaContext';
 
-type Props<NoValidation extends (boolean | undefined), Type extends string> = Omit<
+export type Props<NoValidation extends (boolean | undefined), Type extends string> = Omit<
     {
         noValidation?: NoValidation,
         type?: Type,
@@ -16,11 +16,17 @@ type Props<NoValidation extends (boolean | undefined), Type extends string> = Om
     } & (
         NoValidation extends true
             ? Omit<React.ComponentProps<'input'>, 'type' | 'value'>
-            : Omit<InpProps<Type>, 'rules' | 'style'> & {className?: string, rules?: Rules, style?: CSSProperties}
+            : Omit<InpProps<Type>, 'rules' | 'style'> & {
+                containerClass?: string,
+                containerStyle?: CSSProperties,
+                className?: string,
+                rules?: Rules,
+                style?: CSSProperties,
+            }
     ),
     'disabled' | 'ref'
 >;
-type Ref<NoValidation extends (boolean | undefined), Type extends string> = NoValidation extends true
+export type Ref<NoValidation extends (boolean | undefined), Type extends string> = NoValidation extends true
     ? React.Ref<HTMLInputElement> : React.Ref<InpRef<Type>>;
 
 const SubmittedInput = React.forwardRef(function SubmittedInput<
@@ -58,7 +64,7 @@ const SubmittedInput = React.forwardRef(function SubmittedInput<
         />;
     }
     else {
-        const {className, style, ...props2} = props as Props<false, Type>,
+        const {containerClass, containerStyle, className, style, ...props2} = props as Props<false, Type>,
               props3 = getProps(name);
         return <Input2
             {...props2}
@@ -68,8 +74,14 @@ const SubmittedInput = React.forwardRef(function SubmittedInput<
             onChange={onChange}
             rules={props2.rules ?? props3.rules}
             style={{
-                $class: className,
-                $style: style,
+                $cover: {
+                    $class: containerClass,
+                    $style: containerStyle,
+                },
+                $input: {
+                    $class: className,
+                    $style: style,
+                }
             }}
             value={value}
             ref={($ref: InpRef<Type> | null) => {

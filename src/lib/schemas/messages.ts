@@ -11,5 +11,6 @@ export default {
     phone: 'invalid phone number',
     price: 'must be a non-negative number value with two decimal digits at max',
     productGtin: 'must be in format of alphanumeric',
+    productPermalink: 'only alphanumeric, underscore and dash are allowed',
     sanitizeHtml: 'Not allowed HTML tags is found'
 };

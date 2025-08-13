@@ -1,6 +1,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
+import {emptyString} from 'javascript-common';
 import {isPlainObject, numericRegex} from './common';
 
 export function sanitize(value) {
@@ -22,7 +23,7 @@ FormData.prototype.getDate = function(paramName) {
     const value = this.get(paramName);
     if (typeof(value) == 'string') {
         const sVal = value.trim();
-        if (sVal == '') return null;
+        if (sVal == emptyString) return null;
         const dt = new Date(sVal);
         if (isNaN(dt.getDate())) return null;
         return dt;
@@ -42,7 +43,7 @@ FormData.prototype.getNumber = function(paramName) {
 
 FormData.prototype.getString = function(paramName, trimmed = true) {
     const value = this.get(paramName);
-    return (typeof(value) == 'string') ? (trimmed ? value.trim() : value) : '';
+    return (typeof(value) == 'string') ? (trimmed ? value.trim() : value) : emptyString;
 }
 
 FormData.prototype.sanitize = function(paramName) {

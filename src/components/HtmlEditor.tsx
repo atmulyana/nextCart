@@ -48,14 +48,24 @@ const HtmlEditor = React.forwardRef(function HtmlEditor<NoValidation extends boo
 ) {
     const {pending} = useFormStatus();
     const getProps = useSchemaProps();
-    const [val, setVal] = React.useState(value);
-    const editor = React.useRef<Editor>(null);
-    const validationRef = React.useRef<TextAreaRef>(null);
     const validationProps = getProps(name);
+    const [val, setVal] = React.useState(value);
+    const validationRef = React.useRef<TextAreaRef>(null);
+
+    const editor = React.useRef<Editor>(null);
+    //Using `refCallback` because `editor` ref is set after mounting (The first call of `useEffect(...., [value])`)
+    const editorRefCallback = React.useCallback((ref: Editor | null) => {
+        editor.current = ref;
+        if (ref) ref.commands.setContent(val ?? emptyString);
+    }, []);
     const onUpdate = React.useCallback((editor: Editor) => {
         setVal(editor.getHTML());
     }, []);
-
+    React.useEffect(() => {
+        setVal(value);
+        if (editor.current) editor.current.commands.setContent(value ?? emptyString);
+    }, [value]);
+    
     React.useEffect(() => {
         const obj = {
             get name() {
@@ -77,17 +87,12 @@ const HtmlEditor = React.forwardRef(function HtmlEditor<NoValidation extends boo
         if (editor.current) editor.current.setEditable(!pending);
     }, [pending]);
 
-    React.useEffect(() => {
-        if (editor.current) editor.current.commands.setContent(value ?? emptyString)
-        setVal(value);
-    }, [value]);
-
     rows = Math.floor(rows);
     if (rows < 0) rows = 5;
     const height = rows * 1.5 + 5;
 
     return <div className='flex flex-col html-editor' style={{height: height + 'rem'}}>
-        <TiptapEditor ref={editor} onUpdate={onUpdate} />
+        <TiptapEditor ref={editorRefCallback} onUpdate={onUpdate} />
         {noValidation
             ? <textarea
                 className='hidden'

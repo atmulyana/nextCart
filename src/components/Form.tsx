@@ -4,6 +4,7 @@
  **/
 import * as React from 'react';
 import {useFormStatus} from "react-dom";
+import {isElement} from 'react-is';
 import {setRef} from 'reactjs-common';
 import {type ContextRef, ValidationContext} from '@react-input-validator/web';
 import {useRouter} from 'next/navigation';
@@ -20,6 +21,7 @@ export type FormProps = Omit<React.ComponentProps<'form'>, 'action' | 'noValidat
     action?: string | ActionFunction,
     getResponseMessage?: (response: any) => string | NotificationParam,
     loading?: React.ReactNode,
+    loadingCallback?: (isLoading: boolean) => any,
     onSubmitted?: (response: {
         readonly type: NotificationParam['type'],
         readonly message?: string,
@@ -150,10 +152,22 @@ const FormWithFunctionAction = React.forwardRef<
     </form>;
 });
 
-export function FormLoading({isLoading = false}: {isLoading?: boolean | (() => boolean)}) {
+export function FormLoading({
+    isLoading = false,
+    loadingCallback,
+}: {
+    isLoading?: boolean | (() => boolean),
+    loadingCallback?: (isLoading: boolean) => any,
+}) {
     const {pending} = useFormStatus();
     if (typeof(isLoading) == 'function') isLoading = isLoading();
-    return <Loading isLoading={pending || isLoading} />;
+    isLoading = isLoading || pending;
+
+    React.useEffect(() => {
+        if (loadingCallback) loadingCallback(isLoading);
+    }, [isLoading]);
+
+    return <Loading isLoading={isLoading} />;
 }
 
 const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
@@ -163,6 +177,7 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
         className,
         getResponseMessage = getMessage,
         loading = <FormLoading />,
+        loadingCallback,
         validate,
         onSubmit,
         onSubmitted,
@@ -171,6 +186,8 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
     ref
 ) {
     let fnAction: ResponseAction;
+    if (isElement(loading) && loadingCallback)
+        loading = React.createElement(loading.type, {...(loading.props as any), loadingCallback});
 
     const ctx = React.useRef<ContextRef>(
         {setErrorMessage(){}, validate(){}} as any

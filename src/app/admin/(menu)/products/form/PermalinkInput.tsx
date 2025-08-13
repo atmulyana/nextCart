@@ -9,14 +9,16 @@ import {length, required, ruleAsync} from '@react-input-validator/rules';
 import {getStyleProps, type InputRef, type Rules} from '@react-input-validator/web';
 import Loading from '@/components/Loading';
 import ValidatedInput from '@/components/ValidatedInput';
-import {validatePermalink} from './actions';
+import {validatePermalink} from '../actions';
 
 export default function PermalinkInput({
     placeholder,
     validateLabel,
+    value,
 }: {
     placeholder: string,
     validateLabel: string,
+    value?: string,
 }) {
     const ref = React.useRef<HTMLInputElement & InputRef>(null);
     const successMessage = React.useRef(emptyString);
@@ -34,7 +36,7 @@ export default function PermalinkInput({
         }
     }, [rules]);
 
-    return <ValidatedInput ref={ref} rules={rules} type='text' 
+    return <ValidatedInput ref={ref} rules={rules} type='text' value={value}
         id='productPermalink' name='permalink' placeholder={placeholder}
         className='z-0 rounded-r-none'
         settings={{
@@ -78,7 +80,7 @@ export default function PermalinkInput({
                     required,
                     length(2),
                     ruleAsync((value, resolve) => {
-                        const productId = (document.getElementById('id') as (HTMLInputElement | null))?.value;
+                        const productId = (document.getElementById('productId') as (HTMLInputElement | null))?.value;
                         validatePermalink(value, productId).then(({success, message}) => {
                             if (success) {
                                 successMessage.current = message;

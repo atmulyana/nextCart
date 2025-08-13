@@ -85,7 +85,7 @@ export const POST = createPostHandler(async (formData) => {
                 productImage: `/product/${product._id.toString()}/image`,
                 quantity: 0,
                 totalItemPrice: 0,
-                productStock: product.productStock,
+                productStock: product.productStock ?? 0,
                 productStockDisable: product.productStockDisable,
                 productSubscription: product.productSubscription,
                 variantId: variant?._id,

@@ -50,7 +50,7 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
             {products.totalItems < 1 ? (
                 <li className='bg-[var(--bg-color)] text-center'>{lang('No products found')}</li>
             ) : products.data.map(p => (_id = p._id.toString(),
-                <li key={_id} className='!flex bg-[var(--bg-color)]'>
+                <li key={_id} className='!flex bg-[var(--bg-color)] hover:bg-gray-100 hover:dark:bg-gray-900'>
                     <span className='flex-1'>{p.productTitle}</span>
                     <span className='relative ml-4'>
                         <strong className='opacity-0'>{lang('Published')}</strong>
@@ -67,7 +67,7 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
                     <div className='relative ml-4'>
                         <strong className='opacity-0'>{lang('Edit')}</strong>
                         <span className='absolute left-0 top-0 right-0 bottom-0 text-center'>
-                            <Link href={`/admin/products/edit//${_id}`}><Icon name='edit' /></Link>
+                            <Link href={`/admin/products/form//${_id}`} title={lang('Edit')}><Icon name='edit' /></Link>
                         </span>
                     </div>
                     <span className='relative ml-4'>
@@ -79,7 +79,7 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
                             refreshThreshold='warning'
                         >
                             <input type='hidden' name='id' value={_id} />
-                            <DeleteButton question={lang('Are you sure you want to delete this product?')} />
+                            <DeleteButton question={lang('Are you sure you want to delete this product?')} title={lang('Delete')} />
                         </Form>
                     </span>
                 </li>

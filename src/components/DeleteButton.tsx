@@ -11,10 +11,12 @@ export default function DeleteButton({
     className,
     children = <Icon name='trash-2' />,
     question,
+    title = 'Delete',
 }: {
     className?: string,
     children?: React.ReactNode,
     question: string,
+    title?: string,
 }) {
     if (typeof(children) != 'string' && className === undefined) className = 'border-none h-auto p-0 bg-transparent';
     const btnRef = React.useRef<HTMLButtonElement>(null);
@@ -23,6 +25,7 @@ export default function DeleteButton({
         ref={btnRef}
         type='button'
         className={className}
+        title={title}
         onClick={async (ev) => {
             if (await openConfirm({
                 title: '',

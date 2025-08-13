@@ -35,7 +35,6 @@ export default function DiscountForm(props: Props) {
                 </Button>
                 <Button name='remove' type="submit" value='x' className="relative flex-none z-[1] rounded-l-none btn-outline-danger -ml-px"
                     onClick={ev => {
-                        console.log('DiscountForm code:', code, '; cart.discount: ', cart.discount)
                         if (!cart.discount) {
                             ev.preventDefault();
                             setCode(emptyString);

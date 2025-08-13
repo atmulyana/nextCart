@@ -1,10 +1,34 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {SortDirection} from 'mongodb';
+import {Binary, type Document, type SortDirection} from 'mongodb';
 import config from '@/config';
-import type {_Id, TCartItem, TOrder, TProduct, TProductImage, TProductItem, TVariant, WithObjectId, WithoutId} from './types';
+import type {
+    _Id,
+    ObjectId,
+    TCartItem,
+    TOrder,
+    TProduct,
+    TProductImage,
+    TProductInsert,
+    TProductItem,
+    TVariant,
+    WithoutId
+} from './types';
 import fn, {type Db, type Filter, toId} from './db-conn';
+
+const variantPipeline = [
+    {
+        $set: {
+            _id: {$toString: '$_id'},
+        },
+    },
+    {
+        $project: {
+            product: 0,
+        },
+    }
+];
 
 export const getProduct = fn(async (db: Db, id: _Id): Promise<TProduct | undefined> => {
     return (await db.collection('products').aggregate<TProduct>([
@@ -23,6 +47,7 @@ export const getProduct = fn(async (db: Db, id: _Id): Promise<TProduct | undefin
                 from: 'variants',
                 localField: '_id',
                 foreignField: 'product',
+                pipeline: variantPipeline,
                 as: 'variants'
             }
         },
@@ -42,6 +67,11 @@ export const getProduct = fn(async (db: Db, id: _Id): Promise<TProduct | undefin
                         else: -1
                     }
                 },
+            }
+        },
+        {
+            $set: {
+
             }
         },
         {
@@ -93,7 +123,7 @@ export const getDefaultImage = fn(async (db: Db, id: _Id): Promise<TProductImage
     return products.length > 0 ? products[0].image : void 0;
 });
 
-export const getImage =  fn(async (db: Db, id: _Id, index: number): Promise<TProductImage | undefined> => {
+export const getImage = fn(async (db: Db, id: _Id, index: number): Promise<TProductImage | undefined> => {
     const prodImage = await db.collection<{image: TProductImage}>('products').findOne(
         {
             _id: toId(id),
@@ -163,6 +193,7 @@ export const getProducts = fn(async (
                 from: 'variants',
                 localField: '_id',
                 foreignField: 'product',
+                pipeline: variantPipeline,
                 as: 'variants'
             }
         },
@@ -201,6 +232,7 @@ export const getProductsByValue = fn(async (db: Db, value: number, limit: number
                 from: 'variants',
                 localField: '_id',
                 foreignField: 'product',
+                pipeline: variantPipeline,
                 as: 'variant'
             }
         },
@@ -233,6 +265,18 @@ export const getProductsByValue = fn(async (db: Db, value: number, limit: number
     ]);
     if (limit > 0) rs = rs.limit(limit);
     return await rs.toArray();
+});
+
+export const getVariants = fn(async (db: Db, productId: _Id) => {
+    const arr = await db.collection<TVariant>('variants').aggregate([
+        {
+            $match: {
+                product: toId(productId),
+            }
+        },
+        ...variantPipeline,
+    ]).toArray();
+    return arr;
 });
 
 export const getStock = fn(async (db: Db, productId: _Id, variantId?: _Id) => {
@@ -269,16 +313,209 @@ export const getStock = fn(async (db: Db, productId: _Id, variantId?: _Id) => {
     return null;
 });
 
-export const addProduct = fn(async (db: Db, product: WithoutId<TProduct>) => {
-    product.productAddedDate = new Date();
+export const addProduct = fn(async (db: Db, product: WithoutId<TProductInsert>) => {
+    (product as TProduct).productAddedDate = new Date();
     const res = await db.collection('products').insertOne(product)
     return res.insertedId;
+});
+
+export const updateProduct = fn(async (db: Db, product: TProductInsert) => {
+    product._id = toId(product._id) as ObjectId;
+    const pipeline: any[] = [
+        {
+            $set: product
+        }
+    ];
+    const $unset: string[] = [];
+    if (!('tags' in product)) $unset.push('tags');
+    if (!('productStock' in product)) $unset.push('productStock');
+    if (!('productStockDisable' in product)) $unset.push('productStockDisable');
+    if (!('productSubscription' in product)) $unset.push('productSubscription');
+    if ($unset.length > 0) pipeline.push({$unset});
+
+    const res = await db.collection('products').updateOne(
+        {_id: product._id},
+        pipeline
+    );
+    return res.modifiedCount > 0;
+});
+
+const getImagesProps = fn(async (db: Db, _id: ObjectId | undefined) => {
+    if (!_id) return null;
+    return await db.collection('products').findOne<{
+        count: number,
+        defaultIndex: number,
+    }>(
+        {
+            _id,
+        },
+        {
+            projection: {
+                count: {
+                    $cond: {
+                        if: { $isArray: "$images" },
+                        then: { $size: "$images" },
+                        else: 0,
+                    }
+                },
+                defaultIndex: {
+                    $cond: {
+                        if: { $isArray: "$images" },
+                        then: {$indexOfArray: ["$images.default", true]},
+                        else: -1
+                    }
+                },
+            }
+        }
+    );
+});
+
+export const addImage = fn(async (db: Db, productId: _Id, image: File) => {
+    const products = db.collection<TProductInsert & {images: TProductImage[]}>('products');
+    const _id = toId(productId);
+    const images = await getImagesProps(_id);
+    if (!images) return false;
+
+    const content = new Binary(await image.bytes());
+    if (images.count > 0) {
+        await products.updateOne(
+            { _id },
+            {
+                $push: {
+                    images: {
+                        content,
+                        type: image.type.substring('image/'.length),
+                        default: false,
+                    }
+                }
+            }
+        );
+    }
+    else {
+        await products.updateOne(
+            { _id },
+            {
+                $set: {
+                    images: [
+                        {
+                            content,
+                            type: image.type.substring('image/'.length),
+                            default: true,
+                        }
+                    ]
+                }
+            }
+        );
+    }
+
+    return true;
+});
+
+export const deleteImage = fn(async (db: Db, productId: _Id, idx: number) => {
+    const _id = toId(productId);
+    const images = await getImagesProps(_id);
+    if (!images || idx < 0 || idx >= images.count) return false;
+
+    const products = db.collection('products');
+    if (images.count < 2) {
+        await products.updateOne(
+            {_id},
+            {$unset: {images: null}}
+        );
+    }
+    else {
+        await products.updateOne(
+            {_id},
+            [{
+                $set: {
+                    images: {
+                        $concatArrays: [ 
+                            {
+                                $slice: ["$images", idx]
+                            }, 
+                            {
+                                $slice: ["$images", idx+1, images.count]
+                            }
+                        ]
+                    }
+                }
+            }]
+        );
+        if (idx == images.defaultIndex) {
+            await products.updateOne(
+                {_id},
+                {
+                    $set: {
+                        'images.0.default': true,
+                    }
+                }
+            );
+        }
+    }
+    return true;
+});
+
+export const setMainImage = fn(async (db: Db, productId: _Id, idx: number) => {
+    const _id = toId(productId);
+    const images = await getImagesProps(_id);
+    if (!images || idx < 0 || idx >= images.count) return false;
+    if (idx == images.defaultIndex) return true;
+    
+    await db.collection('products').updateOne(
+        {_id},
+        {
+            $set: {
+                ['images.' + images.defaultIndex + '.default']: false,
+                ['images.' + idx + '.default']: true,
+            }
+        }
+    );
+    return true;
+});
+
+export const addVariant = fn(async (db: Db, variant: WithoutId<TVariant>) => {
+    //@ts-ignore
+    delete variant._id;
+    variant.product = toId(variant.product);
+    const ret = await db.collection('variants').insertOne(variant)
+    return ret.insertedId;
+});
+
+export const updateVariant = fn(async (db: Db, variant: TVariant) => {
+    variant._id = toId(variant._id) as ObjectId;
+    variant.product = toId(variant.product);
+    const pipeline: any[] = [
+        {$set: variant},
+    ];
+    
+    const $unset: string[] = [];
+    if (!('stock' in variant)) {
+        $unset.push('stock');
+    };
+    if (!('imageIdx' in variant)) {
+        $unset.push('imageIdx');
+    };
+    if ($unset.length > 0) pipeline.push({$unset});
+
+    const ret = await db.collection('variants').updateOne(
+        {_id: variant._id},
+        pipeline,
+        {upsert: false}
+    );
+    return ret.modifiedCount > 0;
+});
+
+export const deleteVariant = fn(async (db: Db, variantId: _Id) => {
+    const ret = await db.collection('variants').deleteOne(
+        {_id: toId(variantId)}
+    );
+    return ret.deletedCount > 0;
 });
 
 export const updateStock = fn(async (db: Db, id: { productId: _Id, variantId?: _Id}, newStock: number, oldStock?: number) => {
     const variants = db.collection('variants'),
           products = db.collection('products');
-    if (oldStock === undefined) oldStock = await getStock(id.productId, id.variantId) ?? 0;
+    if (oldStock === undefined) oldStock = await getStock(id.productId, id.variantId) || 0;
     if (id.variantId) {
         await variants.updateOne(
             {
@@ -358,7 +595,7 @@ export const productExists = fn(async (db: Db, productId: _Id) => {
 });
 
 export const permalinkExists = fn(async (db: Db, permalink: string, excludedProductId?: _Id) => {
-    const filter: Filter<WithObjectId<TProduct>> = {productPermalink: permalink};
+    const filter: Filter<Document> = {productPermalink: permalink};
     if (excludedProductId) filter._id = {$ne: toId(excludedProductId)};
     return await db.collection('products').countDocuments(filter) > 0;
 });

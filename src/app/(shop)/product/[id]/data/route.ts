@@ -48,7 +48,8 @@ export const GET = createGetHandler(async ({
         }
     }
 
-    const relatedWords = product.productTitle + ' ' + product.tags.concat(' ');
+    let relatedWords = product.productTitle;
+    if (product.tags) relatedWords += ' ' + product.tags.concat(' ');
     const relatedProducts = (await getProducts(
         1,
         {

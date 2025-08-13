@@ -102,6 +102,7 @@ const ReviewControls = React.memo(function ReviewControls({
                                     titlePlaceholder,
                                     descPlaceholder,
                                 }}
+                                loadingCallback={openModal.setLoading}
                                 onSubmitted={response => resolveSubmit && resolveSubmit(response)}
                             />,
                             okLabel: addReview,
@@ -109,19 +110,14 @@ const ReviewControls = React.memo(function ReviewControls({
                             cancelLabel: cancel,
                             cancelBtnStyle: 'btn-outline-danger',
                             size: 'lg',
-                            onOk: async (btnOk) => {
+                            onOk: async () => {
                                 if (formRef.current) {
-                                    btnOk.disabled = true;
-                                    (btnOk.previousElementSibling as HTMLButtonElement).disabled = true;
                                     return await new Promise<TResponse>(resolve => {
                                         resolveSubmit = resolve;
                                         formRef.current?.requestSubmit();
                                     }).then(response => {
                                         if (response.type == 'danger') return false;
                                         setReviews(response.data);
-                                    }).finally(() => {
-                                        btnOk.disabled = false;
-                                        (btnOk.previousElementSibling as HTMLButtonElement).disabled = false;
                                     });
                                 }
                             },

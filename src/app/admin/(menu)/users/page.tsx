@@ -34,7 +34,7 @@ export default async function AdminUsers() {
                 <strong className='ml-4'>{lang('Delete')}</strong>
             </li>
             {users.map(u => (_id = u._id.toString(),
-                <li key={_id} className='!flex bg-[var(--bg-color)]'>
+                <li key={_id} className='!flex bg-[var(--bg-color)] hover:bg-gray-100 hover:dark:bg-gray-900'>
                     <div className='flex-1'>{u.usersName}</div>
                     <div className='w-1/4 shrink-0 ml-4'>{u.userEmail}</div>
                     <div className='w-1/4 shrink-0 ml-4'>{

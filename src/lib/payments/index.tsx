@@ -123,7 +123,7 @@ async function updateOrderedStock(data: TOrder['orderProducts']) {
     if (appCfg.trackStock) {
         Object.keys(data).forEach(async (productKey) => {
             const product = data[productKey];
-            const currentStock = await getStock(product.productId, product.variantId) ?? 0;
+            const currentStock = await getStock(product.productId, product.variantId) || 0;
             let newStock = currentStock - product.quantity;
             if (newStock < 1) newStock = 0;
             await updateStock(product, newStock, currentStock);

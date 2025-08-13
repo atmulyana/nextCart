@@ -28,7 +28,7 @@ export default new Schema({
         length(5, 200),
     ],
     price: [
-        new Required().setErrorMessage(lang('invalid')),
+        new Required().setErrorMessage(lang(messages.price)),
         regex(/^\d+(\.\d{1,2})?$/).setErrorMessage(lang(messages.price)),
         numeric
     ],
@@ -58,6 +58,7 @@ export default new Schema({
     ],
     permalink: [
         alwaysValid, //to trim the value
+        regex(/^[A-Za-z0-9_-]+$/).setErrorMessage(lang(messages.productPermalink)),
         length(2),
     ],
     allowComment: [required, boolean]

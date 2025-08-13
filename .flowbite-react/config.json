@@ -2,8 +2,9 @@
   "$schema": "https://unpkg.com/flowbite-react/schema.json",
   "components": [],
   "dark": true,
+  "path": "src/components",
   "prefix": "",
-  "path": "src/subview/components",
+  "rsc": true,
   "tsx": true,
-  "rsc": true
+  "version": 4
 }

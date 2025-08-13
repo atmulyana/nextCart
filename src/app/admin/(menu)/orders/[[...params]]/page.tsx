@@ -83,7 +83,7 @@ export default async function AdminOrders(props: {params: Promise<{
             {await orders.count() < 1 ? (
                 <li className='bg-[var(--bg-color)] text-center'>{lang('No orders found')}</li>
             ) : orders.list.map(o => (_id = o._id.toString(),
-                <li key={_id} className='!flex bg-[var(--bg-color)]'>
+                <li key={_id} className='!flex bg-[var(--bg-color)] hover:bg-gray-100 hover:dark:bg-gray-900'>
                     <div className='w-36 mr-4'>{o.orderDate && dtFormat.format(o.orderDate)}</div>
                     <div className='w-56 text-ellipsis mr-4'>{o.orderEmail}</div>
                     <div className='grow mr-4'>{o.orderFirstname} {o.orderLastname}</div>

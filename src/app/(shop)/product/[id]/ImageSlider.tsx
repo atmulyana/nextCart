@@ -56,7 +56,7 @@ const ImageSlider = React.memo(function ImageSlider(
             </Carousel>
             </div>
         </div>
-        <div className='flex flex-wrap -mx-1 mt-4'>
+        <div className='image-slider-thumbnails flex flex-wrap -mx-1 mt-4'>
             {images.map((img, idx) => <div key={idx} className='flex-none basis-1/6 px-1'>
                 <div
                     className={`w-full border-2 rounded-sm ${

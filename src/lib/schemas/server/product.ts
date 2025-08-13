@@ -4,7 +4,7 @@
 import {ruleAsync} from '@react-input-validator/rules';
 import lang from '@/data/lang';
 import {permalinkExists} from '@/data/product';
-import newProduct from '../all/newProduct';
+import newProduct from '../all/product';
 import {type RuleArray, Schema} from '..';
 import messages from '../messages';
 
