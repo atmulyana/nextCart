@@ -33,7 +33,7 @@ export default async function ViewOrder(props: {params: Promise<{id: string}>}) 
             <h2 className='flex-auto'>{lang('View order')}</h2>
             <Form action={updateStatus} className='flex' refreshThreshold='success'>
                 <input type='hidden' name='id' value={id} />
-                <Select name="status" noValidation value={order.orderStatus} className='ml-4'>
+                <Select name="status" noValidation defaultValue={order.orderStatus} className='ml-4'>
                     {getStatusOptions().map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                 </Select>
                 <UpdateButton className='btn-outline-success ml-4'>{lang('Update status')}</UpdateButton>

@@ -61,7 +61,7 @@ export default async function ShopLayout({
                             <Link href='/admin/orders' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 w-4/5 noline'>
                                 <Icon name='package' /> &nbsp; {lang('Orders')}
                             </Link>
-                            <Link href='/admin/order/create' className='inline-block w-1/12 text-gray-500 noline'>
+                            <Link href='/admin/orders/create' className='inline-block w-1/12 text-gray-500 noline'>
                                 <Icon name='plus' />
                             </Link>
                         </li>

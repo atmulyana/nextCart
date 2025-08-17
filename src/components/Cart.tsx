@@ -2,10 +2,11 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {TCart, TCartItem} from '@/data/types';
 import React from 'react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
+import {emptyString} from 'javascript-common';
+import type {TCart, TCartItem} from '@/data/types';
 import {currencySymbol, formatAmount} from '@/lib/common';
 import {clearCart, updateCartItem} from '@/app/actions';
 import FlexImage from './FlexImage';
@@ -132,6 +133,7 @@ type CartProps = {
     qtyText: string,
     readonly?: boolean,
     homeAfterClear?: boolean,
+    noBorder?: boolean,
 };
 
 export const Cart = (props: CartProps) => {
@@ -153,6 +155,7 @@ const CartContent = React.memo(function CartContent({
     qtyText,
     readonly = false,
     homeAfterClear = false,
+    noBorder,
 }: CartProps) {
     const cart = useCart(),
           itemIds = Object.keys(cart.items),
@@ -169,7 +172,7 @@ const CartContent = React.memo(function CartContent({
         }
     }, [cart]);
 
-    return <div className="flex-initial flex flex-col items-stretch min-h-0 bg-[var(--bg-color)] bordered">
+    return <div className={`flex-initial flex flex-col items-stretch min-h-0${noBorder ? emptyString : " bordered"}`}>
         <h5 className="flex-none mb-3">{title}</h5>
         <div ref={scroller} className="flex-initial min-h-0 overflow-auto"
             onScroll={() => {

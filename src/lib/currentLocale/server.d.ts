@@ -1,5 +1,5 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-declare var currentLocale: () => string;
+declare const currentLocale: () => string;
 export default currentLocale;

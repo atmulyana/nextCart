@@ -15,10 +15,10 @@ export default class HtmlSanitized extends ValidationRule<string> {
     }
     validate() {
         this.isValid = true;
-        const This = this, validTags = sanitize.defaults.allowedTags;
+        const validTags = sanitize.defaults.allowedTags;
         this.#resultValue = sanitize(this.value, {
-            onOpenTag(name, attribs) {
-                if (!validTags.includes(name)) This.isValid = false;
+            onOpenTag: (name) => {
+                if (!validTags.includes(name)) this.isValid = false;
             },
         });
         return this;

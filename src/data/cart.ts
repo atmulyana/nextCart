@@ -1,7 +1,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {_Id, TCart, TCartItem, WithId} from '@/data/types';
+import type {_Id, Document, TCart, TCartItemBase, WithId} from '@/data/types';
 import {redirectWithMessage, updateSessionToken} from '@/lib/auth';
 import fn, {type Db, ObjectId, toId, dbTrans} from './db-conn';
 import {getSessionId} from './session';
@@ -58,12 +58,20 @@ const cartAggrStages = [
                                 $concat: [
                                     '/product/',
                                     {$toString: "$productId"},
-                                    '/image'
+                                    '/image/',
+                                    {
+                                        $ifNull: [
+                                            {$toString: "$variant.imageIdx"}, 
+                                            ""
+                                        ]
+                                    },
+                                    "?invalid-idx=default"
                                 ]
                             },
                             quantity: "$quantity",
                             totalItemPrice: {
                                 $ifNull: [
+                                    //"$totalItemPrice",
                                     {
                                         $multiply: ["$variant.price", "$quantity"]
                                     },
@@ -104,6 +112,7 @@ const cartAggrStages = [
             totalCartShipping: 1,
             totalCartAmount: 1,
             totalCartItems: 1,
+            totalCartProducts: 1,
         }
     }
 ];
@@ -161,20 +170,20 @@ export const getCartHeader = fn(async (db: Db) => {
 
 export const upsertCart = fn(async (db: Db, cartId: ObjectId, cart: Omit<TCart, 'items'>) => {
     const $set: Partial<TCart> = {...cart},
-          $unset: Partial<TCart> = {};
+          $unset: Document = {};
     if ('_id' in $set) delete $set._id;
     delete $set.items;
     if (!cart.discount) {
         delete $set.discount;
-        $unset.discount = '';
+        $unset.discount = null;
     }
     if (!cart.orderComment) {
         delete $set.orderComment;
-        $unset.orderComment = '';
+        $unset.orderComment = null;
     }
     if (!cart.shippingMessage) {
         delete $set.shippingMessage;
-        $unset.shippingMessage = '';
+        $unset.shippingMessage = null;
     }
     
     await db.collection('cart').updateOne(
@@ -226,16 +235,24 @@ export const upsertCartItem = fn(async (
     db: Db,
     cartId: ObjectId,
     itemId: _Id,
-    cartItem: Pick<TCartItem, 'productId' | 'quantity' | 'productComment' | 'variantId'>
+    cartItem: TCartItemBase
 ) => {
     const $set: typeof cartItem = {
         productId: toId(cartItem.productId) as ObjectId,
-        quantity: cartItem.quantity,
         productComment: cartItem.productComment,
+        quantity: cartItem.quantity,
+        //totalItemPrice: cartItem.totalItemPrice,
         variantId: cartItem.variantId && toId(cartItem.variantId),
     };
-    if (!cartItem.productComment) delete $set.productComment;
-    if (!cartItem.variantId) delete $set.variantId;
+    const $unset: Document = {};
+    if (!cartItem.productComment) {
+        delete $set.productComment;
+        $unset.productComment = null;
+    }
+    if (!cartItem.variantId) {
+        delete $set.variantId;
+        $unset.variantId = null;
+    }
     await db.collection('cartItems').updateOne(
         {
             _id: {
@@ -243,41 +260,14 @@ export const upsertCartItem = fn(async (
                 itemId: toId(itemId),
             }
         },
-        {$set},
+        {
+            $set,
+            $unset,
+        },
         {
             upsert: true,
         }
     );
-});
-
-export const addCartItems = fn(async (
-    db: Db,
-    cartId: ObjectId,
-    cartItems: Array<Pick<TCartItem, 'productId' | 'quantity' | 'productComment' | 'variantId'> & {id: _Id}>
-) => {
-    type _TCartItem = Partial<TCartItem> & {
-        _id: {
-            cartId: ObjectId,
-            itemId: ObjectId,
-        }
-    };
-    const items: _TCartItem[] = [];
-    for (let item of cartItems) {
-        const cartItem: _TCartItem = {
-            _id: {
-                cartId,
-                itemId: (toId(item.id) as ObjectId),
-            },
-            productId: toId(item.productId),
-            quantity: item.quantity,
-        };
-        if (!cartItem._id.itemId) continue;
-        if (item.variantId) cartItem.variantId = item.variantId;
-        if (item.productComment) cartItem.productComment = item.productComment;
-        items.push(cartItem);
-    }
-    
-    await db.collection<_TCartItem>('cartItems').insertMany(items);
 });
 
 export const deleteCartItem = fn(async (db: Db, cartId: ObjectId, itemId: _Id) => {

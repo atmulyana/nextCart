@@ -4,7 +4,7 @@
  **/
 import * as React from 'react';
 import {useFormStatus} from "react-dom";
-import {isElement} from 'react-is';
+import {noop} from 'javascript-common';
 import {setRef} from 'reactjs-common';
 import {type ContextRef, ValidationContext} from '@react-input-validator/web';
 import {useRouter} from 'next/navigation';
@@ -16,6 +16,7 @@ import {useNotification, type NotificationParam} from './Notification';
 
 type ActionFunction = (formData: FormData) => any;
 type ResponseAction = (response: any, formData: FormData) => any;
+type ValidationRef = Pick<ContextRef, 'setErrorMessage' | 'validate'>;
 
 export type FormProps = Omit<React.ComponentProps<'form'>, 'action' | 'noValidate'> & {
     action?: string | ActionFunction,
@@ -50,7 +51,7 @@ const initFormState = {
 };
 const FormWithFunctionAction = React.forwardRef<
     HTMLFormElement,
-    Omit<FormProps, 'action' | 'loading'> & {action: ResponseAction, validationRef: React.RefObject<ContextRef>}
+    Omit<FormProps, 'action' | 'loading'> & {action: ResponseAction, validationRef: React.RefObject<ValidationRef>}
 >(function FormWithFunctionAction(
     {
         action,
@@ -77,7 +78,7 @@ const FormWithFunctionAction = React.forwardRef<
         
         /**
          * It's useful to maintain the checked/selected elements after submitting. For further information.
-         * see the comment bellow which pertains `checkedInputs.current`
+         * see the comment below which pertains `checkedInputs.current`
          */
         checkedInputs.current = formRef.current.querySelectorAll("input:checked, select option:checked");
     }, [onSubmit]);
@@ -152,19 +153,26 @@ const FormWithFunctionAction = React.forwardRef<
     </form>;
 });
 
-export function FormLoading({
-    isLoading = false,
-    loadingCallback,
-}: {
-    isLoading?: boolean | (() => boolean),
-    loadingCallback?: (isLoading: boolean) => any,
-}) {
+const FormContext = React.createContext<{
+    readonly loadingCallback: (isLoading: boolean) => any,
+    readonly validation: ContextRef | null,
+}>({
+    loadingCallback: noop,
+    validation: null,
+});
+
+export function useFormContext() {
+    return React.useContext(FormContext);
+}
+
+export function FormLoading({isLoading = false}: {isLoading?: boolean | (() => boolean)}) {
+    const formCtx = useFormContext();
     const {pending} = useFormStatus();
     if (typeof(isLoading) == 'function') isLoading = isLoading();
     isLoading = isLoading || pending;
-
+    
     React.useEffect(() => {
-        if (loadingCallback) loadingCallback(isLoading);
+        formCtx.loadingCallback(isLoading);
     }, [isLoading]);
 
     return <Loading isLoading={isLoading} />;
@@ -186,14 +194,27 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
     ref
 ) {
     let fnAction: ResponseAction;
-    if (isElement(loading) && loadingCallback)
-        loading = React.createElement(loading.type, {...(loading.props as any), loadingCallback});
-
+    
+    const notifyLoading = React.useRef<NonNullable<typeof loadingCallback>>(noop);
     const ctx = React.useRef<ContextRef>(
         {setErrorMessage(){}, validate(){}} as any
     );
+    const formCtx = React.useRef({
+        get loadingCallback() {
+            return notifyLoading.current;
+        },
+        get validation() {
+            if ('getInput' in ctx.current) return ctx.current;
+            return null;
+        }
+    });
+
+    React.useEffect(() => {
+        notifyLoading.current = (isLoading: boolean) => loadingCallback && loadingCallback(isLoading);
+    }, [loadingCallback]);
+    
     const _onSubmit = React.useCallback((ev: React.FormEvent<HTMLFormElement>) => {
-        if (ctx.current?.validate()) {
+        if (ctx.current.validate()) {
             if (typeof(onSubmit) == 'function') onSubmit(ev);
         }
         else {
@@ -213,34 +234,38 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
         errorTextStyle='text-[var(--color-danger)]'
         inputErrorStyle='border-[var(--color-danger)] text-[var(--color-danger)] error'
         lang={lang}
-    >{typeof(action) == 'function' ? (
-        fnAction = (_: any, formData: FormData) => typeof(validate) == 'function'
-            ? validate(formData, action) : action(formData),
-        <FormWithFunctionAction
-            {...props}
-            ref={ref}
-            action={fnAction}
-            className={`relative ${className}`}
-            getResponseMessage={getResponseMessage}
-            onSubmit={_onSubmit}
-            onSubmitted={onSubmitted}
-            validationRef={ctx}
-        >
-            {children}
-            {loading}
-        </FormWithFunctionAction>
-    ) : (
-        <form role='form'
-            {...props}
-            ref={ref}
-            action={action && action.startsWith('/') && `${cfg.baseUrl}${action}` || action}
-            className={`relative ${className}`}
-            noValidate
-            onSubmit={_onSubmit}
-        >
-            {children}
-            {loading}
-        </form>
-    )}</ValidationContext>;
+    >
+        <FormContext.Provider value={formCtx.current}>
+        {typeof(action) == 'function' ? (
+            fnAction = (_: any, formData: FormData) => typeof(validate) == 'function'
+                ? validate(formData, action) : action(formData),
+            <FormWithFunctionAction
+                {...props}
+                ref={ref}
+                action={fnAction}
+                className={`relative ${className}`}
+                getResponseMessage={getResponseMessage}
+                onSubmit={_onSubmit}
+                onSubmitted={onSubmitted}
+                validationRef={ctx}
+            >
+                {children}
+                {loading}
+            </FormWithFunctionAction>
+        ) : (
+            <form role='form'
+                {...props}
+                ref={ref}
+                action={action && action.startsWith('/') && `${cfg.baseUrl}${action}` || action}
+                className={`relative ${className}`}
+                noValidate
+                onSubmit={_onSubmit}
+            >
+                {children}
+                {loading}
+            </form>
+        )}
+        </FormContext.Provider>
+    </ValidationContext>;
 });
 export default Form;

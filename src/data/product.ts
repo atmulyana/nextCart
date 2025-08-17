@@ -120,13 +120,14 @@ export const getDefaultImage = fn(async (db: Db, id: _Id): Promise<TProductImage
             }
         }
     ]).toArray();
-    return products.length > 0 ? products[0].image : void 0;
+    return products.length > 0 ? (products[0].image ?? null) : void 0;
 });
 
 export const getImage = fn(async (db: Db, id: _Id, index: number): Promise<TProductImage | undefined> => {
-    const prodImage = await db.collection<{image: TProductImage}>('products').findOne(
+    const products = await db.collection<{image: TProductImage}>('products').find(
         {
             _id: toId(id),
+            productPublished: true,
         },
         {
             projection: {
@@ -134,8 +135,8 @@ export const getImage = fn(async (db: Db, id: _Id, index: number): Promise<TProd
                 image: { $arrayElemAt: [ '$images', index ] },
             }
         }
-    );
-    return prodImage?.image;
+    ).toArray();
+    return  products.length > 0 ? (products[0].image ?? null) : void 0;
 });
 
 function getSort(): {[field: string]: SortDirection} {

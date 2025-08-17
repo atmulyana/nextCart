@@ -3,7 +3,7 @@
  **/
 import React from 'react';
 import appCfg from '@/config';
-import type {_Id, TOrder, WithoutId} from '@/data/types';
+import type {_Id, TOrder, TSessionCustomer, WithoutId} from '@/data/types';
 import {cartTrans, deleteCart, getCart} from '@/data/cart';
 import lang from '@/data/lang/server';
 import * as order from '@/data/order';
@@ -131,7 +131,7 @@ async function updateOrderedStock(data: TOrder['orderProducts']) {
     }
 }
 
-function emailNotif(to: string, orderId: _Id, transactionId: string, message?: string, approved: boolean = true) {
+function emailNotif(to: string, orderId: _Id, transactionId: string, message?: string | null, approved: boolean = true) {
     sendEmail(
         to,
         `${lang('Your order with')} ${appCfg.cartTitle}`,
@@ -146,12 +146,12 @@ type OrderData = {
     [p: string]: any,
 }
 
-export async function createOrder(data: OrderData, approved?: boolean, emailMessage?: string) {
+export async function createOrder(data: OrderData, approved?: boolean, emailMessage?: string | null, session?: WithoutId<TSessionCustomer>) {
     let orderId!: _Id;
     await cartTrans(async () => {
         const cart = await getCart();
         if (!cart) throw 'There are no items in your cart. Please add some items before checking out';
-        const session = await getSession();
+        session ??= await getSession();
         const ord: WithoutId<TOrder> = {
             orderTotal: cart.totalCartAmount,
             orderShipping: cart.totalCartShipping,
@@ -180,7 +180,6 @@ export async function createOrder(data: OrderData, approved?: boolean, emailMess
             await updateOrderedStock(ord.orderProducts);
             await deleteCart();
             emailNotif(ord.orderEmail, orderId, data.orderPaymentId.toString(), emailMessage);
-            return Response.json({}); //sets `chartItemCount` in session token to 0 
         }
         else if (typeof(emailMessage) == 'string') {
             emailNotif(ord.orderEmail, orderId, data.orderPaymentId.toString(), emailMessage, false);

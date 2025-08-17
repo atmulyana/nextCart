@@ -1,12 +1,12 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import type {Binary, ObjectId, WithId, WithoutId} from 'mongodb';
+import type {Binary, Document, ObjectId, WithId, WithoutId} from 'mongodb';
 
 export type {WithId, WithoutId};
 export type WithObjectId<T> = Omit<T, '_id'> & {_id: ObjectId}; 
 export type _Id = string | ObjectId;
-export type {ObjectId};
+export type {Document, ObjectId};
 
 export type TCart = {
     orderComment?: string,
@@ -21,18 +21,21 @@ export type TCart = {
     totalCartProducts: number,
 }
 
-export type TCartItem = {
+export type TCartItemBase = {
     productId: _Id,
+    productComment?: string,
+    quantity: number,
+    variantId?: _Id,
+};
+
+export type TCartItem = TCartItemBase & {
     title: string,
     link: string,
     productImage: string,
-    quantity: number,
-    totalItemPrice: number,
     productStock: number,
     productStockDisable?: boolean,
     productSubscription?: string,
-    productComment?: string,
-    variantId?: _Id,
+    totalItemPrice: number,
     variantTitle?: string,
     variantStock?: number,
 }
@@ -69,7 +72,20 @@ export type TMenu = {
     order: number,
 }
 
-export type OrderStatus = 'Paid' | 'Declined' | 'Approved' | 'Approved - Processing' | 'Failed' | 'Completed' | 'Shipped' | 'Pending' | 'Created';
+export const OrderStatusMap = {
+    Approved: false,
+    'Approved - Processing': false,
+    Cancelled: true,
+    Completed: true,
+    Created: false,
+    Declined: true,
+    Failed: false,
+    Paid: true,
+    Pending: true,
+    Shipped: true,
+};
+
+export type OrderStatus =  keyof typeof OrderStatusMap;
 export type TOrder = {
     _id: _Id,
     orderPaymentId: _Id,

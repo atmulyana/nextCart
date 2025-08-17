@@ -4,6 +4,8 @@
  **/
 import React from 'react';
 import {Carousel, createTheme} from 'flowbite-react';
+import {emptyString} from 'javascript-common';
+import Icon from '@/components/Icon';
 import cfg from '@/config/usable-on-client';
 import type {TProductImagePath} from '@/data/types';
 import FlexImage from '@/components/FlexImage';
@@ -56,8 +58,40 @@ const ImageSlider = React.memo(function ImageSlider(
             </Carousel>
             </div>
         </div>
-        <div className='image-slider-thumbnails flex flex-wrap -mx-1 mt-4'>
-            {images.map((img, idx) => <div key={idx} className='flex-none basis-1/6 px-1'>
+        <Thumbnails images={images} selectedIndex={selectedIndex} slider={slider} />
+    </>;
+});
+
+
+function Thumbnails({
+    images,
+    selectedIndex,
+    slider,
+}: {
+    images: TProductImagePath[],
+    selectedIndex: number,
+    slider: React.RefObject<HTMLDivElement | null>,
+}) {
+    const maxVisibleCount = 6;
+    const maxStartIdx = images.length - maxVisibleCount;
+    const [startVisibleIdx, setStartVisibleIdx] = React.useState(0);
+    const setStart = (idx: number) => {
+        if (idx > maxStartIdx) idx = maxStartIdx;
+        if (idx < 0) idx = 0;
+        setStartVisibleIdx(() => idx);
+    }
+    
+    return <div className='group flex h-auto -mx-1 mt-4'>
+        <button type='button'
+            className={`btn-primary flex-none self-center flex items-center justify-center h-8 w-8 p-0 opacity-70 z-10
+                invisible group-hover:visible ${startVisibleIdx < 1 ? 'hidden' : emptyString}`}
+            onClick={() => setStart(startVisibleIdx - 1)}
+        >
+            <Icon name='chevron-left' height={24} width={24} strokeWidth={4} />
+        </button>
+        <div className={`image-slider-thumbnails flex-1 flex overflow-x-hidden
+            ${startVisibleIdx < 1 ? 'ml-0' : '-ml-8'} ${startVisibleIdx >= maxStartIdx ? 'mr-0' : '-mr-8'}`}>
+            {images.map((img, idx) => <div key={idx} className={`flex-none basis-1/6 px-1 ${idx < startVisibleIdx ? 'hidden' : emptyString}`}>
                 <div
                     className={`w-full border-2 rounded-sm ${
                         selectedIndex==idx ? 'border-green-500 dark:border-pink-400' : 'border-transparent cursor-pointer'
@@ -71,6 +105,14 @@ const ImageSlider = React.memo(function ImageSlider(
                 </div>
             </div>)}
         </div>
-    </>;
-});
+        <button type='button'
+            className={`btn-primary flex-none self-center flex items-center justify-center h-8 w-8 p-0 opacity-70 z-10
+                invisible group-hover:visible ${startVisibleIdx >= maxStartIdx ? 'hidden' : emptyString}`}
+            onClick={() => setStart(startVisibleIdx + 1)}
+        >
+            <Icon name='chevron-right' height={24} width={24} strokeWidth={4} />
+        </button>
+    </div>;
+}
+
 export default ImageSlider;

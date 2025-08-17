@@ -8,10 +8,13 @@ import config from '@/config'
 import lang from '@/data/lang'
 import currentLocale from '@/lib/currentLocale/server'
 import Html from '@/components/Html'
+import {CartContext} from '@/components/Cart'
 import {ModalContext} from '@/components/Modal'
 import {NotificationContext} from '@/components/Notification'
 import {SessionProvider} from '@/components/SessionContext'
 import {initActions} from './actions'
+import {getCart} from '@/data/cart'
+import type {TCart} from '@/data/types'
 
 import messages1 from '@react-input-validator/rules/messages'
 import messages2 from '@react-input-validator/rules-datetime/messages'
@@ -57,26 +60,32 @@ export default async function RootLayout({
     texts = getTexts(messages2, texts)
     texts = getTexts(messages3, texts)
     texts = getTexts(messages4, texts)
-    return (
-        <Html lang={texts} locale={locale}>
-            <head>
-                <meta httpEquiv="X-UA-Compatible" content="IE=edge"></meta>
-                {config.facebookAppId && <meta property="fb:app_id" content={config.facebookAppId} />}
-            </head>
-            <body>
-            <NotificationContext>
-            <ModalContext
-                title={lang('Confirm')}
-                content={lang('Are you sure you want to proceed?')}
-                okLabel={lang('Confirm')}
-                cancelLabel={lang('Close')}
-            >
-            <SessionProvider>
-                {children}
-            </SessionProvider>
-            </ModalContext>
-            </NotificationContext>
-            </body>
-        </Html>
-    )
+    
+    let _id: any, cart: TCart | undefined
+    const cartWithId = await getCart()
+    //eslint-disable-next-line @typescript-eslint/no-unused-vars
+    if (cartWithId) ({_id, ...cart} = cartWithId)
+    
+    return <Html lang={texts} locale={locale}>
+        <head>
+            <meta httpEquiv="X-UA-Compatible" content="IE=edge"></meta>
+            {config.facebookAppId && <meta property="fb:app_id" content={config.facebookAppId} />}
+        </head>
+        <body>
+        <NotificationContext>
+        <ModalContext
+            title={lang('Confirm')}
+            content={lang('Are you sure you want to proceed?')}
+            okLabel={lang('Confirm')}
+            cancelLabel={lang('Close')}
+        >
+        <SessionProvider>
+        <CartContext cart={cart}>
+            {children}
+        </CartContext>
+        </SessionProvider>
+        </ModalContext>
+        </NotificationContext>
+        </body>
+    </Html>
 }

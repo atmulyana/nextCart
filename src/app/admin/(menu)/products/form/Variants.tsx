@@ -188,7 +188,7 @@ export default function Variants({
                             }}
                         >
                             <Icon name='edit' />
-                        </a>&nbsp;<a href='#' title={texts.delete}
+                        </a>&nbsp;<a href='#' title={texts.delete} className='text-[var(--color-danger)]'
                             onClick={ev => {
                                 ev.preventDefault();
                                 setAction(() => deleteVariant.bind(null, idx))
@@ -238,7 +238,7 @@ function Form({
         <div className='flex flex-col mb-4'>
             <label>{texts.name}</label>
             <Input type='text' name='title' value={variant.title} />
-            <div className='text-gray-400 dark:text-gray-600'>{texts.nameNote}</div>
+            <div className='text-gray-500 dark:text-gray-400'>{texts.nameNote}</div>
         </div>
         <div className='flex flex-col mb-4'>
             <label>{texts.price}</label>
@@ -256,7 +256,7 @@ function Form({
                 >
                     {imageOptions}
                 </Select>
-                <div className='text-gray-400 dark:text-gray-600'>{texts.imageNote}</div>
+                <div className='text-gray-500 dark:text-gray-400'>{texts.imageNote}</div>
             </div>
             <Thumbnail img={getImage(parseInt(imgIdx))} />
         </div>

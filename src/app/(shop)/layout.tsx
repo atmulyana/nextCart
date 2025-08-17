@@ -6,14 +6,12 @@ import './pushy-modifier.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import config from '@/config';
-import {CartContext, CartOpenButton} from '@/components/Cart';
+import {CartOpenButton} from '@/components/Cart';
 import AccountMenu from '@/components/partials/AccountMenu';
 import DarkModeMenu from '@/components/partials/DarkModeMenu';
 import LanguangeMenu from '@/components/partials/LanguageMenu';
 import Footer from '@/components/partials/Footer';
 import SideCart from '@/components/partials/SideCart';
-import {getCart} from '@/data/cart';
-import type {TCart} from '@/data/types';
 import lang from '@/data/lang';
 import {fnMeta} from '@/lib/common';
 
@@ -42,12 +40,7 @@ export default async function ShopLayout({
 }: {
     children: React.ReactNode
 }) {
-    let _id: any, cart: TCart | undefined;
-    const cartWithId = await getCart();
-    //eslint-disable-next-line @typescript-eslint/no-unused-vars
-    if (cartWithId) ({_id, ...cart} = cartWithId);
-    
-    return <CartContext cart={cart}>
+   return <>
         <nav id="headerBar" className="relative flex items-center py-2 px-4 lg:flex-row lg:flex-nowrap justify-between leading-normal">
             <Link href="/" className="inline-block
                 text-[#cc3a2c] dark:text-[#33c5d3]
@@ -81,5 +74,5 @@ export default async function ShopLayout({
             {children}
         </div>
         {config.footer.shownForCustomer && <Footer />}
-    </CartContext>;
+    </>;
 }

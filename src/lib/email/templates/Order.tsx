@@ -11,7 +11,7 @@ export default function EmailOrder({
     orderId,
     transactionId,
 }: {
-    message?: string,
+    message?: string | null,
     approved?: boolean,
     orderId?: string,
     transactionId?: string,

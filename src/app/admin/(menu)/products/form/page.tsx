@@ -9,6 +9,7 @@ import {getProduct} from '@/data/product';
 import {TProduct} from '@/data/types';
 import {awaitProps, currencySymbol, fnMeta} from '@/lib/common';
 import Form from '@/components/FormWithSchema';
+import GoBackButton from '@/components/GoBackButton';
 import HtmlEditor from '@/components/HtmlEditor';
 import Keywords from '@/components/Keywords';
 import Button from '@/components/SubmitButton';
@@ -39,7 +40,8 @@ export default async function AdminProduct(props: {params: Promise<{id?: string}
     <Form schemaName='product' action={save}>
         <div className='flex mx-4 pb-1'>
             <h2 className='flex-1'>{lang(product ? 'Edit product' : 'New product')}</h2>
-            <Button className='btn-outline-success flex-none'>{lang('Save product')}</Button>
+            <Button className='btn-outline-success flex-none ml-4'>{lang('Save product')}</Button>
+            <GoBackButton backUrl='/admin/products' className='ml-4' label={lang('Go Back')} />
         </div>
         {product && <input type='hidden' id='productId' name='id' value={product._id.toString()} />}
         <div className='mb-4 mx-4'>
@@ -64,7 +66,7 @@ export default async function AdminProduct(props: {params: Promise<{id?: string}
             <div className='shrink-0 basis-full sm:basis-1/3 px-4'>
                 <label htmlFor='productGtin'>{lang('Product GTIN')}</label>
                 <Input id='productGtin' name='gtin' value={product?.productGtin} />
-                <div className='text-gray-400 dark:text-gray-600'>{lang('The Serial number, GTIN or Barcode')}</div>
+                <div className='text-gray-500'>{lang('The Serial number, GTIN or Barcode')}</div>
             </div>
             <div className='shrink-0 basis-full sm:basis-1/3 px-4'>
                 <label htmlFor='productBrand'>{lang('Product brand')}</label>
@@ -145,7 +147,7 @@ export default async function AdminProduct(props: {params: Promise<{id?: string}
         <div className='mb-4 mx-4'>
             <label htmlFor='productComment'>{lang('Allow comment')}</label>
             <CheckBox id='productComment' name='allowComment' noIndeterminate value={product?.productComment} />
-            <div className='text-gray-400 dark:text-gray-600'>
+            <div className='text-gray-500'>
                 {lang('Allow free form comments when adding products to cart')}
             </div>
         </div>
@@ -154,21 +156,21 @@ export default async function AdminProduct(props: {params: Promise<{id?: string}
             <PermalinkInput placeholder={lang('Permalink for the product')} validateLabel={lang('Validate')}
                 value={product?.productPermalink}
             />
-            <div className='text-gray-400 dark:text-gray-600'>{lang('This sets a readable URL for the product')}</div>
+            <div className='text-gray-500'>{lang('This sets a readable URL for the product')}</div>
         </div>
         {config.paymentGateway.includes('stripe') && <div className='mb-4 mx-4'>
             <label htmlFor='productSubscription'>{lang('Subscription plan')}</label>
             <Input type='text' id='productSubscription' name='subscription' placeholder='plan_XXXXXXXXXXXXXX'
                 value={product?.productSubscription}
             />
-            <div className='text-gray-400 dark:text-gray-600'>
+            <div className='text-gray-500'>
                 {lang('First setup the plan in "Stripe" dashboard and enter the Plan ID. Format: plan_XXXXXXXXXXXXXX')}
             </div>
         </div>}
         <div className='mb-4 mx-4'>
             <label htmlFor='productTags'>{lang('Product tag words')}</label>
             <Keywords name='tags' value={product?.tags} />
-            <div className='text-gray-400 dark:text-gray-600'>
+            <div className='text-gray-500'>
                 {lang('Tag words used to indexed products, making them easier to find and filter.')}
             </div>
         </div>
