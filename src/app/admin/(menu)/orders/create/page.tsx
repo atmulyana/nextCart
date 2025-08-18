@@ -45,6 +45,7 @@ export default async function CreateOrder() {
                         address1: lang('Address 1'),
                         address2: lang('Address 2'),
                         company: lang('Company name'),
+                        country: lang('Country'),
                         email: lang('Email address'),
                         find: lang('Find'),
                         firstName: lang('First name'),

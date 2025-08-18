@@ -55,6 +55,7 @@ export type TCustomer = {
     phone: string,
     resetToken?: string,
     resetTokenExpiry?: number,
+    created?: Date,
 }
 
 export type TDiscount = {

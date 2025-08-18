@@ -38,7 +38,7 @@ export default async function AdminProduct(props: {params: Promise<{id?: string}
 
     return <Template>
     <Form schemaName='product' action={save}>
-        <div className='flex mx-4 pb-1'>
+        <div className='flex mx-4 pb-5'>
             <h2 className='flex-1'>{lang(product ? 'Edit product' : 'New product')}</h2>
             <Button className='btn-outline-success flex-none ml-4'>{lang('Save product')}</Button>
             <GoBackButton backUrl='/admin/products' className='ml-4' label={lang('Go Back')} />

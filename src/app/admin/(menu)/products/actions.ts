@@ -18,11 +18,10 @@ import {
     updateProduct,
     updateVariant,
 } from '@/data/product';
-import {redirectWithMessage} from '@/lib/auth';
 import {createFormAction} from "@/lib/routeHandler";
 import {validateForm} from '@/lib/schemas';
 
-export const save = createFormAction(async (formData: FormData) => {
+export const save = createFormAction(async (formData, redirect) => {
     return await dbTrans(async () => {
         const id = formData.getString('id');
         const product: WithoutId<TProductInsert> = {
@@ -47,21 +46,21 @@ export const save = createFormAction(async (formData: FormData) => {
         if (id) {
             const updatedProduct: TProductInsert = {...product, _id: id};
             await updateProduct(updatedProduct);
-            return redirectWithMessage(
+            return redirect(
                 '/admin/products',
                 {
                     message: lang('Product successfully saved'),
-                    type: 'success',
+                    messageType: 'success',
                 }
             );
         }
         else {
             const productId = await addProduct(product);
-            return redirectWithMessage(
+            return redirect(
                 `/admin/products/form/${productId.toString()}`,
                 {
                     message: lang('New product was successfully created'),
-                    type: 'success',
+                    messageType: 'success',
                 }
             );
         }

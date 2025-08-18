@@ -154,8 +154,13 @@ const FormWithFunctionAction = React.forwardRef<
 });
 
 const FormContext = React.createContext<{
+    readonly id?: string,
     readonly loadingCallback: (isLoading: boolean) => any,
     readonly validation: ContextRef | null,
+    showLoading?: () => {
+        ready: (callback: (value: any) => any) => void,
+        stop: () => void, 
+    }
 }>({
     loadingCallback: noop,
     validation: null,
@@ -168,12 +173,31 @@ export function useFormContext() {
 export function FormLoading({isLoading = false}: {isLoading?: boolean | (() => boolean)}) {
     const formCtx = useFormContext();
     const {pending} = useFormStatus();
+    const [load, setLoad] = React.useState<((value: any) => void) | null>(null);
+
     if (typeof(isLoading) == 'function') isLoading = isLoading();
-    isLoading = isLoading || pending;
-    
+    isLoading = isLoading || pending || !!load;
+
     React.useEffect(() => {
+        if (load) load(true);
         formCtx.loadingCallback(isLoading);
     }, [isLoading]);
+
+    React.useEffect(() => {
+        formCtx.showLoading = () => {
+            const p = new Promise(resolve => {
+                setLoad(() => resolve);
+            });
+            return {
+                ready: callback => {
+                    p.then(callback);
+                },
+                stop: () => {
+                    setLoad(null);
+                }
+            }
+        };
+    }, []);
 
     return <Loading isLoading={isLoading} />;
 }
@@ -200,6 +224,9 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
         {setErrorMessage(){}, validate(){}} as any
     );
     const formCtx = React.useRef({
+        get id() {
+            return props.id;
+        },
         get loadingCallback() {
             return notifyLoading.current;
         },

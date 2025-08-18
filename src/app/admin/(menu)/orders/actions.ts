@@ -10,10 +10,9 @@ import {getCart} from '@/data/cart';
 import {deleteOrder, updateOrderStatus} from "@/data/order";
 import {createFormAction} from "@/lib/routeHandler";
 import type {OrderStatus, TSessionCustomer, WithoutId} from '@/data/types';
-import {redirectWithMessage} from '@/lib/auth';
 import {createOrder} from '@/lib/payments';
 
-export const create = createFormAction(async (formData: FormData) => {
+export const create = createFormAction(async (formData, redirect) => {
     const cart = await getCart();
     if (!cart || Object.keys(cart.items).length < 1) return {
         message: lang('The cart is empty. You will need to add items to the cart first.'),
@@ -52,11 +51,11 @@ export const create = createFormAction(async (formData: FormData) => {
         session
     );
 
-    await redirectWithMessage(
+    await redirect(
         `/admin/orders/view/${orderId}`,
         {
             message: lang('Order was created successfully'),
-            type: 'success',
+            messageType: 'success',
         }
     );
 });

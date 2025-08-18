@@ -94,6 +94,7 @@ export const updateCustomer = fn(async (
             (obj, field) => (obj[field] = '', obj),
             {} as {[F in OptionalCustomerFields]?: ''}
         );
+        if (!customer.password) delete customer.password;
         if (customer.phone) customer.phone = sanitizePhone(customer.phone);
         const updates: {$set?: typeof customer, $unset?: typeof $unset} = {};
         if (Object.keys(customer).length > 0) updates.$set = customer;

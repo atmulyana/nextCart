@@ -18,6 +18,7 @@ export default function CustomerData({texts}: {
         address1: string,
         address2: string,
         company: string,
+        country: string,
         email: string,
         find: string,
         firstName: string,

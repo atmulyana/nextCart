@@ -24,6 +24,7 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
             postcode: formData.getString('postcode'),
             phone: formData.getString('phone'),
             password: bcrypt.hashSync(formData.getString('password', false), 10),
+            created: new Date(),
         }
         const sessObj: WithoutId<TSessionCustomer> = {
             customerEmail: customer.email,
