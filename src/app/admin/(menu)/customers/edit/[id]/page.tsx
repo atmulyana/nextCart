@@ -23,7 +23,7 @@ export const generateMetadata = fnMeta(async () => {
     };
 });
 
-export default async function ViewOrder(props: {params: Promise<{id: string}>}) {
+export default async function EditCustomer(props: {params: Promise<{id: string}>}) {
     const {params: {id}} = await awaitProps(props);
     const customer = await getCustomer(id);
     if (!customer) return notFound();
@@ -35,7 +35,7 @@ export default async function ViewOrder(props: {params: Promise<{id: string}>}) 
             <div className='flex items-baseline pb-5'>
                 <h2 className='flex-auto'>{lang('Edit customer')}</h2>
                 <UpdateButton className='btn-outline-success ml-4'>{lang('Save')}</UpdateButton>
-                <DeleteForm id={id} deleteLabel={lang('Delete')} question={lang('Are you sure you want to delete this order?')} />
+                <DeleteForm id={id} deleteLabel={lang('Delete')} question={lang('Are you sure you want to delete this customer?')} />
                 <GoBackButton className='ml-4' label={lang('Go Back')} />
             </div>
 

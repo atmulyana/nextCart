@@ -50,7 +50,7 @@ export default function DeleteForm({
                         ret.stop();
                         stopLoading.current = noop;
                     };
-                    ret.ready(val => {
+                    ret.ready(() => {
                         resolve(true);
                     });
                 });

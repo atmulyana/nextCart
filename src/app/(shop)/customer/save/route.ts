@@ -5,7 +5,7 @@ import type {TCustomer, TSessionCustomer} from '@/data/types';
 import {
     dbTrans,
     // ObjectId,
-    // toId
+    toId
 } from '@/data/db-conn';
 //import {getCustomerByEmail} from '@/data/customer';
 import {getSession, setCustomerSession} from '@/data/session';
@@ -24,6 +24,10 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
         //     customerId = customer?._id;
         // }
         const {customerId} = await getSession();
+        const customerId2 = toId(formData.getString('customerId'));
+        if ( (!customerId && !customerId2 || customerId?.equals(customerId2)) != true ) {
+            return redirect('/', {message: 'Logout'});
+        }
         
         const custObj: Omit<TCustomer, '_id' | 'password'> = {
             email: formData.getString('email'),

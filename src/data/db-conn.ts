@@ -16,6 +16,7 @@ import {
     type Document,
     type Filter,
     type FindCursor,
+    type FindOneAndUpdateOptions,
     type InsertManyResult,
     type InsertOneOptions,
     type InsertOneResult,
@@ -103,6 +104,15 @@ const [getClient, getDb] = (function() {
                                             options?: BulkWriteOptions
                                         ): Promise<InsertManyResult<TSchema>> {
                                             return col.insertMany(docs, applySession(options));
+                                        }
+                                    }
+                                    else if (prop == 'findOneAndUpdate') {
+                                        return function(
+                                            filter: Filter<TSchema>,
+                                            update: UpdateFilter<TSchema> | Document[],
+                                            options: FindOneAndUpdateOptions & {includeResultMetadata?: boolean}
+                                        ) {
+                                            return col.findOneAndUpdate(filter, update, options);
                                         }
                                     }
                                     else if (prop == 'updateOne') {

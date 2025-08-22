@@ -15,6 +15,7 @@ import {
 } from '@react-input-validator/rules';
 import config from '@/config/usable-on-client';
 import lang from '@/data/lang';
+import {alphaNumericRegex} from '@/lib/common';
 import {Schema} from '..';
 import messages from '../messages';
 import HtmlRequired from '../rules/HtmlRequired';
@@ -33,7 +34,7 @@ export default new Schema({
         numeric
     ],
     gtin: [
-        regex(/^[A-Za-z0-9]+$/).setErrorMessage(lang(messages.productGtin)),
+        regex(alphaNumericRegex).setErrorMessage(lang(messages.alphaNumeric)),
         lengthMax(16),
     ],
     brand: [

@@ -22,9 +22,9 @@ import {save} from '../actions';
 import ImagesVariants from './ImagesVariants';
 import PermalinkInput from './PermalinkInput';
 
-export const generateMetadata = fnMeta(async () => {
+export const generateMetadata = fnMeta<{id?: string}>(async ({params: {id}}) => {
     return {
-        title: `${config.cartTitle}: ${lang('New product')}`,
+        title: `${config.cartTitle}: ${id ? lang('Edit product') : lang('New product')}`,
     };
 });
 

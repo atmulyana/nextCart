@@ -8,6 +8,7 @@ import {redirect, RedirectType} from 'next/navigation';
 import {getRedirectError} from 'next/dist/client/components/redirect';
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import {emptyString} from 'javascript-common';
 import type {NotificationParam} from '@/components/Notification';
 //import {refreshSessionExpires} from "@/data/session";
 import config from './config';
@@ -30,7 +31,7 @@ export const {signIn, signOut, auth, handlers, unstable_update: updateSessionTok
                     if (email == session?.customer?.email) id = session?.customer?.id;
                 }
                 return {
-                    id: id ?? '', //empty string is to avoid creating a random ID
+                    id: id ?? emptyString, //empty string is to avoid creating a random ID
                     email,
                     isCustomer: true,
                     token: session,
@@ -74,16 +75,17 @@ export const getSessionToken = cache(auth);
 
 export async function redirectWithMessage(
     url: string | URL /* including `NextURL` */,
-    message: NotificationParam | string
+    message: (NotificationParam | string) & {counter?: number},
+    isRendering = false,
 ) {
     const session = await getSessionToken();
     if (!session) return void(0) as never;
     if (typeof(url) == 'object') url = url.pathname + url.search;
     else if (!url.startsWith('/')) throw "Invalid URL: only absolute path accepted without protocol and hostname.";
     const isServerAction = (await headers()).get('Next-Action');
-    setRedirectMessage(session.id, message);
-    if (!isServerAction) revalidatePath(url);
-    (await cookies()).set('x-revalidated-at', new Date().toISOString());
+    setRedirectMessage(session.id, message, message.counter);
+    if (!isServerAction && !isRendering) revalidatePath(url);
+    if (!isRendering) (await cookies()).set('x-revalidated-at', new Date().toISOString());
     if (await isFromMobile()) throw getRedirectError(url, RedirectType.replace, 303);
     return redirect(url, RedirectType.replace);
 }

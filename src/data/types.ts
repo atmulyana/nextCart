@@ -3,9 +3,10 @@
  **/
 import type {Binary, Document, ObjectId, WithId, WithoutId} from 'mongodb';
 
+export type _Id = string | ObjectId;
 export type {WithId, WithoutId};
 export type WithObjectId<T> = Omit<T, '_id'> & {_id: ObjectId}; 
-export type _Id = string | ObjectId;
+export type WithOptionalId<T> = Omit<T, '_id'> & {_id?: _Id}; 
 export type {Document, ObjectId};
 
 export type TCart = {
@@ -223,7 +224,7 @@ export type TUser = {
     _id: ObjectId,
     usersName: string,
     userEmail: string,    
-    userPassword: string,
+    userPassword?: string,
     isAdmin: boolean,
     isOwner: boolean,
 };

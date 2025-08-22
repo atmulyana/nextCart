@@ -160,12 +160,24 @@ export function isFallbackError(err: any) { //Forbidden (403), Not Found (404)
     return (err instanceof Error) && err.message.startsWith('NEXT_HTTP_ERROR_FALLBACK');
 }
 
+export class ForbiddenError extends Error {
+    constructor() {
+        super('NextCart;403');
+    }
+}
+
 export function isForbiddenError(err: any) {
-    return (err instanceof Error) && err.message == 'NEXT_HTTP_ERROR_FALLBACK;403';
+    return (err instanceof Error) && err.message == 'NEXT_HTTP_ERROR_FALLBACK;403' || (err instanceof ForbiddenError);
+}
+
+export class NotFoundError extends Error {
+    constructor() {
+        super('NextCart;404');
+    }
 }
 
 export function isNotFoundError(err: any) {
-    return (err instanceof Error) && err.message == 'NEXT_HTTP_ERROR_FALLBACK;404';
+    return (err instanceof Error) && err.message == 'NEXT_HTTP_ERROR_FALLBACK;404' || (err instanceof NotFoundError);
 }
 
 export function isRedirectError(err: any) {
@@ -222,6 +234,7 @@ export function getOrderStatuses() {
     return Object.keys(statusColors);
 }
 
+export const alphaNumericRegex = /^[A-Za-z0-9]+$/;
 export const emailRegex = Email.regex;
 export const indexRegex = /^\d+$/;
 export const nameRegex = /^[a-zA-Z']+$/;

@@ -11,6 +11,7 @@ import {useRouter} from 'next/navigation';
 import cfg from '@/config/usable-on-client';
 import lang from '@/data/lang/client';
 import {isPlainObject} from '@/lib/common';
+import schemaMessages from '@/lib/schemas/messages';
 import Loading from './Loading';
 import {useNotification, type NotificationParam} from './Notification';
 
@@ -125,10 +126,15 @@ const FormWithFunctionAction = React.forwardRef<
 
         if (formRef.current && isPlainObject(response) && isPlainObject(response.__validation_messages__)) {
             const messages = response.__validation_messages__ as {[name: string]: string};
+            let isNotify = false;
             for (let name in messages) {
                 const message = messages[name]?.trim();
-                if (message) validationRef.current.setErrorMessage(name, message);
+                if (message) {
+                    isNotify = true;
+                    validationRef.current.setErrorMessage(name, message);
+                }
             }
+            if (isNotify) notify(schemaMessages.invalidInputs, 'danger');
         }
 
         if (checkedInputs.current) {
@@ -217,6 +223,7 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
     },
     ref
 ) {
+    const notify = useNotification();
     let fnAction: ResponseAction;
     
     const notifyLoading = React.useRef<NonNullable<typeof loadingCallback>>(noop);
@@ -246,6 +253,7 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
         }
         else {
             ev.preventDefault();
+            notify(schemaMessages.invalidInputs, 'danger');
             if (typeof(onSubmitted) == 'function') {
                 onSubmitted({
                     message: 'Invalid input(s)',

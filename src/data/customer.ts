@@ -4,6 +4,7 @@
 import {emailRegex, nameRegex, phoneRegex, sanitizePhone} from '@/lib/common';
 import type {_Id, TCart, TCartItem, TCustomer, TSession, WithoutId} from './types';
 import fn, {type Db, paging, toId} from './db-conn';
+import {clearCustomerSession, getSessionId} from './session';
 
 function phone(customer: TCustomer | null) {
     if (customer?.phone && !customer.phone.startsWith('0')) {
@@ -111,10 +112,18 @@ export const deleteCustomer = fn(async (db: Db, customerId: _Id) => {
     const id = toId(customerId);
     if (!id) return false;
 
+    const currentSessionId = await getSessionId();
     const sessionIds = await db.collection<TSession>('sessions').distinct('_id', {customerId: id});
-    await db.collection<TCartItem>('cartItems').deleteMany({'_id.cartId': {$in: sessionIds}});
-    await db.collection<TCart>('cart').deleteMany({_id: {$in: sessionIds}});
-    await db.collection<TSession>('sessions').deleteMany({_id: {$in: sessionIds}});
+    const deletedSessionIds = sessionIds.filter(id => !id.equals(currentSessionId));
+
+    if (deletedSessionIds.length > 0) {
+        await db.collection<TSession>('sessions').deleteMany({_id: {$in: deletedSessionIds, }});
+        await db.collection<TCartItem>('cartItems').deleteMany({'_id.cartId': {$in: deletedSessionIds}});
+        await db.collection<TCart>('cart').deleteMany({_id: {$in: deletedSessionIds}});
+    }
+    else {
+        await clearCustomerSession();
+    }
 
     await db.collection('reviews').deleteMany({customer: id});
     const w = await db.collection('customers').deleteOne({_id: id});

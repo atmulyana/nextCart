@@ -14,7 +14,7 @@ import Button from '@/components/SubmitButton';
 import TextArea from '@/components/SubmittedTextArea';
 import Input from '@/components/SubmittedInput';
 import CustomerDataForm from '@/components/partials/CustomerDataForm';
-import Template from '@/components/partials/Template';
+import CheckoutTemplate from '../CheckoutTemplate';
 import {formSubmitted, nextToShippingClick} from './formEvents';
 
 export function generateMetadata() {
@@ -27,7 +27,7 @@ export default async function CheckoutInformation() {
     const session = await getSession();
     const cart = await getCartHeader();
 
-    return <Template>
+    return <CheckoutTemplate>
         <div className='bordered'>
             <h5 className='mb-4'>{lang('Customer details')}</h5>
             
@@ -88,5 +88,5 @@ export default async function CheckoutInformation() {
             <Link href='/checkout/cart' className='btn btn-primary'>{lang('Return to cart')}</Link>
             <Button id='nextToShippingButton' className='btn-primary' onClick={nextToShippingClick}>{lang('Continue to shipping')}</Button>
         </div>
-    </Template>;
+    </CheckoutTemplate>;
 }

@@ -147,7 +147,7 @@ export function createGetHandler<P extends GetParam, S extends GetParam, R = any
         normalizeParamValue(searchParams);
         let response = await handler({params, searchParams, redirect: _redirect, isFromMobile, headers}) ?? {};
         if (isFromMobile) {
-            await refreshSessionExpires();
+            await refreshSessionExpires(true);
             await applyCommonMobileData(response, true);
         }
         return response as R;

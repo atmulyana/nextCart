@@ -26,7 +26,7 @@ async function submit(formData: FormData) {
 }
 
 export default async function UserLoginPage() {
-    if (await userCount() < 1) redirect('/admin/setup');
+    if (await userCount() < 1) redirect('/admin/users/form');
     return <> 
         <div className='fixed top-0 right-0 flex gap-4 py-2 px-4'>
             <DarkModeMenu />

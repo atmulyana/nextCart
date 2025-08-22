@@ -6,38 +6,72 @@ import {getSessionToken} from '@/lib/auth';
 import {sanitizePhone} from '@/lib/common';
 import fn, {type Db, ObjectId, toId} from './db-conn';
 import {TSession} from './types';
-import type {_Id, TSessionBasic, TSessionCustomer, TSessionUser, WithoutId} from './types';
+import type {_Id, TSessionCustomer, TSessionUser, WithoutId} from './types';
 
 export async function getSessionId() {
     const session = await getSessionToken();
     return session?.id ? ObjectId.createFromBase64(session.id) : null;
 }
 
-export const refreshSessionExpires = fn(async (db: Db, expires?: Date, sessId?: string) => {
-    let token: Session | null = null;
+export const refreshSessionExpires = fn(async (db: Db, update?: Date | true, sessId?: string) => {
+    let token: Session | null = null,
+        expires = (update instanceof Date) ? update : null;
     if (!sessId && (token = await getSessionToken())) {
         sessId = token.id;
         if (!expires) expires = new Date(token.expires);
     }
     const sessionId = sessId ? ObjectId.createFromBase64(sessId) : null;
-    let isNew: boolean | undefined;
+    let isNew: boolean | undefined,
+        isUserLogout = false,
+        isTokenDirty = false;
     if (sessionId && expires) {
-        const w = await db.collection<TSessionBasic>('sessions').updateOne(
-            {_id: sessionId},
-            {
-                $set: {
-                    expires
+        const sessions = db.collection<TSession>('sessions');
+        if (update === true) {
+            const w = await sessions.updateOne(
+                {_id: sessionId},
+                {
+                    $set: {
+                        expires
+                    }
+                },
+                {
+                    upsert: true,
                 }
-            },
-            {
-                upsert: true,
+            );
+            isNew = w.upsertedCount > 0;
+        }
+        else {
+            const w = await sessions.findOneAndUpdate(
+                {_id: sessionId},
+                {
+                    $set: {
+                        expires
+                    }
+                },
+                {
+                    upsert: true,
+                    includeResultMetadata: true,
+                }
+            );
+            isNew = !w.lastErrorObject?.updatedExisting;
+            if (token) {
+                token.customerPresent = !!w.value?.customerEmail || !!w.value?.customerId;
+                if (!token.customerPresent && token.customer?.email) { //customer has been deleted by admin 
+                    isTokenDirty = true;
+                }
+                if (!w.value?.userId && token.user?.id) { //customer has been deleted by admin 
+                    isUserLogout = true;
+                    isTokenDirty = true;
+                }
             }
-        );
-        isNew = w.upsertedCount > 0;
+        }
     }
+    
     return {
-        sessionId,
         isNew,
+        isTokenDirty,
+        isUserLogout,
+        sessionId,
         token,
     };
 });
@@ -116,7 +150,7 @@ export const getSession = fn(async (db: Db) => {
 });
 
 export const setCustomerSession = fn(async (db: Db, data: _Id | WithoutId<TSessionCustomer>) => {
-    const {sessionId} = await refreshSessionExpires(); //creates session if not exists
+    const {sessionId} = await refreshSessionExpires(true); //creates session if not exists
     if (sessionId) {
         let $set: WithoutId<TSessionCustomer> = {};
         const updates: any[] = [];
@@ -158,17 +192,17 @@ export const clearCustomerSession = fn(async (db: Db) => {
             {_id: sessionId},
             {
                 $unset: {
-                    customerId: "",
-                    customerEmail: "",
-                    customerCompany: "",
-                    customerFirstname: "",
-                    customerLastname: "",
-                    customerAddress1: "",
-                    customerAddress2: "",
-                    customerCountry: "",
-                    customerState: "",
-                    customerPostcode: "",
-                    customerPhone: "",
+                    customerId: 1,
+                    customerEmail: 1,
+                    customerCompany: 1,
+                    customerFirstname: 1,
+                    customerLastname: 1,
+                    customerAddress1: 1,
+                    customerAddress2: 1,
+                    customerCountry: 1,
+                    customerState: 1,
+                    customerPostcode: 1,
+                    customerPhone: 1,
                 }
             }
         );
@@ -178,7 +212,7 @@ export const clearCustomerSession = fn(async (db: Db) => {
 });
 
 export const setUserSession = fn(async (db: Db, userId: ObjectId) => {
-    const {sessionId} = await refreshSessionExpires(); //creates session if not exists
+    const {sessionId} = await refreshSessionExpires(true); //creates session if not exists
     if (sessionId) {
         const w = await db.collection<TSessionUser>('sessions').updateOne(
             {_id: sessionId},
@@ -200,7 +234,7 @@ export const clearUserSession = fn(async (db: Db) => {
             {_id: sessionId},
             {
                 $unset: {
-                    userId: ""
+                    userId: 1
                 }
             }
         );

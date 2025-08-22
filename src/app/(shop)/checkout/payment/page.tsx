@@ -9,7 +9,7 @@ import {getSession} from '@/data/session';
 import {currencySymbol, formatAmount} from '@/lib/common';
 import modules from '@/lib//modules';
 import {getForms} from '@/lib/payments';
-import Template from '@/components/partials/Template';
+import CheckoutTemplate from '../CheckoutTemplate';
 import DiscountForm from './DiscountForm';
 
 export function generateMetadata() {
@@ -22,7 +22,7 @@ export default async function CheckoutPayment() {
     const cart = await getCart();
     const session = await getSession();
     const forms = await getForms();
-    return <Template>
+    return <CheckoutTemplate>
         <div className='bordered'>
             <h5 className='mb-3'>{lang("Customer details")}</h5>
             <div className='bordered !py-3'>
@@ -48,5 +48,5 @@ export default async function CheckoutPayment() {
                 {forms.map((form, idx) => <li key={idx}>{form}</li>)}
             </ul>
         </div>
-    </Template>;
+    </CheckoutTemplate>;
 }

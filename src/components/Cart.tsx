@@ -5,7 +5,7 @@
 import React from 'react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
-import {emptyString} from 'javascript-common';
+import {emptyString, noop} from 'javascript-common';
 import type {TCart, TCartItem} from '@/data/types';
 import {currencySymbol, formatAmount} from '@/lib/common';
 import {clearCart, updateCartItem} from '@/app/actions';
@@ -17,6 +17,7 @@ import Button from './SubmitButton';
 import Input from './SubmittedInput';
 
 interface ContextValue extends TCart {
+    reset(): void;
     update(cart: TCart | null | undefined, callback?: ((cart: TCart) => any) | null): void;
 }
 
@@ -32,18 +33,29 @@ const defaultCart: TCart = {
 
 const Context = React.createContext<ContextValue>({
     ...defaultCart,
-    update: () => {},
+    reset: noop,
+    update: noop,
 });
 
 export function CartContext({cart, children}: {cart?: TCart, children: React.ReactNode}) {
     const updateCallback = React.useRef<(cart: TCart) => any>(null);
     const [value, setValue] = React.useState<ContextValue>({
-       ...(cart ?? defaultCart),
-       update: (
-            cart: TCart | null | undefined, callback?: ((cart: TCart) => any) | null) => {
+        ...(cart ?? defaultCart),
+        reset: () => {
+            setValue(val => ({
+                ...defaultCart,
+                reset: val.reset,
+                update: val.update,
+            }));
+        },
+        update: (
+            newCart: TCart | null | undefined,
+            callback?: ((cart: TCart) => any) | null
+        ) => {
             if (callback) updateCallback.current = callback;    
             setValue(val => ({
-                ...(cart ?? defaultCart),
+                ...(newCart ?? defaultCart),
+                reset: val.reset,
                 update: val.update,
             }));
         }

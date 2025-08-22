@@ -11,18 +11,29 @@ import lang from '@/data/lang';
 import {refreshSessionExpires} from "@/data/session";
 import UrlFixer from '@/components/UrlFixer';
 import {SessionUpdater} from '@/components/SessionContext';
-import {getRequestUrl, getSessionMessage} from '@/lib/auth';
+import {getRequestUrl, getSessionMessage, redirectWithMessage} from '@/lib/auth';
 
 export default async function Template({children}: {children: React.ReactNode}) {
-    const {token: session} = await refreshSessionExpires();
+    const reqUrl = await getRequestUrl();
+    const {isTokenDirty, isUserLogout, token: session} = await refreshSessionExpires();
+    if (isUserLogout && reqUrl.path.startsWith('/admin') && reqUrl.path != '/admin/login') {
+        await redirectWithMessage(
+            '/admin/logout',
+            {
+                message: 'User was deleted',
+                type: 'danger',
+                counter: 2,
+            },
+            true
+        );
+    }
     if (session) {
         const msg = await getSessionMessage();
         if (msg.message) session.message = lang(msg.message);
         session.messageType = msg.type;
     }
-    return <> 
+    return <SessionUpdater value={session} isDirty={isTokenDirty}>
         {children}
-        <SessionUpdater value={session} />
-        <UrlFixer {...(await getRequestUrl())} />
-    </>;
+        <UrlFixer {...reqUrl} />
+    </SessionUpdater>;
 }

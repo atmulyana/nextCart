@@ -4,14 +4,14 @@
 import {ruleAsync} from '@react-input-validator/rules';
 import lang from '@/data/lang';
 import {permalinkExists} from '@/data/product';
-import newProduct from '../all/product';
+import productSchema from '../all/product';
 import {type RuleArray, Schema} from '..';
 import messages from '../messages';
 
 export default new Schema({
-    ...newProduct.shape,
+    ...productSchema.shape,
     permalink: [
-        ...(newProduct.shape.permalink as RuleArray),
+        ...(productSchema.shape.permalink as RuleArray),
         ruleAsync(
             (permalink, resolve, {inputValues}) => {
                 permalinkExists(permalink, inputValues?.id).then(

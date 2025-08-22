@@ -74,9 +74,9 @@ export default async function ShopLayout({
                             <Link href='/admin/users' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 w-4/5 noline'>
                                 <Icon name='user' /> &nbsp; {lang('Users')}
                             </Link>
-                            <Link href='/admin/user/new' className='inline-block w-1/12 text-gray-500 noline'>
+                            {session.isAdmin && <Link href='/admin/users/form' className='inline-block w-1/12 text-gray-500 noline'>
                                 <Icon name='plus' />
-                            </Link>
+                            </Link>}
                         </li>
                         {config.modules.enabled.reviews && <li>
                             <Link href='/admin/reviews' className='inline-block py-2 px-4 text-slate-700 dark:text-slate-700 noline'>

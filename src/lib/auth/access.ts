@@ -86,6 +86,10 @@ const items: ToRedirectItem[] = [
         toRedirect: adminHasLoggedin
     },
     {
+        fromPath: '/admin/users/form',
+        toRedirect: null,
+    },
+    {
         fromPath: '/admin',
         isPrefix: true,
         toRedirect: adminNeedsLogin
