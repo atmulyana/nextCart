@@ -134,7 +134,7 @@ const FormWithFunctionAction = React.forwardRef<
                     validationRef.current.setErrorMessage(name, message);
                 }
             }
-            if (isNotify) notify(schemaMessages.invalidInputs, 'danger');
+            if (isNotify) notify(lang(schemaMessages.invalidInputs), 'danger');
         }
 
         if (checkedInputs.current) {
@@ -253,7 +253,7 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
         }
         else {
             ev.preventDefault();
-            notify(schemaMessages.invalidInputs, 'danger');
+            notify(lang(schemaMessages.invalidInputs), 'danger');
             if (typeof(onSubmitted) == 'function') {
                 onSubmitted({
                     message: 'Invalid input(s)',

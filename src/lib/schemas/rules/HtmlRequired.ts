@@ -11,7 +11,7 @@ export default class HtmlRequired extends Required {
     }
     validate() {
         this.#resultValue = null;
-        if (typeof(this.value == 'string')) {
+        if (typeof(this.value) == 'string') {
             this.#resultValue = this.value.trim();
             this.setValue(stripHtml(this.value).result);
         }

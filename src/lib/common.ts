@@ -235,6 +235,7 @@ export function getOrderStatuses() {
 }
 
 export const alphaNumericRegex = /^[A-Za-z0-9]+$/;
+export const alphaNumericUdashRegex = /^[A-Za-z0-9_-]+$/;
 export const emailRegex = Email.regex;
 export const indexRegex = /^\d+$/;
 export const nameRegex = /^[a-zA-Z']+$/;

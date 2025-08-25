@@ -15,7 +15,7 @@ import {
 } from '@react-input-validator/rules';
 import config from '@/config/usable-on-client';
 import lang from '@/data/lang';
-import {alphaNumericRegex} from '@/lib/common';
+import {alphaNumericRegex, alphaNumericUdashRegex} from '@/lib/common';
 import {Schema} from '..';
 import messages from '../messages';
 import HtmlRequired from '../rules/HtmlRequired';
@@ -59,7 +59,7 @@ export default new Schema({
     ],
     permalink: [
         alwaysValid, //to trim the value
-        regex(/^[A-Za-z0-9_-]+$/).setErrorMessage(lang(messages.productPermalink)),
+        regex(alphaNumericUdashRegex).setErrorMessage(lang(messages.alphaNumericUdash)),
         length(2),
     ],
     allowComment: [required, boolean]

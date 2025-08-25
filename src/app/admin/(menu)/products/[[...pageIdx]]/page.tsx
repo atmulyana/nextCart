@@ -67,7 +67,7 @@ export default async function AdminProducts(props: {params: Promise<{pageIdx?: s
                     <div className='relative ml-4'>
                         <strong className='opacity-0'>{lang('Edit')}</strong>
                         <span className='absolute left-0 top-0 right-0 bottom-0 text-center'>
-                            <Link href={`/admin/products/form//${_id}`} title={lang('Edit')}><Icon name='edit' /></Link>
+                            <Link href={`/admin/products/form/${_id}`} title={lang('Edit')}><Icon name='edit' /></Link>
                         </span>
                     </div>
                     <span className='relative ml-4'>
