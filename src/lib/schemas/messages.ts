@@ -21,5 +21,6 @@ export default {
     permalinkExists: 'This permalink already exists',
     phone: 'invalid phone number',
     price: 'must be a non-negative number value with two decimal digits at max',
-    sanitizeHtml: 'Not allowed HTML tags is found'
+    sanitizeHtml: 'Not allowed HTML tags is found',
+    url: 'invalid URL',
 };

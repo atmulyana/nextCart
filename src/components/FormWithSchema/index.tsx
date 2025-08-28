@@ -6,7 +6,7 @@ import React from 'react';
 import {getSchemaProps} from '@/lib/schemas';
 import FormWithoutSchema, {type FormProps} from '../Form';
 import SchemaContext from '../SchemaContext';
-import loading from './loading';
+import schemaLoading from './loading';
 import {validate} from './validation';
 
 type Props = Omit<FormProps, 'action'> & {
@@ -22,6 +22,7 @@ const FormWithSchema = React.forwardRef<
     {
         children,
         Form = FormWithoutSchema,
+        loading = schemaLoading,
         schemaName,
         ...props
     },

@@ -53,7 +53,7 @@ db.serialize(() => {
             if (!lang) return;
             const key = lang[defaultLocale];
             const idx = lang.idx;
-            if (!Array.isArray(texts[key])) texts[key] = [];
+            if (typeof(texts[key]) != 'object' || !texts[key]) texts[key] = {};
             texts[key][idx] = {};
             for (const locale in lang) {
                 if (locale != defaultLocale && locale != 'idx') texts[key][idx][locale] = lang[locale];
