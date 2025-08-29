@@ -52,12 +52,4 @@ const InternalForm = React.memo(function InternalForm({
     >
         {children}
     </FormWithSchema>;
-})
-
-function SaveButton({isLoading, label}: {isLoading: boolean, label: string}) {
-    if (typeof(window) != 'object') return null;
-    return createPortal(
-        <Button type='submit' className='btn-outline-success flex-none' disabled={isLoading} form='createOrderForm'>{label}</Button>,
-        document.getElementById('createOrderButtonContainer') as HTMLDivElement
-    );
-}
+});

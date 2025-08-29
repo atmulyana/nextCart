@@ -105,14 +105,17 @@ export default function Images({
         let count = Math.floor(imageCount);
         if (count < 0) count = 0;
         setState({count});
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [imageCount]);
 
     React.useEffect(() => {
         if (state.count >= 0 && state.count != imageCount && onCountChange) onCountChange(state.count);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [state.count, onCountChange]);
 
     React.useEffect(() => {
         setState({mainIdx});
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainIdx]);
 
     React.useEffect(() => {
@@ -125,6 +128,7 @@ export default function Images({
                 setAction(null);
             });
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [action]);
 
     const images = [];

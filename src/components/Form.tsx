@@ -58,7 +58,8 @@ const FormWithFunctionAction = React.forwardRef<
         action,
         children,
         getResponseMessage = getMessage,
-        method,
+        //eslint-disable-next-line @typescript-eslint/no-unused-vars
+        method, //always `POST`
         onSubmit,
         onSubmitted,
         refreshThreshold,
@@ -187,7 +188,8 @@ export function FormLoading({isLoading = false}: {isLoading?: boolean | (() => b
     React.useEffect(() => {
         if (load) load(true);
         formCtx.loadingCallback(isLoading);
-    }, [isLoading]);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading, formCtx]);
 
     React.useEffect(() => {
         formCtx.showLoading = () => {
@@ -203,7 +205,7 @@ export function FormLoading({isLoading = false}: {isLoading?: boolean | (() => b
                 }
             }
         };
-    }, []);
+    }, [formCtx]); //`formCtx` never changes
 
     return <Loading isLoading={isLoading} />;
 }
@@ -263,6 +265,7 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
                 });
             }
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [onSubmit, onSubmitted]);
 
     return <ValidationContext ref={ctx}

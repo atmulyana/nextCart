@@ -54,6 +54,7 @@ function Item({
     React.useEffect(() => {
         if (a.current) a.current.parentElement?.addEventListener('selectstart', selectStartHandler);
         arefCallback(a.current);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, emptyArray);
 
     return <div
@@ -99,6 +100,7 @@ const InternalKeywords = React.memo(function WordList({
     const values = Object.values(words);
     React.useEffect(() => {
         if (onChange) onChange(values);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [words, onChange]);
 
     React.useEffect(() => {
@@ -127,6 +129,7 @@ const InternalKeywords = React.memo(function WordList({
     const remove = (key: string) => {
         if (!key) return ;
         setWords(words => {
+            //eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {[key]: removed, ...newWords} = words;
             return newWords;
         });

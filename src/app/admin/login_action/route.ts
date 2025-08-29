@@ -1,7 +1,8 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-import bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs";
+import {emptyString} from 'javascript-common'; 
 import {ResponseMessage} from '@/lib/common';
 import {signIn} from '@/lib/auth';
 import {createPostHandler} from '@/lib/routeHandler';
@@ -20,7 +21,7 @@ export const POST = createPostHandler(async (formData, redirect, isFromMobile) =
 
     const cannotLogin = ResponseMessage(lang('Access denied. Check password and try again.'), 400);
     try {
-        const isPwdValid: boolean = await bcrypt.compare(password, user.userPassword);
+        const isPwdValid = await bcrypt.compare(password, user.userPassword ?? emptyString);
         if (!isPwdValid) return cannotLogin;
     }
     catch {

@@ -38,7 +38,7 @@ const ImageUpload = React.forwardRef(function ImageUpload<NoValidation extends b
     React.useEffect(() => {
         setRef(ref, input.current);
         return () => setRef(ref, null);
-    }, []);
+    }, [ref]);
 
     return <div className='image-upload'>
         <div className='image-upload-input form-input flex items-center relative' onClick={() => input.current?.click()}>

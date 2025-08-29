@@ -19,7 +19,7 @@ export async function GET(
     if (parseInt(nums[0]) != 3 * parseInt(nums[1]) || parseInt(nums[1]) != 3 * parseInt(nums[2])) return notFound();
     
     const token = await getSessionToken();
-    if (!token) return null;
+    if (!token) return Response.json(null);
     const cart = await getCart();
     const session = await getSession();
     token.customerPresent = !!session.customerId || !!session.customerEmail;

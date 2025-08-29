@@ -30,10 +30,11 @@ type Texts = {
     update: string,
 };
 
-const ItemLoading = React.memo(({setLoading}: {setLoading: (isLoading: boolean) => any}) => {
+const ItemLoading = React.memo(function ItemLoading({setLoading}: {setLoading: (isLoading: boolean) => any}) {
     const {pending} = useFormStatus();
     React.useEffect(() => {
         setLoading(pending);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pending]);
     return null;
 });
@@ -55,10 +56,11 @@ export default function Menu({
         setItemElms(menu.map((item, idx) => (
             <MenuItem key={idx} {...{item, setItems, setLoading, texts}} />
         )));
-    }, []);
+    }, [texts]);
 
     React.useEffect(() => {
         setItems(menu);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [menu]);
 
     React.useEffect(() => {
@@ -74,6 +76,7 @@ export default function Menu({
                 setAction(null);
             });
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [action]);
 
     return <div ref={container} className='relative md:w-2/3'>
@@ -175,10 +178,14 @@ function MenuItem({
              * - Add a new item
              * - Drag the new item to the position where the deleted item existed
              * The impact of `onSubnitted` re-invocation is the list will be reverted back to state before the new item
-             * was added. It also happens when we updates an item, but in this case, re-invocatiom won't cause a chaos.
+             * was added. It also happens when we updates an item.
+             * This bug is likely because the form is re-rendered and `React.useActionState` is re-invoked to re-process
+             * `response`.
              */
             resp.data.menu = null;
         }
+        //With the same reason as explained in the above comment, we need to clear the message to avoid re-displaying it.
+        if (resp.data?.message) resp.data.message = emptyString;
     }, [setItems]);
     
     return <>

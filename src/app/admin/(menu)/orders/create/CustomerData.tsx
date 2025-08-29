@@ -52,6 +52,7 @@ export default function CustomerData({texts}: {
                 setLoading(false);
             }
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading]);
 
     return <>

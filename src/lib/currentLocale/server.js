@@ -41,7 +41,7 @@ function currentLocale() {
     try {
         return getCookieLocale() ?? defaultLocale;
     }
-    catch (ex) {
+    catch {
         return defaultLocale;
     }
 }

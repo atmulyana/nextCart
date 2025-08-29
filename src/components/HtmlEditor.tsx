@@ -57,6 +57,7 @@ const HtmlEditor = React.forwardRef(function HtmlEditor<NoValidation extends boo
     const editorRefCallback = React.useCallback((ref: Editor | null) => {
         editor.current = ref;
         if (ref) ref.commands.setContent(val ?? emptyString);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const onUpdate = React.useCallback((editor: Editor) => {
         setVal(editor.getHTML());
@@ -81,7 +82,7 @@ const HtmlEditor = React.forwardRef(function HtmlEditor<NoValidation extends boo
                 ? obj
                 : extendObject(obj, validationRef.current as InputRef)
         );
-    }, [ref, noValidation]);
+    }, [ref, noValidation, name, val]);
 
     React.useEffect(() => {
         if (editor.current) editor.current.setEditable(!pending);

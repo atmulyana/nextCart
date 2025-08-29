@@ -34,6 +34,7 @@ export default function PermalinkInput({
                     .finally(() => setRules(void(0)));
             }
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rules]);
 
     return <ValidatedInput ref={ref} rules={rules} type='text' value={value}

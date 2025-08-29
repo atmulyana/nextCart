@@ -30,6 +30,7 @@ const Variants = React.memo(function Variants({labels: {option, outOfStock}, sto
 
     React.useEffect(() => {
         selectImage(items[0].imageIdx ?? NaN);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return <>

@@ -96,6 +96,7 @@ function TokenUpdater({
             isDirty: false,
             value: session as any,
         });
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session]);
 
     return children;

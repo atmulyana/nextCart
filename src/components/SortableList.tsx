@@ -109,12 +109,15 @@ export default function SortedList({
             if (onSortUpdate) onSortUpdate();
             flag.isJustSorted = false;
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [items]);
 
     React.useEffect(() => {
         if (flag.lastDraggedIdx >= 0 && draggedIdx < 0) { //end of dragging
             if (flag.dropIdx >= 0 && flag.dropIdx != flag.lastDraggedIdx) { //update list
+                //eslint-disable-next-line react-hooks/exhaustive-deps
                 _draggedIdx = flag.lastDraggedIdx;
+                //eslint-disable-next-line react-hooks/exhaustive-deps
                 _overIdx = flag.dropIdx;
                 const newItems: typeof items = [];
                 for (let i = 0; i < items.length; i++) {
@@ -143,6 +146,7 @@ export default function SortedList({
             case 3:
                 flag.dropIdx = idx;
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return <div {...props}>

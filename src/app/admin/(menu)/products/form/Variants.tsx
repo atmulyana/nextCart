@@ -80,6 +80,7 @@ export default function Variants({
                 setAction(null);
             });
         }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [action]);
 
     const showVariantForm = async (idx: number) => {
@@ -299,7 +300,8 @@ function Thumbnail({img}: {img?: HTMLImageElement | null}) {
     }, [img]);
 
     return <div className='flex-none w-32'>
-        <img ref={defaultImage} src='/images/placeholder.png' className='hidden' />
+        {/*eslint-disable-next-line @next/next/no-img-element*/}
+        <img ref={defaultImage} src='/images/placeholder.png' alt='...' className='hidden' />
         <div ref={canvasContainer} className='relative bg-gray-500 pt-full w-full'>
             <div className='absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center'>
                 <canvas ref={canvas} height={1} width={1}>
