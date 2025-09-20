@@ -27,13 +27,67 @@ export default {
         }
     },
     cookies: {
-        name: sessionCfg.paramName,
+        sessionToken: {
+            name: sessionCfg.paramName,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: clientCfg.baseUrl.pathname,
+                secure: process.env.AUTH_SECURE,
+            }
+        },
+        // callbackUrl: {
+        //     name: `${sessionCfg.paramName}.callback`,
+        //     options: {
+        //         sameSite: 'lax',
+        //         path: clientCfg.baseUrl.pathname,
+        //         secure: process.env.AUTH_SECURE
+        //     }
+        // },
+        // csrfToken: {
+        //     name: `${sessionCfg.paramName}.csrf`,
+        //     options: {
+        //         httpOnly: true,
+        //         sameSite: 'lax',
+        //         path: clientCfg.baseUrl.pathname,
+        //         secure: process.env.AUTH_SECURE
+        //     }
+        // },
+        // pkceCodeVerifier: {
+        //     name: `${sessionCfg.paramName}.pkce`,
+        //     options: {
+        //         httpOnly: true,
+        //         sameSite: 'lax',
+        //         path: clientCfg.baseUrl.pathname,
+        //         secure: process.env.AUTH_SECURE,
+        //         maxAge: 900
+        //     }
+        // },
+        // state: {
+        //     name: `${sessionCfg.paramName}.state`,
+        //     options: {
+        //         httpOnly: true,
+        //         sameSite: "lax",
+        //         path: clientCfg.baseUrl.pathname,
+        //         secure: process.env.AUTH_SECURE,
+        //         maxAge: 900
+        //     },
+        // },
+        // nonce: {
+        //     name: `${sessionCfg.paramName}.nonce`,
+        //     options: {
+        //         httpOnly: true,
+        //         sameSite: "lax",
+        //         path: clientCfg.baseUrl.pathname,
+        //         secure: process.env.AUTH_SECURE,
+        //     },
+        // },
     },
     session: {
         strategy: 'jwt',
-        maxAge: sessionCfg.maxAge ?? 30 * 24 * 60 * 60,
+        maxAge: !sessionCfg.maxAge || sessionCfg.maxAge < 1 ? 30 * 24 * 60 * 60 : sessionCfg.maxAge,
     },
-    secret: 'abc',
+    secret: sessionCfg.secret,
     callbacks: {
         async jwt({token, trigger, session, user}) {
             if (trigger == 'signIn') {

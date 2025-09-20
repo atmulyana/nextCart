@@ -3,7 +3,6 @@
  **/
 import './pushy.css';
 import './pushy-modifier.css';
-import Image from 'next/image';
 import Link from 'next/link';
 import config from '@/config';
 import {CartOpenButton} from '@/components/Cart';
@@ -50,7 +49,8 @@ export default async function ShopLayout({
                 whitespace-nowrap"
             >
                 {config.cartLogo
-                    ? <Image src={config.cartLogo} alt={config.cartTitle} className="h-full w-[auto]" />
+                    /*eslint-disable-next-line @next/next/no-img-element*/
+                    ? <img src={config.cartLogo} alt={config.cartTitle} className="h-full w-[auto]" />
                     : config.cartTitle
                 }
             </Link>

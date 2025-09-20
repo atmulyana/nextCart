@@ -4,7 +4,9 @@
 import '@/lib/darkMode'
 import './globals.css'
 import type {Metadata, Viewport} from 'next'
-import config from '@/config'
+import {GoogleAnalytics} from '@next/third-parties/google'
+import config from '@/config/config'
+import type {UsableOnClientConfig} from '@/config/usable-on-client'
 import lang from '@/data/lang'
 import currentLocale from '@/lib/currentLocale/server'
 import Html from '@/components/Html'
@@ -12,6 +14,7 @@ import {CartContext} from '@/components/Cart'
 import {ModalContext} from '@/components/Modal'
 import {NotificationContext} from '@/components/Notification'
 import {SessionProvider} from '@/components/SessionContext'
+import {isOnBrowser} from '@/lib/common'
 import {initActions} from './actions'
 import {getCart} from '@/data/cart'
 import type {TCart} from '@/data/types'
@@ -31,16 +34,31 @@ function getTexts(messages: Messages, translates: React.ComponentProps<typeof Ht
     return translates
 }
 
+async function getClientConfig() {
+    let cfg: UsableOnClientConfig
+    if (isOnBrowser()) {
+        cfg = window.__config__
+    }
+    else {
+        cfg = (await import('@/config/usable-on-client')).default
+    }
+    return cfg
+}
+
 const title = 'Shop'
-export const metadata: Metadata = {
-    title,
-    description: config.cartDescription,
-    keywords: config.cartTitle,
-    referrer: 'origin',
-    metadataBase: config.baseUrl,
-    alternates: {
-        canonical: config.baseUrl,
-    },
+export async function generateMetadata() {
+    const configClient = await getClientConfig()
+    const metadata: Metadata = {
+        title,
+        description: config.cartDescription,
+        keywords: configClient.cartTitle,
+        referrer: 'origin',
+        metadataBase: configClient.baseUrl,
+        alternates: {
+            canonical: configClient.baseUrl,
+        },
+    }
+    return metadata
 }
 export const viewport: Viewport = {
     width: 'device-width',
@@ -66,10 +84,15 @@ export default async function RootLayout({
     //eslint-disable-next-line @typescript-eslint/no-unused-vars
     if (cartWithId) ({_id, ...cart} = cartWithId)
     
-    return <Html lang={texts} locale={locale}>
+    return <Html config={JSON.stringify(await getClientConfig())} lang={texts} locale={locale}>
         <head>
             <meta httpEquiv="X-UA-Compatible" content="IE=edge"></meta>
             {config.facebookAppId && <meta property="fb:app_id" content={config.facebookAppId} />}
+            {config.googleAnalytics && <GoogleAnalytics
+                gaId={config.googleAnalytics.gaId}
+                dataLayerName={config.googleAnalytics.dataLayerName}
+                debugMode={config.googleAnalytics.debugMode}
+            />}
         </head>
         <body>
         <NotificationContext>
@@ -86,6 +109,8 @@ export default async function RootLayout({
         </SessionProvider>
         </ModalContext>
         </NotificationContext>
+        
+            <link rel='stylesheet' href='/custom.css' />
         </body>
     </Html>
 }

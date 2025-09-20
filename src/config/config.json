@@ -1,23 +1,15 @@
 {
     "cartDescription": "nextCart",
     "cartLogo": "",
-    
     "footer": {
-        "html": null,
+        "html": "",
         "shownForCustomer": true,
         "shownForAdmin": false
     },
-    "googleAnalytics": "",
     "databaseConnectionString": "mongodb://127.0.0.1:27017/nextcart?replicaSet=rs0",
-    "enableLanguages": true,
-    "availableLanguages": {
-        "en": "English",
-        "id": "Indonesia",
-        "it": "Italiano"
-    },
-    "defaultLocale": "en",
+    "productOrderBy": "date",
+    "productOrder": "descending",
     "twitterHandle": "",
     "facebookAppId": "",
-    "productOrderBy": "date",
-    "productOrder": "descending"
+    "googleAnalytics": null
 }

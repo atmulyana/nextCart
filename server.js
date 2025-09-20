@@ -8,6 +8,8 @@ const baseUrl = new URL(cfg.baseUrl);
 baseUrl.protocol = 'https:';
 const DEFAULT_PORT = 443;
 
+process.env.AUTH_SECURE = true;
+
 const port = parseInt(baseUrl.port, 10) || DEFAULT_PORT;
 const dev = process.env.NODE_ENV != "production";
 const app = next({dev, dir: __dirname});
@@ -47,13 +49,11 @@ app.prepare().then(() => {
     })
     .once('listening', function() {
         console.log(
-            `\x1b[32m\u2714\x1b[0m  Server listening at https://${baseUrl.host} as ${
-                dev ? "development" : process.env.NODE_ENV
-            }`,
+            `\x1b[32m\u2714\x1b[0m  Server listening at https://${baseUrl.host} as ${process.env.NODE_ENV}`,
         );
     });
 
-    process.env.BASE_URL = baseUrl.toString();
+    process.env.APP_BASE_URL = baseUrl.toString();
 });
 
 if (port == DEFAULT_PORT) {

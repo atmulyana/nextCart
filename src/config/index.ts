@@ -7,11 +7,6 @@ import clientUsable, {type UsableOnClientConfig} from './usable-on-client';
 import emailCfg from './email';
 import sessionCfg from './session';
 
-export type SessionConfig = {
-    paramName: string,
-    maxAge: number | null,
-};
-
 export type Config = typeof cfg &
     {email: typeof emailCfg} &
     UsableOnClientConfig &

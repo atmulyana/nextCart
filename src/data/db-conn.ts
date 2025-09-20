@@ -471,7 +471,7 @@ export default <Func extends ((_db: Db, ...args: any[]) => Promise<any>)>(
 let dbTrans: <T>(fn: () => Promise<T>, options?: TransactionOptions) => Promise<T>;
 if (/(\?|&)replicaSet=/i.test(dbUrl)) {
     dbTrans = async <T>(fn: () => Promise<T>, options?: TransactionOptions): Promise<T> => {
-        console.log('====== WITH TRANSACTION =======')
+        //console.log('====== WITH TRANSACTION =======')
         const client = await getClient(),
               db = await getDb(),
               isNestedTrans = !!db.session;
@@ -510,7 +510,7 @@ if (/(\?|&)replicaSet=/i.test(dbUrl)) {
 }
 else {
     dbTrans = async <T>(fn: () => Promise<T>): Promise<T> => {
-        console.log('====== WITHOUT TRANSACTION =======')
+        //console.log('====== WITHOUT TRANSACTION =======')
         return await fn();
     };
 }

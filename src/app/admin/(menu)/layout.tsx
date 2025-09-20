@@ -21,11 +21,11 @@ export default async function ShopLayout({
     const session = await getSession();
     return <>
         <div id="container" className="relative flex flex-wrap h-full w-full mx-auto mb-0">
-            <nav className='hidden md:!block w-full md:w-1/4 lg:w-1/6 shrink-0 fixed left-0 top-0 bottom-0 z-50
+            <nav className='hidden md:!block w-full md:w-1/4 lg:w-1/6 shrink-0 fixed left-0 top-0 bottom-0 z-40
                             shadow-[inset_-1px_0_0_rgba(0,0,0,0.1)] dark:shadow-[inset_-1px_0_0_rgba(255,255,255,0.1)]
                             bg-white dark:bg-black'
             >
-                <div className='sticky top-0 h-screen overflow-x-hidden overflow-y-auto'>
+                <div className={`sticky top-0 h-screen overflow-x-hidden overflow-y-auto ${config.footer.shownForAdmin ? 'pb-36' : 'pb-0'}`}>
                     <ul className='flex flex-col flex-wrap my-0 pl-0 list-none'>
                         <li className='flex items-center'>
                             <Link href='/admin' className='inline-block py-2 px-4 w-4/5'>

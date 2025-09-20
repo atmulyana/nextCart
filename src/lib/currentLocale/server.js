@@ -4,16 +4,16 @@
 const {cache} = require('react');
 const {cookies} = require('next/headers');
 //const {PassThrough} = require('stream');
-const {defaultLocale} = require('@/config/config.json');
+const {defaultLocale} = require('@/config/server');
 
 let getCookieLocale = () => {
     return cookies().get('locale')?.value;
 }
 
- if (process.env.NODE_ENV == 'development') {
+if (process.env.NODE_ENV == 'development') {
     const storage = require("next/dist/server/app-render/work-unit-async-storage.external");
     function cookies() {
-        return storage.getExpectedRequestStore('cookies').cookies;
+        return storage.workUnitAsyncStorage.getStore().cookies;
     }
     
     // const nullStream = new PassThrough();

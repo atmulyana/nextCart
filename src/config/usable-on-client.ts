@@ -1,82 +1,74 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
+import BaseURL from '@/lib/BaseURL';
 import moduleConfig from '@/lib/modules/config';
+import './usable-on-client.json';
 
 export type UsableOnClientConfig = {
-    cartTitle: string,
-    baseUrl: BaseURL,
+    enableLanguages: boolean,
+    availableLanguages: {[locale: string]: string},
+    defaultLocale: string,
+    currencySymbol: string,
+    currencyISO: string,
     productsPerRow: 1 | 2 | 3 | 4,
     productsPerPage: number,
     itemsPerPage: number,
-    currencySymbol: string,
-    currencyISO: string,
     maxQuantity: number,
-    modules: {
-        enabled: { 
-            discount?: string,
-            reviews?: string,
-            shipping?: string,
-        },
-        loaded: {
-            discount?: string,
-            reviews?: string,
-            shipping?: string,
-        },
-    },
-    paymentGateway: string[],
     trackStock: boolean,
     showRelatedProducts: boolean,
     showHomepageVariants: boolean,
-};
-
-class BaseURL extends URL {
-    static reDirSepTrimEnd = /\/+$/;
-    constructor(input: string | URL, base?: string | URL) {
-        super(input, base);
-        this.username = '';
-        this.password = '';
-        this.search = '';
-        this.hash = '';
-    }
-
-    get path() {
-        return super.pathname.replace(BaseURL.reDirSepTrimEnd, '');
-    }
-
-    get pathname() {
-        return this.path || '/';
-    }
-
-    toString() {
-        const str = super.toString();
-        return str.replace(BaseURL.reDirSepTrimEnd, '');
-    }
-
-    toJSON() {
-        return this.toString();
-    }
-}
-
-const {baseUrl, ...baseConfig} = require('./usable-on-client.json') as UsableOnClientConfig;
-const config = {
-    ...baseConfig,
-    get baseUrl() {
-        if (typeof(location) == 'object') { //on client browser
-            const url = new BaseURL(baseUrl);
-            url.protocol = location.protocol;
-            url.host = location.host;
-            return url;
-        }
-        return new BaseURL(process?.env?.BASE_URL || baseUrl);
-    },
+    paymentGateway: string[],
+    cartTitle: string,
+    baseUrl: BaseURL,
     modules: {
         enabled: { 
-            ...moduleConfig,
+            discount?: string,
+            reviews?: string,
+            shipping?: string,
         },
         loaded: {
-            ...moduleConfig,
+            discount?: string,
+            reviews?: string,
+            shipping?: string,
         },
     },
 };
-export default config;
+
+declare global {
+    interface Window {
+        __config__: UsableOnClientConfig;
+    }
+    var __config__: UsableOnClientConfig;
+}
+
+let cfg!: UsableOnClientConfig;
+if (!cfg) {
+    if (typeof(window) == 'object') {
+        cfg = require('./client').config;
+    }
+    else {
+        cfg = require('@__server__').config;
+        if (!cfg) { //Server-side rendering for client component
+            cfg = global.__config__;
+        }
+        const {baseUrl, ...baseConfig} = cfg;
+        cfg = {
+            ...baseConfig,
+            get baseUrl() {
+                return new BaseURL(process.env.APP_BASE_URL || baseUrl);
+            },
+            modules: {
+                enabled: { 
+                    ...moduleConfig,
+                },
+                loaded: {
+                    ...moduleConfig,
+                },
+            },
+        };
+    }
+    
+    global.__config__ = cfg;
+}
+export default cfg;

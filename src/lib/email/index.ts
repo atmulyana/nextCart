@@ -8,8 +8,13 @@ import * as nodemailer from 'nodemailer';
 import type SMTPTransport from 'nodemailer/lib/smtp-connection';
 import config from '@/config';
 
-export async function sendEmail(to: string, subject: string, body: React.ReactElement | string) {
-    const emailSettings:SMTPTransport.Options = {
+export async function sendEmail(
+    to: string,
+    subject: string,
+    body: React.ReactElement | string,
+    emailSetting?: SMTPTransport.Options & {from?: string}
+) {
+    const smtpSettings: SMTPTransport.Options = emailSetting ?? {
         host: config.email.host,
         port: config.email.port,
         secure: config.email.secure,
@@ -19,14 +24,14 @@ export async function sendEmail(to: string, subject: string, body: React.ReactEl
         }
     };
     if(config.email.host == 'smtp-mail.outlook.com'){
-        emailSettings.tls = { 
+        smtpSettings.tls = { 
             ciphers: 'SSLv3',
         };
     }
-    const transporter = nodemailer.createTransport(emailSettings);
+    const transporter = nodemailer.createTransport(smtpSettings);
 
     const mailOptions: nodemailer.SendMailOptions = {
-        from: config.email.fromAddress,
+        from: emailSetting?.from ?? config.email.fromAddress,
         to: to,
         subject: subject,
     };

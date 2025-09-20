@@ -11,16 +11,14 @@ type Props<NoIndeterminate extends (boolean | undefined)> = Omit<
     CheckBoxProps<NoIndeterminate>,
     'className' | 'disabled' | 'style'
 > & {
+    containerClass?: string,
+    containerStyle?: CSSProperties,
     className?: string,
     style?: CSSProperties,
-    $coverStyle?: {
-        className?: string,
-        style?: CSSProperties,
-    }
 };
 
 const SubmittedCheckBox = React.forwardRef(function SubmittedCheckBox<NoIndeterminate extends boolean = false>(
-    {$coverStyle, className, name, style, ...props}: Props<NoIndeterminate>,
+    {containerClass, containerStyle, className, name, style, ...props}: Props<NoIndeterminate>,
     ref: React.Ref<CheckBoxRef<NoIndeterminate>>
 ) {
     const {pending} = useFormStatus();
@@ -34,8 +32,8 @@ const SubmittedCheckBox = React.forwardRef(function SubmittedCheckBox<NoIndeterm
         rules={props.rules ?? props2.rules}
         style={{
             $cover: {
-                $class: $coverStyle?.className,
-                $style: $coverStyle?.style,
+                $class: containerClass,
+                $style: containerStyle,
             },
             $input: {
                 $class: className,

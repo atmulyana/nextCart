@@ -4,6 +4,12 @@
  * Create `email-local.json` in the same directory to overwrite the email settings.
  * The file won't be uploaded to GIT repository
  ***/
+const {readJSON} = require('@/lib/file-util');
+try {
+    require('./email-local.json');
+}
+catch {}
+
 const config = {
     host: "<Your SMTP server>",
     port: 587, //SMTP prort
@@ -13,10 +19,10 @@ const config = {
     fromAddress: "<your-support@email.address>", //It's `From` address of the email sent to customer when an order is created
 };
 
+
 let localCfg: Partial<typeof config> = {};
 try {
-    //@ts-ignore
-    localCfg = await import('./email-local.json');
+    localCfg = readJSON('/config/email-local.json');
 }
 catch {}
 

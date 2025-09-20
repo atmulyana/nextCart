@@ -1,7 +1,11 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-export default require('./config.json') as {
+import {readFileText, readJSON} from '@/lib/file-util';
+import './config.json';
+import './custom.less';
+
+type Config = {
     cartDescription: string,
     cartLogo: string,
     footer: {
@@ -9,13 +13,26 @@ export default require('./config.json') as {
         shownForCustomer: boolean,
         shownForAdmin: boolean,
     },
-    googleAnalytics: string,
+    customCss: string,
     databaseConnectionString: string,
-    enableLanguages: boolean,
-    availableLanguages: {[locale: string]: string},
-    defaultLocale: string,
-    twitterHandle: string,
-    facebookAppId: string,
     productOrderBy: string,
     productOrder:  'ascending' | 'descending',
+    twitterHandle: string,
+    facebookAppId: string,
+    googleAnalytics: null | {
+        gaId: string,
+        dataLayerName?: string,
+        debugMode?: boolean,
+        script?: string,
+    },
 };
+
+let cfg!: Config;
+if (!cfg) {
+    cfg = {
+        ...readJSON<Config>('/config/config.json'),
+        customCss: readFileText('/config/custom.less')
+    };
+}
+
+export default cfg;

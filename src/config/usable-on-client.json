@@ -1,6 +1,11 @@
 {
-    "cartTitle": "CLOTH",
-    "baseUrl": "http://localhost:3000",
+    "enableLanguages": true,
+    "availableLanguages": {
+        "en": "English",
+        "id": "Indonesia",
+        "it": "Italiano"
+    },
+    "defaultLocale": "en",
     "productsPerRow": 3,
     "productsPerPage": 6,
     "itemsPerPage": 10,
@@ -15,5 +20,7 @@
     ],
     "trackStock": true,
     "showRelatedProducts": true,
-    "showHomepageVariants": true
+    "showHomepageVariants": true,
+    "cartTitle": "CLOTH",
+    "baseUrl": "http://localhost:3000"
 }

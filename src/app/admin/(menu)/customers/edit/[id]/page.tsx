@@ -46,7 +46,7 @@ export default async function EditCustomer(props: {params: Promise<{id: string}>
                 <div className='text-gray-500'>{lang('Only populate if wanting to reset the customers password')}</div>
             </div>
             <div className='flex flex-col mb-4'>
-                <label htmlFor='customerCreateDate'>{lang('Creation date')}</label>
+                <label htmlFor='customerCreateDate'>{lang('Created date')}</label>
                 <input id='customerCreateDate' defaultValue={customer.created && formatDate(customer.created)} readOnly />
             </div>
         </Form>

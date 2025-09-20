@@ -1,0 +1,15 @@
+/** 
+ * https://github.com/atmulyana/nextCart
+ **/
+.code-editor .cm-editor {
+    border-color: var(--input-border-color);
+    border-radius: .25rem;
+    border-style: solid;
+    border-width: 1px;
+    box-sizing: border-box;
+    outline: none !important;
+    overflow: hidden;
+}
+.code-editor:has( textarea.error) .cm-editor {
+    border-color: var(--color-danger) !important;
+}

@@ -27,10 +27,12 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts", 
+    "src/data/lang/server.js",
+    "src/data/lang/client.js",
     "src/lib/currentLocale/client.js",
     "src/lib/currentLocale/server.js",
-    "src/data/lang/server.js",
-    "src/data/lang/client.js" 
+    "src/lib/env-vars.js",
+    "src/lib/file-util.js"
   ],
   "exclude": [
     "node_modules"

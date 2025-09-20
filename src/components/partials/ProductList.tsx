@@ -4,6 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
+import {emptyString} from 'javascript-common';
 import config from '@/config';
 import type {TProductItem} from '@/data/types';
 import lang from '@/data/lang';
@@ -17,6 +18,7 @@ import Button from '@/components/SubmitButton';
 import Select from '@/components/SubmittedSelect';
 import Template from '@/components/partials/Template';
 import FrontMenu from './FrontMenu';
+import ProductTitle from './ProductTitle';
 
 const ColsToBasis = {
     1: 'basis-full',
@@ -32,7 +34,7 @@ class Title extends String {
 }
 
 export function getTitle(pageUrl?: string, searchTerm?: string) {
-    searchTerm = searchTerm?.trim() || '';
+    searchTerm = searchTerm?.trim() || emptyString;
     let title: Title | undefined;
     if (pageUrl == 'category') {
         title = new Title(`${lang('Category')}: ${searchTerm}`);
@@ -89,13 +91,13 @@ function Item({
     data: TProductItem,
 }) {
     const productId = data._id.toString();
-    return <div className={className + (data.productPermalink ? ' product-wrapper' : '')}>
+    return <div className={className + (data.productPermalink ? ' product-wrapper' : emptyString)}>
         <Link className='block flex-none bg-[var(--bg-color)] text-[var(--fg-color)]'
             href={`/product/${data.productPermalink ? data.productPermalink : productId}`}
             prefetch={false}
         >
             <FlexImage src={data.productImage} alt='...' />
-            <h6 className='block mt-0 pt-2.5 text-center text-lg'>{data.productTitle}</h6>
+            <ProductTitle title={data.productTitle} />
         </Link>
         <CartForm className='w-full' action={addCartItem}>
             <input type='hidden' name='productId' value={productId} />

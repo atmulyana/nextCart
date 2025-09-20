@@ -10,7 +10,7 @@ import {isIndexNumber} from '@/lib/common';
 
 export async function GET(
     _: Request,
-    {params}: {params: Promise<{nums: string[]}>}
+    {params}: {params: Promise<{nums?: string[]}>}
 ) {
     /*** Just a little bit obfuscating ***/
     const {nums} = await params;

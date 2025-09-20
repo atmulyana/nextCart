@@ -112,7 +112,7 @@ export async function validateForm<T extends (string | undefined) = undefined>(
                     rules,
                     resObj
                 ) != 'string') {
-                    value = resObj.resultValue;
+                    if ('resultValue' in resObj) value = resObj.resultValue;
                 }
             }
             return value;
@@ -135,7 +135,7 @@ export async function validateForm<T extends (string | undefined) = undefined>(
             messages[name] = retVal;
         }
         else {
-            data[name] = resObj.resultValue;
+            data[name] = 'resultValue' in resObj ? resObj.resultValue : value;
         }
     }
 
