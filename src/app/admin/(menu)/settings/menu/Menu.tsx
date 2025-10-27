@@ -3,7 +3,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
-import {emptyString} from 'javascript-common';
+import {emptyArray, emptyString} from 'javascript-common';
 import {useFormStatus} from 'react-dom';
 import Button from '@/components/SubmitButton';
 import DeleteButton from '@/components/DeleteButton';
@@ -13,7 +13,7 @@ import Form from '@/components/Form';
 import FormWithSchema from '@/components/FormWithSchema';
 import Loading from '@/components/Loading';
 import {useNotification} from '@/components/Notification';
-import SortedList from '@/components/SortableList';
+import SortedList from '@react-packages/sortable-list';
 import type {TMenu} from '@/data/types';
 import {isPlainObject} from '@/lib/common';
 import {remove, save, updateOrder} from './actions';
@@ -46,15 +46,15 @@ export default function Menu({
     menu: TMenu[],
     texts: Texts,
 }) {
-    const [itemElms, setItemElms] = React.useState<React.ReactElement[]>([]);
+    const [itemElms, setItemElms] = React.useState<React.ReactElement[]>(emptyArray);
     const [loading, setLoading] = React.useState(false);
     const [action, setAction] = React.useState<(() => Promise<any>) | null>(null);
     const container = React.useRef<HTMLDivElement>(null);
     const notify = useNotification();
 
     const setItems = React.useCallback((menu: TMenu[]) => {
-        setItemElms(menu.map((item, idx) => (
-            <MenuItem key={idx} {...{item, setItems, setLoading, texts}} />
+        setItemElms(menu.length < 1 ? emptyArray : menu.map((item, idx) => (
+            <MenuItem {...{item, setItems, setLoading, texts}} />
         )));
     }, [texts]);
 
@@ -90,8 +90,7 @@ export default function Menu({
             </div>
         </div>
         <SortedList
-            itemClassName='flex pb-2'
-            onSortUpdate={() => {
+            onOrderChange={() => {
                 setAction(() => {
                     return () => new Promise<any>(resolve => {
                         if (!container.current) return;
@@ -100,7 +99,7 @@ export default function Menu({
                             formData.append('id', (input as HTMLInputElement).value);
                         });
                         resolve(updateOrder(formData));
-                    })
+                    });
                 });
             }}
         >
@@ -172,23 +171,10 @@ function MenuItem({
     const onSubmitted = React.useCallback((resp: {data?: any}) => {
         if (resp.data?.menu) {
             setItems(resp.data.menu);
-            /**
-             * NEEDS to be set to `null` because unexpectedly `onSubnitted` is re-invoked in the following scenario:
-             * - Delete an item
-             * - Add a new item
-             * - Drag the new item to the position where the deleted item existed
-             * The impact of `onSubnitted` re-invocation is the list will be reverted back to state before the new item
-             * was added. It also happens when we updates an item.
-             * This bug is likely because the form is re-rendered and `React.useActionState` is re-invoked to re-process
-             * `response`.
-             */
-            resp.data.menu = null;
         }
-        //With the same reason as explained in the above comment, we need to clear the message to avoid re-displaying it.
-        if (resp.data?.message) resp.data.message = emptyString;
     }, [setItems]);
     
-    return <>
+    return <div className='flex pb-2'>
         <a className='btn flex-none mr-2' title={texts.move}>
             <Icon name='move' />
         </a>
@@ -223,5 +209,5 @@ function MenuItem({
         >
             <input type='hidden' name='id' value={item._id} />
         </Form>
-    </>;
+    </div>;
 }

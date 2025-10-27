@@ -2,6 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 const crypto = require('crypto');
+const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
 const {emptyString} = require('javascript-common');
@@ -14,25 +15,13 @@ function getProjectRoot() {
 function setEnvVars(clientCfg, sessionCfg, projectRoot) {
     if (!projectRoot) projectRoot = getProjectRoot();
     const envPath = `${projectRoot}/.env.local`;
-    const env = {};
-    let envRows = [], isDirty = false;
+    let env = {};
+    let isDirty = false;
     try {
-        envRows = fs.readFileSync(envPath, 'utf8').split('\n');
+        const envStr = fs.readFileSync(envPath, 'utf8');
+        env = dotenv.parse(envStr);
     }
     catch {}
-    for (let envItem of envRows) {
-        const sepIdx = envItem.indexOf('=');
-        let varname, value;
-        if ( sepIdx >= 0) {
-            varname = envItem.substring(0, sepIdx).trim();
-            value = envItem.substring(sepIdx + 1).trim();
-        }
-        else {
-            varname = envItem.trim();
-            value = emptyString;
-        }
-        if (varname) env[varname] = value;
-    }
 
     let newValue = clientCfg.baseUrl.toString();
     if (env.APP_BASE_URL != newValue) {
@@ -59,32 +48,41 @@ function setEnvVars(clientCfg, sessionCfg, projectRoot) {
     }
 
     newValue = sessionCfg.secret;
-    if (JSON.parse(env.AUTH_SECRET) != newValue) {
-        env.AUTH_SECRET = JSON.stringify(newValue);
+    if (env.AUTH_SECRET != newValue) {
+        env.AUTH_SECRET = newValue;
         isDirty = true;
     }
 
     if (isDirty) {
-        envRows = [];
-        for (let varname in env) envRows.push(varname + '=' + env[varname]);
+        const envRows = [];
+        for (let varname in env) {
+            const value = ['AUTH_COOKIE_NAME', 'AUTH_COOKIE_EXPIRES'].includes(varname)
+                ? env[varname]
+                : `"${env[varname].replaceAll('"', '\\"')}"`
+            envRows.push(varname + '=' + value);
+        }
         fs.writeFileSync(envPath, envRows.join('\n'));
     }
 }
 
-function setEnvVarsFromConfig() {
+function setEnvVarsFromConfig(isDev = false) {
     const projectRoot = getProjectRoot();
-    let configDir = `${projectRoot}/.next/server/config/`;
-    if (!fs.existsSync(configDir)) {
-        configDir = `${projectRoot}/src/config/`;
+    let configDir = `${projectRoot}/.next/server/config`;
+    if (!fs.existsSync(configDir) || isDev) {
+        configDir = `${projectRoot}/src/config`;
     }
     const sCfg = readJSON(`${configDir}/session.json`, false);
     let slCfg;
     const slCfgPath = `${configDir}/session-local.json`;
     if (!fs.existsSync(slCfgPath)) {
-        slCfg = {
-            secret: crypto.randomBytes(32).toString('base64'),
-        };
-        saveJSON(slCfgPath, slCfg);
+        try {
+            slCfg = {
+                secret: crypto.randomBytes(32).toString('base64'),
+            };
+            saveJSON(slCfgPath, slCfg);
+        }
+        catch {
+        }
     }
     else {
         slCfg = readJSON(slCfgPath, false);
