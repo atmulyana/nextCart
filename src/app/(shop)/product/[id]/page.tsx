@@ -3,6 +3,7 @@
  **/
 import React from 'react';
 import Link from 'next/link';
+import Ellipsis from '@react-packages/ellipsis';
 import {stripHtml} from 'string-strip-html';
 import config from '@/config';
 import lang from '@/data/lang';
@@ -19,7 +20,6 @@ import {addCartItem} from '@/app/actions';
 import {GET} from './data/route';
 import ImageSlider from './ImageSlider';
 import Quantity from './Quantity';
-import RelatedImageTitleItem from './RelatedImageTitleItem';
 import ReviewControls from './ReviewControls';
 import Variants from './Variants';
 
@@ -196,15 +196,10 @@ export default async function Product(props: Props) {
                     {relatedProducts.map(p => <div key={p._id.toString()}
                         className={`grow-0 shrink basis-1/4 px-4 ${p.productPermalink ? 'product-wrapper' : ''}`}
                     >
-                        <RelatedImageTitleItem item={{
-                            title: p.productTitle,
-                            imageUrl: p.productImage,
-                            link: p.productPermalink || p._id.toString(),
-                        }} />
-                        {/* <Link href={`/product/${p.productPermalink || p._id.toString()}`} className='block' prefetch={false}>
+                        <Link href={`/product/${p.productPermalink || p._id.toString()}`} className='block' prefetch={false}>
                             <FlexImage src={p.productImage} alt='...' />
-                            <h5 className='w-full text-center mt-2.5 overflow-hidden text-ellipsis whitespace-nowrap'>{p.productTitle}</h5>
-                        </Link> */}
+                            <h5 className='text-center mt-2.5'><Ellipsis>{p.productTitle}</Ellipsis></h5>
+                        </Link>
                         <h5 className='w-full text-center text-neutral-500'>{currencySymbol()}{formatAmount(p.productPrice)}</h5>
                         <p className='text-center mb-2.5'>
                             <Link href={`/product/${p.productPermalink || p._id.toString()}`} className='btn btn-primary'>{lang('View')}</Link>

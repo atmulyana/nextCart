@@ -1,6 +1,6 @@
 {
   "name": "next-cart",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "private": true,
   "scripts": {
     "predev": "node ./preprocess.js led",
@@ -27,7 +27,9 @@
     "@react-input-validator/rules-datetime": "^2.0.1",
     "@react-input-validator/rules-file": "^2.0.0",
     "@react-input-validator/web": "^2.0.3",
+    "@react-packages/ellipsis": "^1.0.0",
     "@react-packages/keywords": "^1.0.0",
+    "@react-packages/rect": "^1.0.0",
     "@react-packages/sortable-list": "^1.0.0",
     "@stripe/stripe-js": "^7.5.0",
     "@tiptap/extension-highlight": "^3.0.7",

@@ -5,6 +5,7 @@
 @plugin "flowbite-react/plugin/tailwindcss";
 @source "../../.flowbite-react/class-list.json";
 @custom-variant dark (&:where(.dark, .dark *));
+@custom-variant hover (&:hover);
 
 :root {
     --fg-color: black;

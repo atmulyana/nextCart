@@ -5,6 +5,7 @@
 import React from 'react';
 import {Tooltip} from "flowbite-react";
 import {emptyString} from 'javascript-common';
+import Rect, {styles} from '@react-packages/rect';
 import Button from '@/components/SubmitButton';
 import type {FormProps} from '@/components/Form';
 import FormWithSchema from '@/components/FormWithSchema';
@@ -268,6 +269,7 @@ function Thumbnail({img}: {img?: HTMLImageElement | null}) {
     const canvas = React.useRef<HTMLCanvasElement>(null);
     const canvasContainer = React.useRef<HTMLDivElement>(null);
     const defaultImage = React.useRef<HTMLImageElement>(null);
+    const [canvasRendered, setCanvasRendered] = React.useState(false);
     
     React.useEffect(() => {
         if (!canvas.current || !canvasContainer.current) return;
@@ -292,21 +294,21 @@ function Thumbnail({img}: {img?: HTMLImageElement | null}) {
                 canv.width = width;
                 const ctx = canv.getContext('2d');
                 ctx?.drawImage(image, 0, 0, imgWidth, imgHeight, 0, 0, width, height);
-            }).catch(noImage)
+            }).catch(noImage);
         }
         else {
             noImage();
         }
-    }, [img]);
+    }, [img, canvasRendered]);
 
     return <div className='flex-none w-32'>
         {/*eslint-disable-next-line @next/next/no-img-element*/}
         <img ref={defaultImage} src='/images/placeholder.png' alt='...' className='hidden' />
-        <div ref={canvasContainer} className='relative bg-gray-500 pt-full w-full'>
-            <div className='absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center'>
+        <Rect ref={canvasContainer} className='bg-gray-500' onRendered={isRendered => setCanvasRendered(isRendered)}>
+            <div style={styles.centeredContent}>
                 <canvas ref={canvas} height={1} width={1}>
                 </canvas>
             </div>
-        </div>
+        </Rect>
     </div>
 }

@@ -5,6 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import {emptyString} from 'javascript-common';
+import Ellipsis from '@react-packages/ellipsis';
 import config from '@/config';
 import type {TProductItem} from '@/data/types';
 import lang from '@/data/lang';
@@ -18,7 +19,6 @@ import Button from '@/components/SubmitButton';
 import Select from '@/components/SubmittedSelect';
 import Template from '@/components/partials/Template';
 import FrontMenu from './FrontMenu';
-import ProductTitle from './ProductTitle';
 
 const ColsToBasis = {
     1: 'basis-full',
@@ -92,12 +92,12 @@ function Item({
 }) {
     const productId = data._id.toString();
     return <div className={className + (data.productPermalink ? ' product-wrapper' : emptyString)}>
-        <Link className='block flex-none bg-[var(--bg-color)] text-[var(--fg-color)]'
+        <Link className='block bg-[var(--bg-color)] text-[var(--fg-color)]'
             href={`/product/${data.productPermalink ? data.productPermalink : productId}`}
             prefetch={false}
         >
             <FlexImage src={data.productImage} alt='...' />
-            <ProductTitle title={data.productTitle} />
+            <h6 className='text-center text-lg mt-0 pt-2.5'><Ellipsis>{data.productTitle}</Ellipsis></h6>
         </Link>
         <CartForm className='w-full' action={addCartItem}>
             <input type='hidden' name='productId' value={productId} />

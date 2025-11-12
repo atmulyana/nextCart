@@ -5,6 +5,7 @@
 import React from 'react';
 import {Carousel, createTheme} from 'flowbite-react';
 import {emptyString} from 'javascript-common';
+import Rect from '@react-packages/rect';
 import Icon from '@/components/Icon';
 import cfg from '@/config/usable-on-client';
 import type {TProductImagePath} from '@/data/types';
@@ -50,14 +51,12 @@ const ImageSlider = React.memo(function ImageSlider(
     const slider = React.useRef<HTMLDivElement>(null);
     
     return <>
-        <div className='relative rounded-sm w-full pt-full overflow-hidden'>
-            <div ref={slider} className='absolute top-0 right-0 bottom-0 left-0'>
+        <Rect ref={slider} className='rounded-sm'>
             <Carousel slide={false} theme={theme.carousel} onSlideChange={slideChange}>
                 {/*eslint-disable-next-line @next/next/no-img-element*/}
                 {images.map(img => <img key={img.id} src={`${cfg.baseUrl.path}${img.path}`} alt='...' />)}
             </Carousel>
-            </div>
-        </div>
+        </Rect>
         <Thumbnails images={images} selectedIndex={selectedIndex} slider={slider} />
     </>;
 });

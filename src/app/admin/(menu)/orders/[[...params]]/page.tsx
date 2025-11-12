@@ -69,11 +69,11 @@ export default async function AdminOrders(props: {params: Promise<{
         />
         <ul className='bordered'>
             <li className='!flex bg-gray-200 dark:bg-gray-800'>
-                <strong className='w-36 mr-4'>{lang('Date')}</strong>
-                <strong className='w-56 mr-4'>{lang('Email address')}</strong>
+                <strong className='w-36 shrink-0 mr-4'>{lang('Date')}</strong>
+                <strong className='w-56 shrink-0 mr-4'>{lang('Email address')}</strong>
                 <strong className='grow mr-4'>{lang('Customer')}</strong>
-                <strong className='mr-4'>{lang('Status')}</strong>
-                <strong className='mr-4'>{lang('View')}</strong>
+                <strong className='mr-4 shrink-0'>{lang('Status')}</strong>
+                <strong className='mr-4 shrink-0'>{lang('View')}</strong>
                 <strong>{lang('Delete')}</strong>
             </li>
             {(search || status) && <li className='bg-[var(--bg-color)] !py-0'>
@@ -84,11 +84,11 @@ export default async function AdminOrders(props: {params: Promise<{
                 <li className='bg-[var(--bg-color)] text-center'>{lang('No orders found')}</li>
             ) : orders.list.map(o => (_id = o._id.toString(),
                 <li key={_id} className='!flex bg-[var(--bg-color)] hover:bg-gray-100 hover:dark:bg-gray-900'>
-                    <div className='w-36 mr-4'>{o.orderDate && dtFormat.format(o.orderDate)}</div>
-                    <div className='w-56 text-ellipsis mr-4'>{o.orderEmail}</div>
+                    <div className='w-36 shrink-0 mr-4'>{o.orderDate && dtFormat.format(o.orderDate)}</div>
+                    <div className='w-56 shrink-0 overflow-hidden text-ellipsis text-nowrap mr-4'>{o.orderEmail}</div>
                     <div className='grow mr-4'>{o.orderFirstname} {o.orderLastname}</div>
-                    <div className='mr-4' style={{color: `var(--color-${getStatusColor(o.orderStatus)})`}}>{getStatusText(o.orderStatus)}</div>
-                    <div className='relative mr-4'>
+                    <div className='shrink-0 mr-4' style={{color: `var(--color-${getStatusColor(o.orderStatus)})`}}>{getStatusText(o.orderStatus)}</div>
+                    <div className='relative shrink-0 mr-4'>
                         <strong className='opacity-0'>{lang('View')}</strong>
                         <span className='absolute left-0 top-0 right-0 bottom-0 text-center'>
                             <Link href={`/admin/orders/view/${_id}`}><Icon name='file' /></Link>
