@@ -26,13 +26,13 @@ export const POST = createPostHandler(async (_, redirect, isFromMobile) => {
         },
         transactions: [{
             amount: {
-                total: cart.totalCartAmount.toString(),
+                total: new Number(Math.ceil(cart.totalCartAmount * 100) / 100).toFixed(2),
                 currency: paypalConfig.paypalCurrency.toString(),
             },
             description: paypalConfig.paypalCartDescription.toString(),
         }]
     };
-    paypal.configure((paypalConfig as unknown) as ConfigureOptions);
+    paypal.configure((paypalConfig as unknown) as ConfigureOptions)
 
     let obj: {message?: string, redirectUrl?: string} = {};
     try {
@@ -43,6 +43,7 @@ export const POST = createPostHandler(async (_, redirect, isFromMobile) => {
                         resolve({
                             message: `${lang('There was an error processing your payment')}. ${lang('You have not been charged and can try again')}.`,
                         });
+                        return;
                     }
                     if(payment.payer.payment_method == 'paypal'){
                         let redirectUrl: string | undefined;

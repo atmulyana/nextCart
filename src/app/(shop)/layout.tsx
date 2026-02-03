@@ -45,12 +45,12 @@ export default async function ShopLayout({
                 text-[#cc3a2c] dark:text-[#33c5d3]
                 text-[55px] tracking-[4px]
                 pt-0 pl-[20px] pb-1.5 mr-4 max-lg:pl-0
-                h-[80px] max-lg:h-[auto]
+                h-[80px] max-lg:h-auto
                 whitespace-nowrap"
             >
                 {config.cartLogo
                     /*eslint-disable-next-line @next/next/no-img-element*/
-                    ? <img src={config.cartLogo} alt={config.cartTitle} className="h-full w-[auto]" />
+                    ? <img src={config.cartLogo} alt={config.cartTitle} className="h-full w-auto" />
                     : config.cartTitle
                 }
             </Link>
@@ -70,9 +70,12 @@ export default async function ShopLayout({
             </ul>
         </nav>
         <SideCart />
-        <div id="container" className="relative flex flex-wrap h-full w-full mx-auto mb-10">
+        <div id="container" className="relative flex flex-wrap h-full mx-auto">
             {children}
         </div>
-        {config.footer.shownForCustomer && <Footer />}
+        {config.footer.shownForCustomer && <>
+            <div className='h-[100px]'></div>
+            <Footer />
+        </>}
     </>;
 }

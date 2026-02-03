@@ -20,12 +20,13 @@ export default async function ShopLayout({
 }) {
     const session = await getSession();
     return <>
-        <div id="container" className="relative flex flex-wrap h-full w-full mx-auto mb-0">
-            <nav className='hidden md:!block w-full md:w-1/4 lg:w-1/6 shrink-0 fixed left-0 top-0 bottom-0 z-40
-                            shadow-[inset_-1px_0_0_rgba(0,0,0,0.1)] dark:shadow-[inset_-1px_0_0_rgba(255,255,255,0.1)]
-                            bg-white dark:bg-black'
+        <div id="container" className="relative flex flex-wrap h-full w-full mx-auto">
+            <nav className={`hidden md:block! md:w-1/4 lg:w-1/6 shrink-0 fixed left-0 top-0 
+                ${config.footer.shownForAdmin ? 'bottom-[100px]' : 'bottom-0'} z-40
+                shadow-[inset_-1px_0_0_rgba(0,0,0,0.1)] dark:shadow-[inset_-1px_0_0_rgba(255,255,255,0.1)]
+                bg-white dark:bg-black`}
             >
-                <div className={`sticky top-0 h-screen overflow-x-hidden overflow-y-auto ${config.footer.shownForAdmin ? 'pb-36' : 'pb-0'}`}>
+                <div className='absolute left-0 right-0 top-0 bottom-0 overflow-x-hidden overflow-y-auto pb-10'>
                     <ul className='flex flex-col flex-wrap my-0 pl-0 list-none'>
                         <li className='flex items-center'>
                             <Link href='/admin' className='inline-block py-2 px-4 w-4/5'>
@@ -140,10 +141,13 @@ export default async function ShopLayout({
                     </ul>
                 </div>
             </nav>
-            <main role="main" className='relative mb-5 sm:!ml-auto px-6 md:py-5 w-full md:w-3/4 lg:w-5/6 shrink-0'>
+            <main role="main" className='relative mb-5 sm:ml-auto! px-6 md:py-5 w-full md:w-3/4 lg:w-5/6 shrink-0'>
                 {children}
             </main>
         </div>
-        {config.footer.shownForAdmin && <Footer />}
+        {config.footer.shownForAdmin && <>
+            <div className='h-[100px]'></div>
+            <Footer />
+        </>}
     </>;
 }

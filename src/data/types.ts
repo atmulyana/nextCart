@@ -90,7 +90,7 @@ export const OrderStatusMap = {
 export type OrderStatus =  keyof typeof OrderStatusMap;
 export type TOrder = {
     _id: _Id,
-    orderPaymentId: _Id,
+    orderPaymentId?: _Id | null,
     orderPaymentGateway: string,
     orderTotal: number,
     orderShipping: number,

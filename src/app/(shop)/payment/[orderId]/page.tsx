@@ -28,21 +28,21 @@ export default async function Payment({params}: {params: Promise<{orderId: strin
     ) : (    
         <div className='shrink-0 basis-full md:basis-5/6 mx-auto text-center pt-14'>
             {order.orderStatus == 'Paid' ?
-                <h2 className="text-[var(--color-success)]">{lang('Your payment has been successfully processed')}</h2> :
+                <h2 className="text-(--color-success)">{lang('Your payment has been successfully processed')}</h2> :
              order.orderStatus == 'Pending' ?
                 (
                     order.orderPaymentGateway.toLowerCase() == 'instore' ?
-                        <h2 className="text-[var(--color-warning)]">{mod.config.resultMessage.toString()}</h2> :
-                        <h2 className="text-[var(--color-warning)]">{lang('The payment for this order is pending. We will be in contact shortly.')}</h2>
+                        <h2 className="text-(--color-warning)">{mod.config.resultMessage.toString()}</h2> :
+                        <h2 className="text-(--color-warning)">{lang('The payment for this order is pending. We will be in contact shortly.')}</h2>
                 ) :
-                <h2 className="text-[var(--color-danger)]">{lang('Your payment has failed. Please try again or contact us.')}</h2>
+                <h2 className="text-(--color-danger)">{lang('Your payment has failed. Please try again or contact us.')}</h2>
             }
             <div>
                 <p><strong>{lang("Order ID")}:</strong> {order._id.toString()}</p>
-                <p><strong>{lang("Payment ID")}:</strong> {order.orderPaymentId.toString()}</p>
+                <p><strong>{lang("Payment ID")}:</strong> {order.orderPaymentId?.toString()}</p>
             </div>
             {(order.orderStatus === 'Paid' || order.orderStatus === 'Pending') &&
-               <h5 className="text-[var(--color-warning)]">{lang('Please retain the details above as a reference of payment')}</h5>
+               <h5 className="text-(--color-warning)">{lang('Please retain the details above as a reference of payment')}</h5>
             }
             <Link href='/' className='btn btn-outline-warning'>{lang('Home')}</Link>
         </div>

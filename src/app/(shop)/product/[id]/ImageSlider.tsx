@@ -4,12 +4,12 @@
  **/
 import React from 'react';
 import {Carousel, createTheme} from 'flowbite-react';
-import {emptyString} from 'javascript-common';
-import Rect from '@react-packages/rect';
+import {emptyArray, emptyString} from 'javascript-common';
+import Rect, {styles as rectStyles} from '@react-packages/rect';
+import {createComponent, isHoverSupported, type RefInstance as SliderRef} from '@react-packages/simple-images-slider';
 import Icon from '@/components/Icon';
 import cfg from '@/config/usable-on-client';
 import type {TProductImagePath} from '@/data/types';
-import FlexImage from '@/components/FlexImage';
 
 const theme = createTheme({
     carousel: {
@@ -41,15 +41,46 @@ const theme = createTheme({
 });
 
 const ImageSlider = React.memo(function ImageSlider(
-    {images}: {images: TProductImagePath[]}
+    {
+        images,
+        sliderRef,
+    }: {
+        images: TProductImagePath[],
+        sliderRef: React.RefObject<SliderRef | null>,
+    }
 ) {
     const [selectedIndex, setSelectedIndex] = React.useState(0);
     const slideChange = React.useCallback(
         (idx: number) => setSelectedIndex(idx),
-        []
+        emptyArray
     );
-    const slider = React.useRef<HTMLDivElement>(null);
     
+    const slider = React.useRef<HTMLDivElement>(null);
+    const thumbnailsChange = React.useCallback(({selected}: {selected: number}) => {
+        const btns = slider.current?.querySelectorAll<HTMLButtonElement>('button[data-testid="carousel-indicator"]');
+        if (btns) btns[selected]?.click();
+    }, emptyArray);
+
+    const thumbnails = React.useRef<SliderRef>(null);
+    React.useEffect(() => {
+        const oldValue = sliderRef.current;
+        Object.defineProperty(sliderRef, 'current', {
+            configurable: true,
+            enumerable: true,
+            get() {
+                return thumbnails.current;
+            }
+        });
+        return () => {
+            Object.defineProperty(sliderRef, 'current', {
+                configurable: true,
+                enumerable: true,
+                value: oldValue,
+                writable: true,
+            });
+        };
+    }, [sliderRef]);
+
     return <>
         <Rect ref={slider} className='rounded-sm'>
             <Carousel slide={false} theme={theme.carousel} onSlideChange={slideChange}>
@@ -57,61 +88,54 @@ const ImageSlider = React.memo(function ImageSlider(
                 {images.map(img => <img key={img.id} src={`${cfg.baseUrl.path}${img.path}`} alt='...' />)}
             </Carousel>
         </Rect>
-        <Thumbnails images={images} selectedIndex={selectedIndex} slider={slider} />
+        <Thumbnails
+            ref={thumbnails}
+            images={images.map(img => img.path)}
+            onChange={thumbnailsChange}
+            selectedIndex={selectedIndex}
+        />
     </>;
 });
 
-
-function Thumbnails({
-    images,
-    selectedIndex,
-    slider,
-}: {
-    images: TProductImagePath[],
-    selectedIndex: number,
-    slider: React.RefObject<HTMLDivElement | null>,
-}) {
-    const maxVisibleCount = 6;
-    const maxStartIdx = images.length - maxVisibleCount;
-    const [startVisibleIdx, setStartVisibleIdx] = React.useState(0);
-    const setStart = (idx: number) => {
-        if (idx > maxStartIdx) idx = maxStartIdx;
-        if (idx < 0) idx = 0;
-        setStartVisibleIdx(() => idx);
+const Thumbnails = createComponent({
+    hiddenFirst: true,
+    leftButtonContent: <Icon name='chevron-left' height={24} width={24} strokeWidth={4} />,
+    rightButtonContent: <Icon name='chevron-right' height={24} width={24} strokeWidth={4} />,
+    styles: {
+        bgImage: {
+            className: 'px-1'
+        },
+        button: {
+            className: `btn-primary flex-none self-center flex items-center justify-center h-8 w-8 p-0 opacity-70 z-10${
+                isHoverSupported ? ' invisible group-hover:visible' : emptyString
+            }`
+        },
+        buttonAtFirst: {
+            className: 'hidden'
+        },
+        buttonAtLast: {
+            className: 'hidden'
+        },
+        container: {
+            className: 'group flex h-auto -mx-1 mt-4'
+        },
+        image: {
+            className: 'border-2 border-transparent cursor-pointer box-border rounded-sm',
+            style: rectStyles.centeredImage,
+        },
+        imageSelected: {
+            className: '!border-green-500 dark:!border-pink-400 !cursor-default'
+        },
+        imagesBox: {
+           className: 'flex-1 -mx-9 overflow-x-hidden'
+        },
+        imagesBoxAtFirst: {
+            className: 'ml-0'
+        },
+        imagesBoxAtLast: {
+            className: 'mr-0'
+        },
     }
-    
-    return <div className='group flex h-auto -mx-1 mt-4'>
-        <button type='button'
-            className={`btn-primary flex-none self-center flex items-center justify-center h-8 w-8 p-0 opacity-70 z-10
-                invisible group-hover:visible ${startVisibleIdx < 1 ? 'hidden' : emptyString}`}
-            onClick={() => setStart(startVisibleIdx - 1)}
-        >
-            <Icon name='chevron-left' height={24} width={24} strokeWidth={4} />
-        </button>
-        <div className={`image-slider-thumbnails flex-1 flex overflow-x-hidden
-            ${startVisibleIdx < 1 ? 'ml-0' : '-ml-8'} ${startVisibleIdx >= maxStartIdx ? 'mr-0' : '-mr-8'}`}>
-            {images.map((img, idx) => <div key={idx} className={`flex-none basis-1/6 px-1 ${idx < startVisibleIdx ? 'hidden' : emptyString}`}>
-                <div
-                    className={`w-full border-2 rounded-sm ${
-                        selectedIndex==idx ? 'border-green-500 dark:border-pink-400' : 'border-transparent cursor-pointer'
-                    }`}
-                    onClick={() => {
-                        const btns = slider.current?.querySelectorAll<HTMLButtonElement>('button[data-testid="carousel-indicator"]');
-                        if (btns) btns[idx]?.click();
-                    }}
-                >
-                    <FlexImage src={img.path} alt='...' />
-                </div>
-            </div>)}
-        </div>
-        <button type='button'
-            className={`btn-primary flex-none self-center flex items-center justify-center h-8 w-8 p-0 opacity-70 z-10
-                invisible group-hover:visible ${startVisibleIdx >= maxStartIdx ? 'hidden' : emptyString}`}
-            onClick={() => setStart(startVisibleIdx + 1)}
-        >
-            <Icon name='chevron-right' height={24} width={24} strokeWidth={4} />
-        </button>
-    </div>;
-}
+});
 
 export default ImageSlider;

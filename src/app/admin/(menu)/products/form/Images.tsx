@@ -4,10 +4,10 @@
  **/
 import React from 'react';
 import Button from '@/components/SubmitButton';
+import FileUpload from '@/components/FileUpload';
 import FlexImage from '@/components/FlexImage';
 import type {FormProps} from '@/components/Form';
 import FormWithSchema from '@/components/FormWithSchema';
-import ImageUpload from '@/components/ImageUpload';
 import Loading from '@/components/Loading';
 import {useModal} from '@/components/Modal';
 import {useNotification} from '@/components/Notification';
@@ -164,7 +164,7 @@ export default function Images({
                             loadingCallback={openDialog.setLoading}
                             noFileText={texts.popup.noFile}
                             onSubmitted={response => resolveSubmit && resolveSubmit(response)}
-                            selectFileLabel={texts.popup.selectFile}
+                            selectFileText={texts.popup.selectFile}
                         />,
                         okLabel: texts.popup.upload,
                         okBtnStyle: 'btn-outline-success',
@@ -191,7 +191,7 @@ export default function Images({
             <>&nbsp;</>
         ) : 
         state.count < 1 ? (
-            <strong className='text-[var(--color-warning)]'>{texts.noImage}</strong>
+            <strong className='text-(--color-warning)'>{texts.noImage}</strong>
         ) : (
             <div className='flex flex-wrap gap-y-4 justify-start -mx-2'>
                 {images}
@@ -208,23 +208,24 @@ function UploadForm({
     noFileText,
     onSubmitted,
     productId,
-    selectFileLabel,
+    selectFileText,
 }: {
     loadingCallback?: FormProps['loadingCallback'],
     noFileText: string,
     onSubmitted?: FormProps['onSubmitted'],
     productId: string,
-    selectFileLabel: string,
+    selectFileText: string,
 }) {
     return <FormWithSchema
         action={uploadImage}
-        className='block'
+        className='flex justify-center'
         id="uploadImageForm"
         loadingCallback={loadingCallback}
         onSubmitted={onSubmitted}
         schemaName='productImage'
     >
         <input type='hidden' name='productId' value={productId} />
-        <ImageUpload accept={acceptedImageTypes} buttonLabel={selectFileLabel} name='image' noFileText={noFileText} />
+        {/* <ImageUpload accept={acceptedImageTypes} buttonLabel={selectFileLabel} name='image' noFileText={noFileText} /> */}
+        <FileUpload accept={acceptedImageTypes} name='image' selectText={selectFileText} noFileText={noFileText} />
     </FormWithSchema>;
 }

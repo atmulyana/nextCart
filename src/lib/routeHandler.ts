@@ -290,6 +290,7 @@ export function createFormAction(handler: (formData: FormData, redirect: Redirec
         }
         catch (err: any) {
             if (isRedirectError(err)) throw err;
+            console.error(err);
             response = {
                 message: (
                     isForbiddenError(err) ? lang('Access denied') :

@@ -55,31 +55,34 @@ export default async function CheckoutBlockonomics({
         <div className='flex flex-wrap justify-center -mx-4'>
             <div className='checkout-left-pane px-4'>
                 <h5 className='mb-3'>{lang('Blockonomics payment details')}</h5>
-                <div className='bordered !py-3'>
+                <div className='bordered py-3!'>
                     {session.customerFirstname} {session.customerLastname} - {session.customerEmail}
                 </div>
-                {cart && cart.totalCartShipping > 0 && <div className='bordered !py-3 flex flex-wrap'>
+                {cart && cart.totalCartShipping > 0 && <div className='bordered py-3! flex flex-wrap'>
                     <span className='basis-full md:basis-1/2 shrink-0 grow-0'>{lang(cart.shippingMessage ?? '-')}</span>
                     <strong className='basis-full md:basis-1/2 shrink-0 grow-0'>{currencySymbol()}{formatAmount(cart.totalCartShipping)}</strong>
                 </div>}
-                <div className='bordered !py-3 flex flex-wrap'>
+                <div className='bordered py-3! flex flex-wrap'>
                     <span className='basis-full md:basis-1/2 shrink-0 grow-0'>{lang('Send BTC amount')}</span>
                     <div className='basis-full md:basis-1/2 shrink-0 grow-0'>
                         <strong id='expectedBtc'>{params.expectedBtc}</strong>
                         <CopyLink sourceId='expectedBtc' className='btn btn-sm btn-outline-primary float-right' title={lang('Copy')} />
                     </div>
                 </div>
-                <div className='bordered !py-3'>
+                <div className='bordered py-3!'>
                     {lang('Address')}:<br/>
                     <div>
                         <strong id='btcAddress'>{params.address}</strong>
                         <CopyLink sourceId='btcAddress' className='btn btn-sm btn-outline-primary float-right' title={lang('Copy')} />
                     </div>
                 </div>
-                <div className='bordered !py-3 flex flex-wrap'>
+                <div className='bordered py-3! flex flex-wrap'>
                     <Waiting
                         blUrl={cfg.hostUrl.replace(/^https:/, 'wss:') + '/payment/'}
-                        params={params}
+                        params={{
+                            ...params,
+                            pendingOrderId: params.pendingOrderId.toString(),
+                        }}
                         text={{
                             alreadyPaid: lang('If you already paid, your order will be processed automatically'),
                             clickHere: lang('Click here'),

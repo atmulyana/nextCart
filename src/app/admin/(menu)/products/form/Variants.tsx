@@ -5,7 +5,7 @@
 import React from 'react';
 import {Tooltip} from "flowbite-react";
 import {emptyString} from 'javascript-common';
-import Rect, {styles} from '@react-packages/rect';
+import {createComponent} from '@react-packages/image-thumbnail';
 import Button from '@/components/SubmitButton';
 import type {FormProps} from '@/components/Form';
 import FormWithSchema from '@/components/FormWithSchema';
@@ -148,7 +148,7 @@ export default function Variants({
             <Button type='button' className='btn-outline-primary' onClick={() => showVariantForm(-1)}>{texts.add}</Button>
         </div>
         <ul className='bordered'>
-            <li className='!flex bg-gray-200 dark:bg-gray-800'>
+            <li className='flex! bg-gray-200 dark:bg-gray-800'>
                 <strong className='w-1/4 flex-none pr-4'>{texts.name}</strong>
                 <strong className='w-1/4 flex-none pr-4'>{texts.price}</strong>
                 <strong className='w-1/4 flex-none pr-4'>{texts.stock}</strong>
@@ -162,9 +162,9 @@ export default function Variants({
                 </strong>
             </li>
             {items.length < 1 ? (
-                <li className='bg-[var(--bg-color)] text-center'>{texts.noVariant}</li>
+                <li className='bg-(--bg-color) text-center'>{texts.noVariant}</li>
             ) : items.map((v, idx) => (imageIdx = v.imageIdx ?? -1,
-                <li key={v._id as string} className='!flex bg-[var(--bg-color)] hover:bg-gray-100 hover:dark:bg-gray-900'>
+                <li key={v._id as string} className='flex! bg-(--bg-color) hover:bg-gray-100 hover:dark:bg-gray-900'>
                     <span className='w-1/4 flex-none pr-4'>{v.title}</span>
                     <span className='w-1/4 flex-none pr-4'>{currencySymbol()}{formatAmount(v.price)}</span>
                     <span className='w-1/4 flex-none pr-4'>{
@@ -174,7 +174,7 @@ export default function Variants({
                         Number.isInteger(imageIdx) && 0 <= imageIdx && imageIdx < imageCount
                             ? (
                                 <Tooltip
-                                    content={<Thumbnail img={getImage(imageIdx)} />}
+                                    content={<Thumbnail image={getImage(imageIdx)}  className='w-32' />}
                                     style={darkMode.isDark ? 'dark' : 'light'}
                                 >
                                     <a className='cursor-pointer underline'>{texts.image}&nbsp;{imageIdx + 1}</a>
@@ -190,7 +190,7 @@ export default function Variants({
                             }}
                         >
                             <Icon name='edit' />
-                        </a>&nbsp;<a href='#' title={texts.delete} className='text-[var(--color-danger)]'
+                        </a>&nbsp;<a href='#' title={texts.delete} className='text-(--color-danger)'
                             onClick={ev => {
                                 ev.preventDefault();
                                 setAction(() => deleteVariant.bind(null, idx))
@@ -260,55 +260,18 @@ function Form({
                 </Select>
                 <div className='text-gray-500 dark:text-gray-400'>{texts.imageNote}</div>
             </div>
-            <Thumbnail img={getImage(parseInt(imgIdx))} />
+            <Thumbnail image={getImage(parseInt(imgIdx))} className='flex-none w-32' />
         </div>
     </FormWithSchema>;
 }
 
-function Thumbnail({img}: {img?: HTMLImageElement | null}) {
-    const canvas = React.useRef<HTMLCanvasElement>(null);
-    const canvasContainer = React.useRef<HTMLDivElement>(null);
-    const defaultImage = React.useRef<HTMLImageElement>(null);
-    const [canvasRendered, setCanvasRendered] = React.useState(false);
-    
-    React.useEffect(() => {
-        if (!canvas.current || !canvasContainer.current) return;
-        const canv = canvas.current;
-        const maxSize = canvasContainer.current.offsetWidth; // == canvasContainer.current.offsetHeight
-        const noImage = () => canv.height = canv.width = 1;
-        const image = img ?? defaultImage.current;
-        if (image) {
-            image.decode().then(() => {
-                const imgHeight = image.naturalHeight, imgWidth = image.naturalWidth;
-                let height: number, width: number;
-                if (imgHeight < imgWidth) {
-                    width = maxSize;
-                    height = maxSize * imgHeight / imgWidth
-                }
-                else {
-                    width = maxSize * imgWidth / imgHeight;
-                    height = maxSize;
-                }
-                
-                canv.height = height;
-                canv.width = width;
-                const ctx = canv.getContext('2d');
-                ctx?.drawImage(image, 0, 0, imgWidth, imgHeight, 0, 0, width, height);
-            }).catch(noImage);
+const Thumbnail = createComponent({
+    styles: {
+        background: {
+            className: 'bg-gray-500'
+        },
+        content: {
+            className: 'w-full h-full flex items-center justify-center'
         }
-        else {
-            noImage();
-        }
-    }, [img, canvasRendered]);
-
-    return <div className='flex-none w-32'>
-        {/*eslint-disable-next-line @next/next/no-img-element*/}
-        <img ref={defaultImage} src='/images/placeholder.png' alt='...' className='hidden' />
-        <Rect ref={canvasContainer} className='bg-gray-500' onRendered={isRendered => setCanvasRendered(isRendered)}>
-            <div style={styles.centeredContent}>
-                <canvas ref={canvas} height={1} width={1}>
-                </canvas>
-            </div>
-        </Rect>
-    </div>
-}
+    }
+});

@@ -1,51 +1,20 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-const {cache} = require('react');
-const {cookies} = require('next/headers');
-//const {PassThrough} = require('stream');
-const {defaultLocale} = require('@/config/server');
+const storage = require("next/dist/server/app-render/work-unit-async-storage.external");
+const {defaultLocale} = require('@/config/server').config;
 
-let getCookieLocale = () => {
-    return cookies().get('locale')?.value;
-}
-
-if (process.env.NODE_ENV == 'development') {
-    const storage = require("next/dist/server/app-render/work-unit-async-storage.external");
-    function cookies() {
-        return storage.workUnitAsyncStorage.getStore().cookies;
-    }
-    
-    // const nullStream = new PassThrough();
-    // nullStream.on('data', data => {
-    //     //No data wriiten
-    // });
-
-    // const errConsole = process.stderr;
-    // let stderr = process.stderr;
-    // Object.defineProperty(process, 'stderr', {
-    //     get() {
-    //         return stderr;
-    //     },
-    // });
-    
-    getCookieLocale = () => {
-        // stderr = nullStream;
-        const locale = cookies().get('locale')?.value;
-        // stderr = errConsole;
-        return locale;
-    };
-}
-
+const cache = new WeakMap();
 function currentLocale() {
-    try {
-        return getCookieLocale() ?? defaultLocale;
-    }
-    catch {
-        return defaultLocale;
-    }
+    const requestStore = storage.workUnitAsyncStorage.getStore(); //Different for each HTTP request
+    if (!requestStore) return defaultLocale;
+    let locale = cache.get(requestStore);
+    if (locale) return locale;
+    locale = requestStore.cookies?.get('locale')?.value ?? defaultLocale;
+    cache.set(requestStore, locale);
+    return locale;
 }
 
-exports = module.exports = cache(currentLocale);
+exports = module.exports = currentLocale;
 exports.__esModule = true;
 exports.default = exports;

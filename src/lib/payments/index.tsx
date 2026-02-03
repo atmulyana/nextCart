@@ -2,6 +2,7 @@
  * https://github.com/atmulyana/nextCart
  **/
 import React from 'react';
+import {emptyString} from 'javascript-common';
 import appCfg from '@/config';
 import type {_Id, TOrder, TSessionCustomer, WithoutId} from '@/data/types';
 import {cartTrans, deleteCart, getCart} from '@/data/cart';
@@ -179,10 +180,10 @@ export async function createOrder(data: OrderData, approved?: boolean, emailMess
         if (approved) {
             await updateOrderedStock(ord.orderProducts);
             await deleteCart();
-            emailNotif(ord.orderEmail, orderId, data.orderPaymentId.toString(), emailMessage);
+            emailNotif(ord.orderEmail, orderId, data.orderPaymentId?.toString() ?? emptyString, emailMessage);
         }
         else if (typeof(emailMessage) == 'string') {
-            emailNotif(ord.orderEmail, orderId, data.orderPaymentId.toString(), emailMessage, false);
+            emailNotif(ord.orderEmail, orderId, data.orderPaymentId?.toString() ?? emptyString, emailMessage, false);
         }
     });
     return orderId;
@@ -206,7 +207,7 @@ export async function updateOrder(id: _Id, data: Partial<OrderData>, status?: Ap
             await deleteCart();
             if (status == ApprovalStatus.Approved) {
                 if (!ord.productStockUpdated) await updateOrderedStock(ord.orderProducts);
-                emailNotif(ord.orderEmail, id, (data.orderPaymentId ?? ord.orderPaymentId).toString());
+                emailNotif(ord.orderEmail, id, (data.orderPaymentId ?? ord.orderPaymentId)?.toString() ?? emptyString);
             }
             return Response.json({}); //sets `chartItemCount` in session token to 0 
         }

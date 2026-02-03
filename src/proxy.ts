@@ -1,7 +1,7 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
-export {middleware} from '@/lib/auth/middleware';
+export {middleware as proxy} from '@/lib/auth/middleware';
 
 export const config = {
     matcher: [

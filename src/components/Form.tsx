@@ -70,11 +70,32 @@ const FormWithFunctionAction = React.forwardRef<
 ) {
     const formRef = React.useRef<HTMLFormElement>(null);
     const checkedInputs = React.useRef<NodeListOf<HTMLInputElement | HTMLOptionElement>>(null);
-    const [response, formAction] = React.useActionState(action, initFormState);
+
+    //const _action = action;
+    // ++++++++++ This is temporarily fixing before being found the code that should be
+    const [_, setFlag] = React.useState(false);
+    const _action = React.useCallback<ResponseAction>((response: any, formData: FormData) => {
+        const resp = action(response, formData);
+        if (resp instanceof Promise) {
+            return resp.then(resp => {
+                setTimeout(() => {
+                    //Especially happens in production mode, often, it needs to re-render to finish the process.
+                    //It seems there is a pending process that's never resolved. Re-rendering forces the pending
+                    //process resolved.
+                    setFlag(flag => !flag);
+                }, 100);
+                return resp;
+            });
+        }
+        return resp;
+    }, [action]);
+    // ++++++++++
+    
+    const [response, formAction, isPending] = React.useActionState(_action, initFormState);
     const notify = useNotification();
     const router = useRouter();
 
-    const _onSubmit = React.useCallback((ev: React.FormEvent<HTMLFormElement>) => {
+    const _onSubmit = React.useCallback((ev: React.SubmitEvent<HTMLFormElement>) => {
         if (onSubmit) onSubmit(ev);
         if (!formRef.current || ev.defaultPrevented) return;
         
@@ -90,7 +111,7 @@ const FormWithFunctionAction = React.forwardRef<
     }, [ref]);
     
     React.useEffect(() => {
-        if (response === initFormState) return;
+        if (response === initFormState || isPending) return;
         const responseMessage = getResponseMessage(response);
         let notification: NotificationParam | undefined;
         if (typeof(responseMessage) == 'string') {
@@ -140,12 +161,20 @@ const FormWithFunctionAction = React.forwardRef<
 
         if (checkedInputs.current) {
             /**
-             * After invoking the server action (submitting the form to the server), all checked/selected 
-             * elements in the form will unchecked/unselected. It's not a problem if the page's content changes
-             * as a response of the submitting action. However, if the should stay, for example, because there
-             * is one or more invalid inputs, all inputs that the user has just filled must be kept intact. The
-             * following statements keep all checked/selected elements before unchanged.
+             * After invoking the server action (submitting the form to the server), all checkable/selectable 
+             * elements in the form will resetted to the state before submitting. It's not a problem if the
+             * page's content changes as a response of the submitting action. However, if the should stay, for
+             * example, because there is one or more invalid inputs, all inputs that the user has just filled
+             * must be kept intact. The following statements keep all checkable/selectable elements unchanged.
              */
+            if (formRef.current) {
+                formRef.current.querySelectorAll("input:checked").forEach(node => {
+                    (node as HTMLInputElement).checked = false;
+                });
+                formRef.current.querySelectorAll("select option:checked").forEach(node => {
+                    (node as HTMLOptionElement).selected = false;
+                });
+            }
             checkedInputs.current.forEach(node => {
                 if (node.tagName == 'INPUT') (node as HTMLInputElement).checked = true;
                 else (node as HTMLOptionElement).selected = true;
@@ -153,7 +182,7 @@ const FormWithFunctionAction = React.forwardRef<
             checkedInputs.current = null;
         }
     //eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [response]);
+    }, [response, isPending]);
 
     return <form role='form' {...props} ref={formRef} action={formAction} noValidate onSubmit={_onSubmit}>
         {children}
@@ -249,7 +278,7 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
         notifyLoading.current = (isLoading: boolean) => loadingCallback && loadingCallback(isLoading);
     }, [loadingCallback]);
     
-    const _onSubmit = React.useCallback((ev: React.FormEvent<HTMLFormElement>) => {
+    const _onSubmit = React.useCallback((ev: React.SubmitEvent<HTMLFormElement>) => {
         if (ctx.current.validate()) {
             if (typeof(onSubmit) == 'function') onSubmit(ev);
         }
@@ -275,8 +304,8 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
     >
         <FormContext.Provider value={formCtx.current}>
         {typeof(action) == 'function' ? (
-            fnAction = (_: any, formData: FormData) => typeof(validate) == 'function'
-                ? validate(formData, action) : action(formData),
+            fnAction = (_: any, formData: FormData) =>
+                typeof(validate) == 'function' ? validate(formData, action) : action(formData),
             <FormWithFunctionAction
                 {...props}
                 ref={ref}

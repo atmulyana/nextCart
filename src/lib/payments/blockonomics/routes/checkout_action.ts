@@ -4,6 +4,7 @@
 import appCfg from '@/config';
 import {dbTrans} from '@/data/db-conn';
 import {getCart} from '@/data/cart';
+import lang from '@/data/lang/server';
 import {createPostHandler} from '@/lib/routeHandler';
 import {setParams, type TSessionBlockonomics} from '../data';
 import {createOrder, getPaymentConfig} from '../../';
@@ -35,6 +36,10 @@ export const POST = createPostHandler(async (_, redirect) => {
             },
         }
     ).then(resp => resp.json());
+    if (!response.address) {
+        console.error(response);
+        return await redirect('/checkout/payment', {message: lang('There was an error processing your payment')});
+    }
     blockonomicsParams.address = response.address;
     blockonomicsParams.timestamp = Math.floor(new Date().getTime() / 1000);
 

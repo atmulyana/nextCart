@@ -377,7 +377,7 @@ export const addImage = fn(async (db: Db, productId: _Id, image: File) => {
     const images = await getImagesProps(_id);
     if (!images) return false;
 
-    const content = new Binary(await image.bytes());
+    const content = new Binary(image.bytes ? await image.bytes() : new Uint8Array(await image.arrayBuffer()));
     if (images.count > 0) {
         await products.updateOne(
             { _id },

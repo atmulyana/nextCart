@@ -3,18 +3,21 @@
  **/
 //require('server-only');
 const fs = require('fs');
+const {emptyString} = require('javascript-common');
 const {getRootPath} = require('next-server-root-dir');
 
 module.exports = {
     serverRoot: getRootPath,
     projectRoot: function() {
         const serverPaths = (getRootPath()?.split('/' /* Always separated by '/' (never '\') */) ?? []).filter(segment => !!segment);
+        if (serverPaths.length < 1) return null;
         let i = serverPaths.length - 1;
+        const systemRoot = serverPaths[0].endsWith(':') /* Windows drive */ ? emptyString : '/';
         while (i > 0) {
             try {
                 if (
                     JSON.parse(
-                        fs.readFileSync('/' + serverPaths.slice(0, i).join('/') + '/package.json', 'utf8')
+                        fs.readFileSync(systemRoot + serverPaths.slice(0, i).join('/') + '/package.json', 'utf8')
                     ).name == "next-cart"
                 ) {
                     break;
@@ -27,7 +30,7 @@ module.exports = {
                 i--;
             }
         }
-        if (i > 0) return '/' + serverPaths.slice(0, i).join('/');
+        if (i > 0) return systemRoot + serverPaths.slice(0, i).join('/');
         return null;
     },
     readFileText: function(path, relativeToServer = true) {

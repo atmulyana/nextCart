@@ -1,10 +1,11 @@
 /** 
  * https://github.com/atmulyana/nextCart
  **/
+@reference "../../globals.css";
 body {
     @apply bg-gray-50 dark:bg-gray-950;
 }
 
 #global-search-form:has(+#global-search-results:not(:empty)) > *:not(:last-child) {
-    @apply !rounded-b-none;
+    @apply rounded-b-none!;
 }

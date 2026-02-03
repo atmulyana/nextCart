@@ -63,7 +63,7 @@ export async function globalSearch(formData: FormData) {
     ret.orders?.forEach(item => {
         item._id = item._id.toString();
         delete item.orderCustomer;
-        if ((item.orderPaymentId as any) instanceof ObjectId) item.orderPaymentId = item.orderPaymentId.toString();
+        if (item.orderPaymentId instanceof ObjectId) item.orderPaymentId = item.orderPaymentId.toString();
         item.orderProducts = {};
     });
     ret.products?.forEach(item => {

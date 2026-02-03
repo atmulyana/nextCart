@@ -4,6 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Ellipsis from '@react-packages/ellipsis';
+import type {RefInstance as SliderRef} from '@react-packages/simple-images-slider';
 import {stripHtml} from 'string-strip-html';
 import config from '@/config';
 import lang from '@/data/lang';
@@ -69,6 +70,7 @@ export default async function Product(props: Props) {
     } = await GET.data(await awaitProps(props));
     const productId = product._id.toString();
     const pageUrl = config.baseUrl + '/product/' + productId;
+    const sliderRef: React.RefObject<SliderRef | null> = {current: null};
 
     const ldJson: any = {
         "@context": "https://schema.org/",
@@ -128,7 +130,7 @@ export default async function Product(props: Props) {
             <div className='flex flex-wrap gap-y-8'>
                 <div className='flex-none basis-full md:basis-1/2'>
                 {images.length > 1 ? (
-                    <ImageSlider images={images} />
+                    <ImageSlider images={images} sliderRef={sliderRef} />
                 ) : (
                     <FlexImage src={`/product/${productId}/image`} alt='...' className='w-full' />
                 )}
@@ -148,6 +150,7 @@ export default async function Product(props: Props) {
                                 }}
                                 stockDisabled={product.productStockDisable}
                                 items={product.variants}
+                                sliderRef={sliderRef}
                             />
                         ) : (<>
                             <h5 className='mb-2.5 text-neutral-500 text-[1.33rem]'>
